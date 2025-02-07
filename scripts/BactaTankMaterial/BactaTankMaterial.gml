@@ -127,6 +127,92 @@ function BactaTankMaterial() constructor
 	
 	#endregion
 	
+	#region Export / Replace Material
+	
+	/// @func exportMaterial()
+	/// @desc Export BactaTankMaterial
+	static exportMaterial = function(materialIndex, filepath)
+	{
+		// Create Export Buffer
+		var buffer = buffer_create(1, buffer_grow, 1);
+		
+		// Material
+		var material = self.materials[materialIndex];
+		
+		// Write Header
+		buffer_write(buffer, buffer_string, "BactaTankMaterial");
+		buffer_write(buffer, buffer_string, "PCGHG");
+		buffer_write(buffer, buffer_f32, 0.1);
+		
+		// Write Blend Colour
+		buffer_write(buffer, buffer_f32, material.colour[0]);
+		buffer_write(buffer, buffer_f32, material.colour[1]);
+		buffer_write(buffer, buffer_f32, material.colour[2]);
+		buffer_write(buffer, buffer_f32, material.colour[3]);
+		
+		// Write Ambient Tint
+		buffer_write(buffer, buffer_f32, material.ambientTint[0]);
+		buffer_write(buffer, buffer_f32, material.ambientTint[1]);
+		buffer_write(buffer, buffer_f32, material.ambientTint[2]);
+		buffer_write(buffer, buffer_f32, material.ambientTint[3]);
+		
+		// Write Specular Exponent and Reflection Power
+		buffer_write(buffer, buffer_f32, material.specularExponent);
+		buffer_write(buffer, buffer_f32, material.reflectionPower);
+		
+		// Write Other Attributes
+		buffer_write(buffer, buffer_u32, material.vertexFormat);
+		buffer_write(buffer, buffer_u32, material.alphaBlend);
+		buffer_write(buffer, buffer_u32, material.shaderFlags);
+		
+		// Buffer Save
+		buffer_save(buffer, filepath);
+		buffer_delete(buffer);
+	}
+	
+	/// @func replaceMaterial()
+	/// @desc Replace BactaTankMaterial
+	static replaceMaterial = function(materialIndex, filepath, replaceVertexFormat = false)
+	{
+		// Load Material Buffer
+		var buffer = buffer_load(filepath);
+		
+		// Read Header
+		var magic = buffer_read(buffer, buffer_string); // BactaTankMaterial
+		var format = buffer_read(buffer, buffer_string); // PCGHG
+		var version = buffer_read(buffer, buffer_f32); // 0.1
+		
+		// Version Check
+		if (version != 0.1) return;
+		
+		// Read Blend Colour
+		self.materials[materialIndex].colour[0] = buffer_read(buffer, buffer_f32);
+		self.materials[materialIndex].colour[1] = buffer_read(buffer, buffer_f32);
+		self.materials[materialIndex].colour[2] = buffer_read(buffer, buffer_f32);
+		self.materials[materialIndex].colour[3] = buffer_read(buffer, buffer_f32);
+		
+		// Read Ambient Tint
+		self.materials[materialIndex].ambientTint[0] = buffer_read(buffer, buffer_f32);
+		self.materials[materialIndex].ambientTint[1] = buffer_read(buffer, buffer_f32);
+		self.materials[materialIndex].ambientTint[2] = buffer_read(buffer, buffer_f32);
+		self.materials[materialIndex].ambientTint[3] = buffer_read(buffer, buffer_f32);
+		
+		// Read Specular Exponent and Reflection Power
+		self.materials[materialIndex].specularExponent = buffer_read(buffer, buffer_f32);
+		self.materials[materialIndex].reflectionPower = buffer_read(buffer, buffer_f32);
+		
+		// Read Other Attributes
+		if (replaceVertexFormat) self.materials[materialIndex].vertexFormat = buffer_read(buffer, buffer_u32);
+		else buffer_read(buffer, buffer_u32);
+		self.materials[materialIndex].alphaBlend = buffer_read(buffer, buffer_u32);
+		self.materials[materialIndex].shaderFlags = buffer_read(buffer, buffer_u32);
+		
+		// Delete Buffer
+		buffer_delete(buffer);
+	}
+	
+	#endregion
+	
 	#region Helper
 	
 	/// @func decodeVertexFormat()

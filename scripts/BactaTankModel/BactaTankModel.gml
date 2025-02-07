@@ -111,17 +111,17 @@ function BactaTankModel(model = -1) constructor
 			readLocatorOrder(buffer);
 			
 			// Seek to DISP (Special Object Count)
-			buffer_seek(buffer, buffer_seek_start, gsnhOffset + 0x10C);
-			buffer_seek(buffer, buffer_seek_relative, buffer_read(buffer, buffer_s32) - 4);
-			var dispOffset = buffer_tell(buffer);
+			//buffer_seek(buffer, buffer_seek_start, gsnhOffset + 0x10C);
+			//buffer_seek(buffer, buffer_seek_relative, buffer_read(buffer, buffer_s32) - 4);
+			//var dispOffset = buffer_tell(buffer);
 			
 			// Read Mesh Links
-			buffer_seek(buffer, buffer_seek_start, dispOffset + 0x10);
-			readModels(buffer);
+			//buffer_seek(buffer, buffer_seek_start, dispOffset + 0x10);
+			//readModels(buffer);
 			
 			// Read Special Objects
-			buffer_seek(buffer, buffer_seek_start, dispOffset + 0x6c);
-			readSpecialObjects(buffer);
+			//buffer_seek(buffer, buffer_seek_start, dispOffset + 0x6c);
+			//readSpecialObjects(buffer);
 			
 			// Read Layers
 			buffer_seek(buffer, buffer_seek_start, gsnhOffset + 0x18c);
@@ -479,6 +479,9 @@ function BactaTankModel(model = -1) constructor
 		// Seek to layer entry
 		buffer_seek(buffer, buffer_seek_relative, buffer_read(buffer, buffer_u32) - 4);
 		
+		// Current Mesh
+		var currentMesh = 0;
+		
 		// Loop though the layers
 		for (var i = 0; i < layerCount; i++)
 		{
@@ -486,7 +489,10 @@ function BactaTankModel(model = -1) constructor
 			self.layers[i] = new BactaTankLayer();
 			
 			// Parse Layer
-			self.layers[i].parse(buffer, self, i);
+			self.layers[i].parse(buffer, self, i, currentMesh);
+			
+			// Increase Current Mesh
+			currentMesh += array_length(self.layers[i].meshes);
 		}
 		
 		ConsoleLog(self.layers);
@@ -587,16 +593,7 @@ function BactaTankModel(model = -1) constructor
 		
 		for (var i = 0; i < array_length(self.meshes); i++)
 		{
-			buffer_copy(buffer,
-						self.offsets.vertexBuffer[self.meshes[i].vertexBufferID] + self.meshes[i].vertexOffset * self.meshes[i].vertexStride,
-						self.meshes[i].vertexCount * self.meshes[i].vertexStride,
-						self.meshes[i].vertexBuffer,
-						0);
-			buffer_copy(buffer,
-						self.offsets.indexBuffer[self.meshes[i].indexBufferID] + self.meshes[i].indexOffset * 2,
-						(self.meshes[i].triangleCount + 2) * 2,
-						self.meshes[i].indexBuffer,
-						0);
+			self.meshes[i].link(buffer, self.offsets.vertexBuffer, self.offsets.indexBuffer, self);
 		}
 	}
 	
@@ -1516,680 +1513,6 @@ function BactaTankModel(model = -1) constructor
 	
 	#endregion
 	
-	#region Export / Replace Mesh
-	
-	/// @func exportMesh()
-	/// @desc Export BactaTankMesh
-	static exportMesh = function(meshIndex, filepath)
-	{
-		// Create Export Buffer
-		var buffer = buffer_create(1, buffer_grow, 1);
-		
-		// Mesh
-		var mesh = self.meshes[meshIndex];
-		var material = getMaterial(meshIndex);
-		var bones = self.bones;
-		
-		// VF value
-		var vfValue = 0;
-		if (mesh.vertexStride == 28) vfValue = 2313;
-		if (mesh.vertexStride == 36) vfValue = 33556745;
-		
-		// Get Vertex Format
-		var vertexFormat = self.materials[material].vertexFormat;
-		
-		// Write Header
-		buffer_write(buffer, buffer_string, "BactaTank");
-		buffer_write(buffer, buffer_string, "PCGHG");
-		buffer_write(buffer, buffer_f32, 0.3);
-		buffer_write(buffer, buffer_string, "Materials");
-		buffer_write(buffer, buffer_u32, 0);
-		
-		// Bones
-		buffer_write(buffer, buffer_string, "Bones");
-		//buffer_write(buffer, buffer_u32, array_length(bones));
-		buffer_write(buffer, buffer_u32, 0);
-		
-		//for (var i = 0; i < array_length(bones); i++)
-		//{
-		//	var bone = bones[i];
-		//	buffer_write(buffer, buffer_string, bone.name);
-		//	buffer_write(buffer, buffer_s32, bone.parent);
-		//	for (var j = 0; j < 16; j++) buffer_write(buffer, buffer_f32, bone.matrix[j]);
-		//}
-		
-		buffer_write(buffer, buffer_string, "Meshes");
-		buffer_write(buffer, buffer_u32, 1);
-		buffer_write(buffer, buffer_string, "MeshData");
-		
-		// Write Mesh Data
-		buffer_write(buffer, buffer_u32, mesh.triangleCount);
-		buffer_write(buffer, buffer_u32, mesh.vertexCount);
-		for (var i = 0; i < 8; i++) buffer_write(buffer, buffer_s8, mesh.bones[i]);
-		
-		// Write Mesh Attributes
-		buffer_write(buffer, buffer_string, "MeshAttributes");
-		buffer_write(buffer, buffer_u32, 6);
-		buffer_write(buffer, buffer_string, "Position");
-		buffer_write(buffer, buffer_string, "Normal");
-		buffer_write(buffer, buffer_string, "Colour");
-		buffer_write(buffer, buffer_string, "UV");
-		buffer_write(buffer, buffer_string, "BlendIndices");
-		buffer_write(buffer, buffer_string, "BlendWeights");
-		
-		// Write Vertex Buffer
-		buffer_write(buffer, buffer_string, "VertexBuffer");
-	
-		// Write Positions
-		buffer_write(buffer, buffer_string, "Position");
-		for (var i = 0; i < mesh.vertexCount; i++)
-		{
-			for (var j = 0; j < array_length(vertexFormat); j++)
-			{
-				if (vertexFormat[j].attribute == BTVertexAttributes.position)
-				{
-					buffer_write(buffer, buffer_f32, buffer_peek(mesh.vertexBuffer, (i*mesh.vertexStride) + vertexFormat[j].position, buffer_f32));
-					buffer_write(buffer, buffer_f32, buffer_peek(mesh.vertexBuffer, (i*mesh.vertexStride) + vertexFormat[j].position + 4, buffer_f32));
-					buffer_write(buffer, buffer_f32, buffer_peek(mesh.vertexBuffer, (i*mesh.vertexStride) + vertexFormat[j].position + 8, buffer_f32));
-				}
-			}
-		}
-		
-		// Write Normals
-		buffer_write(buffer, buffer_string, "Normal");
-		for (var i = 0; i < mesh.vertexCount; i++)
-		{
-			for (var j = 0; j < array_length(vertexFormat); j++)
-			{
-				if (vertexFormat[j].attribute == BTVertexAttributes.normal)
-				{
-					buffer_write(buffer, buffer_u32, buffer_peek(mesh.vertexBuffer, (i*mesh.vertexStride) + vertexFormat[j].position, buffer_u32));
-				}
-			}
-		}
-		
-		// Write Colour
-		buffer_write(buffer, buffer_string, "Colour");
-		for (var i = 0; i < mesh.vertexCount; i++)
-		{
-			for (var j = 0; j < array_length(vertexFormat); j++)
-			{
-				if (vertexFormat[j].attribute == BTVertexAttributes.colour)
-				{
-					buffer_write(buffer, buffer_u32, buffer_peek(mesh.vertexBuffer, (i*mesh.vertexStride) + vertexFormat[j].position, buffer_u32));
-				}
-			}
-		}
-		
-		// Write UVs
-		buffer_write(buffer, buffer_string, "UV");
-		for (var i = 0; i < mesh.vertexCount; i++)
-		{
-			for (var j = 0; j < array_length(vertexFormat); j++)
-			{
-				if (vertexFormat[j].attribute == BTVertexAttributes.uv)
-				{
-					buffer_write(buffer, buffer_f32, buffer_peek(mesh.vertexBuffer, (i*mesh.vertexStride) + vertexFormat[j].position, buffer_f32));
-					buffer_write(buffer, buffer_f32, buffer_peek(mesh.vertexBuffer, (i*mesh.vertexStride) + vertexFormat[j].position + 4, buffer_f32));
-				}
-			}
-		}
-		
-		// Write Blend Indices
-		buffer_write(buffer, buffer_string, "BlendIndices");
-		for (var i = 0; i < mesh.vertexCount; i++)
-		{
-			var write = false;
-			for (var j = 0; j < array_length(vertexFormat); j++)
-			{
-				if (vertexFormat[j].attribute == BTVertexAttributes.blendWeights)
-				{
-					buffer_write(buffer, buffer_u32, buffer_peek(mesh.vertexBuffer, (i*mesh.vertexStride) + vertexFormat[j].position, buffer_u32));
-					write = true;
-				}
-			}
-			if (!write) buffer_write(buffer, buffer_s32, -1);
-		}
-		
-		// Write Blend Weights
-		buffer_write(buffer, buffer_string, "BlendWeights");
-		for (var i = 0; i < mesh.vertexCount; i++)
-		{
-			var write = false;
-			for (var j = 0; j < array_length(vertexFormat); j++)
-			{
-				if (vertexFormat[j].attribute == BTVertexAttributes.blendIndices)
-				{
-					buffer_write(buffer, buffer_u32, buffer_peek(mesh.vertexBuffer, (i*mesh.vertexStride) + vertexFormat[j].position, buffer_u32));
-					write = true;
-				}
-			}
-			if (!write) buffer_write(buffer, buffer_s32, -1);
-		}
-		
-		// Write Index Buffer
-		buffer_write(buffer, buffer_string, "IndexBuffer");
-		buffer_write(buffer, buffer_u32, buffer_get_size(mesh.indexBuffer));
-		buffer_copy(mesh.indexBuffer, 0, buffer_get_size(mesh.indexBuffer), buffer, buffer_tell(buffer));
-		buffer_seek(buffer, buffer_seek_relative, buffer_get_size(mesh.indexBuffer));
-		
-		// Buffer Save
-		buffer_save(buffer, filepath);
-		buffer_delete(buffer);
-	}
-	
-	/// @func replaceMesh()
-	/// @desc Replace BactaTankMesh
-	static replaceMesh = function(meshIndex, filepath)
-	{
-		// Load Mesh File
-		var buffer = buffer_load(filepath);
-		
-		// Current Mesh
-		var mesh = self.meshes[meshIndex];
-		var material = getMaterial(meshIndex);
-		
-		// VF value
-		var vfValue = 0;
-		if (mesh.vertexStride == 28) vfValue = 2313;
-		if (mesh.vertexStride == 36) vfValue = 33556745;
-		
-		// Get Vertex Format
-		var vertexFormat = self.materials[material].vertexFormat;
-		
-		// Read Mesh File
-		buffer_read(buffer, buffer_string);					// BactaTank
-		buffer_read(buffer, buffer_string);					// PCGHG
-		var version = buffer_read(buffer, buffer_f32);		// 0.3
-		if (version != 0.3) return;
-		buffer_read(buffer, buffer_string);					// Materials
-		buffer_read(buffer, buffer_u32);					// 0
-		buffer_read(buffer, buffer_string);					// Bones
-		buffer_read(buffer, buffer_u32);					// 0
-		buffer_read(buffer, buffer_string);					// Meshes
-		buffer_read(buffer, buffer_u32);					// 1
-		buffer_read(buffer, buffer_string);					// MeshData
-		
-		// Mesh Data
-		var newTriangleCount = buffer_read(buffer, buffer_u32);
-		var newVertexCount = buffer_read(buffer, buffer_u32);
-		var newBoneLinks = [];
-		repeat(8) array_push(newBoneLinks, buffer_read(buffer, buffer_s8));
-		
-		// Mesh Attributes
-		buffer_read(buffer, buffer_string);	// Mesh Attributes
-		var attributeCount = buffer_read(buffer, buffer_u32);
-		repeat (attributeCount) buffer_read(buffer, buffer_string); // Position, Normal, Colour, UV
-		
-		// Vertex Buffer
-		buffer_read(buffer, buffer_string);
-		
-		// Position Attribute
-		buffer_read(buffer, buffer_string);
-		var position = [];
-		
-		for (var i = 0; i < newVertexCount; i++)
-		{
-			var positionX = buffer_read(buffer, buffer_f32);
-			var positionY = buffer_read(buffer, buffer_f32);
-			var positionZ = buffer_read(buffer, buffer_f32);
-			array_push(position, [positionX, positionY, positionZ])
-		}
-		
-		// Normal Attribute
-		buffer_read(buffer, buffer_string);
-		var normal = [];
-		
-		for (var i = 0; i < newVertexCount; i++)
-		{
-			array_push(normal, buffer_read(buffer, buffer_u32));
-		}
-		
-		// Colour Attribute
-		buffer_read(buffer, buffer_string);
-		var colour = [];
-		
-		for (var i = 0; i < newVertexCount; i++)
-		{
-			array_push(colour, buffer_read(buffer, buffer_u32));
-		}
-		
-		// UV Attribute
-		buffer_read(buffer, buffer_string);
-		var uv = [];
-		
-		for (var i = 0; i < newVertexCount; i++)
-		{
-			var uvX = buffer_read(buffer, buffer_f32);
-			var uvY = buffer_read(buffer, buffer_f32);
-			array_push(uv, [uvX, uvY]);
-		}
-		
-		if (attributeCount > 4)
-		{
-			// Bone Indices Attribute
-			buffer_read(buffer, buffer_string);
-			var boneIndices = [];
-			
-			for (var i = 0; i < newVertexCount; i++)
-			{
-				boneIndices[i] = buffer_read(buffer, buffer_u32);
-			}
-			
-			// Bone Indices Attribute
-			buffer_read(buffer, buffer_string);
-			var boneWeights = [];
-			
-			for (var i = 0; i < newVertexCount; i++)
-			{
-				boneWeights[i] = buffer_read(buffer, buffer_u32);
-			}
-		}
-		
-		// Check if mesh Vertex Stride is More then 0
-		var size = 0;
-		for (var i = 0; i < array_length(vertexFormat); i++)
-		{
-			switch (vertexFormat[i].attribute)
-			{
-				case BTVertexAttributes.position:
-					size += 12;
-					break;
-				case BTVertexAttributes.uv:
-					size += 8;
-					break;
-				case BTVertexAttributes.normal:
-				case BTVertexAttributes.colour:
-				case BTVertexAttributes.tangent:
-				case BTVertexAttributes.bitangent:
-				case BTVertexAttributes.blendIndices:
-				case BTVertexAttributes.blendWeights:
-					size += 4;
-					break;
-			}
-		}
-		mesh.vertexStride = size;
-		
-		// Delete Old Vertex Buffer
-		if (buffer_exists(mesh.vertexBuffer)) buffer_delete(mesh.vertexBuffer);
-		
-		// Build New Vertex Buffer
-		mesh.vertexBuffer = buffer_create(newVertexCount * mesh.vertexStride, buffer_fixed, 1);
-		
-		for (var i = 0; i < newVertexCount; i++)
-		{
-			//show_debug_message(position[i][1]);
-			for (var j = 0; j < array_length(vertexFormat); j++)
-			{
-				switch (vertexFormat[j].attribute)
-				{
-					case BTVertexAttributes.position:
-						buffer_write(mesh.vertexBuffer, buffer_f32, position[i][0]);
-						buffer_write(mesh.vertexBuffer, buffer_f32, position[i][1]);
-						buffer_write(mesh.vertexBuffer, buffer_f32, position[i][2]);
-						break;
-					case BTVertexAttributes.normal:
-						buffer_write(mesh.vertexBuffer, buffer_u32, normal[i]);
-						break;
-					case BTVertexAttributes.colour:
-						buffer_write(mesh.vertexBuffer, buffer_u32, colour[i]);
-						break;
-					case BTVertexAttributes.uv:
-						buffer_write(mesh.vertexBuffer, buffer_f32, uv[i][0]);
-						buffer_write(mesh.vertexBuffer, buffer_f32, uv[i][1]);
-						break;
-					case BTVertexAttributes.tangent:
-						buffer_write(mesh.vertexBuffer, buffer_u32, 0);
-						break;
-					case BTVertexAttributes.bitangent:
-						buffer_write(mesh.vertexBuffer, buffer_u32, 0);
-						break;
-					case BTVertexAttributes.blendIndices:
-						buffer_write(mesh.vertexBuffer, buffer_u32, boneWeights[i]);
-						break;
-					case BTVertexAttributes.blendWeights:
-						buffer_write(mesh.vertexBuffer, buffer_u32, boneIndices[i]);
-						break;
-				}
-			}
-		}
-		
-		// Index Buffer
-		buffer_read(buffer, buffer_string); // IndexBuffer
-		var newIndexBufferSize = buffer_read(buffer, buffer_u32);
-		if (buffer_exists(mesh.indexBuffer)) buffer_delete(mesh.indexBuffer);
-		mesh.indexBuffer = buffer_create(newIndexBufferSize, buffer_fixed, 1);
-		buffer_copy(buffer, buffer_tell(buffer), newIndexBufferSize, mesh.indexBuffer, 0);
-		buffer_seek(buffer, buffer_seek_relative, newIndexBufferSize);
-		
-		// Delete Mesh Buffer
-		buffer_delete(buffer);
-		if (mesh.vertexBufferObject != -1) vertex_delete_buffer(mesh.vertexBufferObject);
-		
-		// Set New Variables
-		mesh.type = 6;
-		mesh.triangleCount = newTriangleCount;
-		mesh.vertexCount = newVertexCount;
-		mesh.bones = newBoneLinks;
-		
-		// Build New VBO
-		if (mesh.triangleCount == 0 || mesh.vertexCount == 0)
-		{
-			mesh.vertexBufferObject = -1;
-			return;
-		}
-		
-		// Create New Vertex Buffer
-		var currentVertexBuffer = vertex_create_buffer();
-		vertex_begin(currentVertexBuffer, BT_VERTEX_FORMAT);
-		
-		// Build VBO
-		for (var i = 0; i < mesh.triangleCount+2; i++)
-		{
-			var index = buffer_peek(mesh.indexBuffer, i*2, buffer_u16);
-			var pos = array_create(3, 0);
-			var norm = array_create(3, 0);
-			var tangent = [0, 0];
-			var tex = array_create(2, 0);
-			var col = 0;
-			for (var j = 0; j < array_length(vertexFormat); j++)
-			{
-				switch (vertexFormat[j].attribute)
-				{
-					case BTVertexAttributes.position:
-						pos = [buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[j].position, buffer_f32),
-								buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[j].position + 4, buffer_f32),
-								buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[j].position + 8, buffer_f32)];
-						break;
-					case BTVertexAttributes.normal:
-						norm = [((buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[j].position, buffer_u8)/255)*2)-1,
-								((buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[j].position + 1, buffer_u8)/255)*2)-1,
-								((buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[j].position + 2, buffer_u8)/255)*2)-1];
-					case BTVertexAttributes.tangent:
-						tangent = [make_colour_rgb(buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[j].position, buffer_u8),
-									buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[j].position + 1, buffer_u8),
-									buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[j].position + 2, buffer_u8)),
-									buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[j].position + 3, buffer_u8) / 255];
-						break;
-					case BTVertexAttributes.uv:
-						tex = [buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[j].position, buffer_f32),
-								buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[j].position + 4, buffer_f32)];
-						break;
-					case BTVertexAttributes.colour:
-						col = make_colour_rgb(
-								buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[j].position, buffer_u8),
-								buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[j].position + 1, buffer_u8),
-								buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[j].position + 2, buffer_u8));
-						break;
-				}
-			}
-			
-			// Add Vertex Positions
-			vertex_position_3d(currentVertexBuffer, pos[0], pos[1], pos[2]);
-			vertex_normal(currentVertexBuffer, norm[0], norm[1], norm[2]);
-			vertex_texcoord(currentVertexBuffer, tex[0], tex[1]);
-			vertex_colour(currentVertexBuffer, #ffffff, 1);
-			vertex_colour(currentVertexBuffer, tangent[0], tangent[1]);
-			vertex_texcoord(currentVertexBuffer, index, 0);
-		}
-		
-		// End Vertex Buffer
-		vertex_end(currentVertexBuffer);
-		
-		// Freeze Vertex Buffer
-		vertex_freeze(currentVertexBuffer);
-		
-		// Set VBO
-		mesh.vertexBufferObject = currentVertexBuffer;
-		
-		// Set Mesh
-		self.meshes[meshIndex] = mesh;
-	}
-	
-	/// @func dereferenceMesh()
-	/// @desc Dereferences a mesh, and removes it from the model
-	static dereferenceMesh = function(meshIndex)
-	{
-		// Mesh
-		var mesh = self.meshes[meshIndex];
-		
-		// Destroy Vertex Buffer
-		if (mesh.vertexBufferObject != -1) vertex_delete_buffer(mesh.vertexBufferObject);
-		mesh.vertexBufferObject = -1;
-		
-		// Destroy Buffers
-		if (mesh.indexBuffer != -1) buffer_delete(mesh.indexBuffer);
-		if (mesh.vertexBuffer != -1) buffer_delete(mesh.vertexBuffer);
-		mesh.indexBuffer = -1;
-		mesh.vertexBuffer = -1;
-		
-		// Zero out all variables
-		mesh.type = 0;
-		mesh.triangleCount = 0;
-		mesh.vertexStride = 0;
-		mesh.bones = array_create(8, 0);
-		mesh.flags = 0;
-		mesh.vertexOffset = 0;
-		mesh.vertexCount = 0;
-		mesh.indexOffset = 0;
-		mesh.indexBufferID = 0;
-		mesh.vertexBufferID = 0;
-		mesh.dynamicBuffers = [  ];
-		
-		// Set Mesh
-		self.meshes[meshIndex] = mesh;
-	}
-	
-	#endregion
-	
-	#region Export / Replace Material
-	
-	/// @func exportMaterial()
-	/// @desc Export BactaTankMaterial
-	static exportMaterial = function(materialIndex, filepath)
-	{
-		// Create Export Buffer
-		var buffer = buffer_create(1, buffer_grow, 1);
-		
-		// Material
-		var material = self.materials[materialIndex];
-		
-		// Write Header
-		buffer_write(buffer, buffer_string, "BactaTankMaterial");
-		buffer_write(buffer, buffer_string, "PCGHG");
-		buffer_write(buffer, buffer_f32, 0.1);
-		
-		// Write Blend Colour
-		buffer_write(buffer, buffer_f32, material.colour[0]);
-		buffer_write(buffer, buffer_f32, material.colour[1]);
-		buffer_write(buffer, buffer_f32, material.colour[2]);
-		buffer_write(buffer, buffer_f32, material.colour[3]);
-		
-		// Write Ambient Tint
-		buffer_write(buffer, buffer_f32, material.ambientTint[0]);
-		buffer_write(buffer, buffer_f32, material.ambientTint[1]);
-		buffer_write(buffer, buffer_f32, material.ambientTint[2]);
-		buffer_write(buffer, buffer_f32, material.ambientTint[3]);
-		
-		// Write Specular Exponent and Reflection Power
-		buffer_write(buffer, buffer_f32, material.specularExponent);
-		buffer_write(buffer, buffer_f32, material.reflectionPower);
-		
-		// Write Other Attributes
-		buffer_write(buffer, buffer_u32, material.vertexFormat);
-		buffer_write(buffer, buffer_u32, material.alphaBlend);
-		buffer_write(buffer, buffer_u32, material.shaderFlags);
-		
-		// Buffer Save
-		buffer_save(buffer, filepath);
-		buffer_delete(buffer);
-	}
-	
-	/// @func replaceMaterial()
-	/// @desc Replace BactaTankMaterial
-	static replaceMaterial = function(materialIndex, filepath, replaceVertexFormat = false)
-	{
-		// Load Material Buffer
-		var buffer = buffer_load(filepath);
-		
-		// Read Header
-		var magic = buffer_read(buffer, buffer_string); // BactaTankMaterial
-		var format = buffer_read(buffer, buffer_string); // PCGHG
-		var version = buffer_read(buffer, buffer_f32); // 0.1
-		
-		// Version Check
-		if (version != 0.1) return;
-		
-		// Read Blend Colour
-		self.materials[materialIndex].colour[0] = buffer_read(buffer, buffer_f32);
-		self.materials[materialIndex].colour[1] = buffer_read(buffer, buffer_f32);
-		self.materials[materialIndex].colour[2] = buffer_read(buffer, buffer_f32);
-		self.materials[materialIndex].colour[3] = buffer_read(buffer, buffer_f32);
-		
-		// Read Ambient Tint
-		self.materials[materialIndex].ambientTint[0] = buffer_read(buffer, buffer_f32);
-		self.materials[materialIndex].ambientTint[1] = buffer_read(buffer, buffer_f32);
-		self.materials[materialIndex].ambientTint[2] = buffer_read(buffer, buffer_f32);
-		self.materials[materialIndex].ambientTint[3] = buffer_read(buffer, buffer_f32);
-		
-		// Read Specular Exponent and Reflection Power
-		self.materials[materialIndex].specularExponent = buffer_read(buffer, buffer_f32);
-		self.materials[materialIndex].reflectionPower = buffer_read(buffer, buffer_f32);
-		
-		// Read Other Attributes
-		if (replaceVertexFormat) self.materials[materialIndex].vertexFormat = buffer_read(buffer, buffer_u32);
-		else buffer_read(buffer, buffer_u32);
-		self.materials[materialIndex].alphaBlend = buffer_read(buffer, buffer_u32);
-		self.materials[materialIndex].shaderFlags = buffer_read(buffer, buffer_u32);
-		
-		// Delete Buffer
-		buffer_delete(buffer);
-	}
-	
-	#endregion
-	
-	#region Export / Replace Textures
-	
-	/// @func exportTexture()
-	/// @desc Export DDS Texture
-	static exportTexture = function(textureIndex, filepath)
-	{
-		// Log
-		ConsoleLog($"Exporting Texture {textureIndex} to \"{filepath}\"", CONSOLE_MODEL_LOADER);
-		
-		// Save Texture
-		buffer_save(self.textures[self.textureMetaData[textureIndex].index].data, filepath);
-	}
-	
-	/// @func replaceTexture()
-	/// @desc Replace DDS Texture
-	static replaceTexture = function(textureIndex, filepath)
-	{
-		// Log
-		ConsoleLog($"Replacing Texture {textureIndex} from \"{filepath}\"", CONSOLE_MODEL_LOADER);
-		
-		// Load New Texture Buffer
-		var buffer = buffer_load(filepath);
-		
-		// Get Metadata
-		var newWidth = buffer_peek(buffer, 0x10, buffer_u32);
-		var newHeight = buffer_peek(buffer, 0x0c, buffer_u32);
-		var newSize = buffer_get_size(buffer);
-		
-		// Get Textures File Name For Saving
-		var name = buffer_sha1(buffer, 0, newSize);
-		self.textureMetaData[textureIndex].file = TEMP_DIRECTORY + @"\" + name;
-		
-		// Convert DDS to PNG
-		var sprite = ddsLoad(buffer);
-		sprite_save(sprite, 0, TEMP_DIRECTORY + @"\_textures\" + name + ".png")
-					
-		// Free Memory
-		var oldSpriteIndex = self.textures[self.textureMetaData[textureIndex].index].sprite;
-		buffer_delete(self.textures[self.textureMetaData[textureIndex].index].data);
-		
-		// Set Buffer
-		self.textures[self.textureMetaData[textureIndex].index].data = buffer;
-		self.textureMetaData[textureIndex].width = newWidth;
-		self.textureMetaData[textureIndex].height = newHeight;
-		self.textureMetaData[textureIndex].size = newSize;
-		self.textureMetaData[textureIndex].compression = array_get_index(BT_DXT_COMPRESSION, buffer_peek(buffer, 0x54, buffer_string));
-		
-		// Add Sprite
-		self.textures[self.textureMetaData[textureIndex].index].sprite = sprite;
-		self.textures[self.textureMetaData[textureIndex].index].texture = sprite_get_texture(sprite, 0);
-		sprite_delete(oldSpriteIndex);
-	}
-	
-	/// @func addTexture()
-	/// @desc Add DDS Texture
-	static addTexture = function(filepath)
-	{
-		
-	}
-	
-	#endregion
-	
-	#region Export / Replace Locators
-	
-	/// @func exportLocator()
-	/// @desc Export BactaTankLocator
-	static exportLocator = function(locatorIndex, filepath)
-	{
-		// Create Export Buffer
-		var buffer = buffer_create(1, buffer_grow, 1);
-		
-		// locator
-		var locator = self.locators[locatorIndex];
-		
-		// Write Header
-		buffer_write(buffer, buffer_string, "BactaTankLocator");
-		buffer_write(buffer, buffer_string, "PCGHG");
-		buffer_write(buffer, buffer_f32, 0.1);
-		
-		// Write Parent Index
-		buffer_write(buffer, buffer_s32, locator.parent);
-		
-		// Write Matrix
-		for (var i = 0; i < 16; i++) buffer_write(buffer, buffer_f32, locator.matrix[i]);
-		
-		// Buffer Save
-		buffer_save(buffer, filepath);
-		buffer_delete(buffer);
-	}
-	
-	/// @func replaceLocator()
-	/// @desc Replace BactaTankLocator
-	static replaceLocator = function(locatorIndex, filepath)
-	{
-		// Load Locator Buffer
-		var buffer = buffer_load(filepath);
-		
-		// Read Header
-		var magic = buffer_read(buffer, buffer_string); // BactaTankLocator
-		var format = buffer_read(buffer, buffer_string); // PCGHG
-		var version = buffer_read(buffer, buffer_f32); // 0.1
-		
-		// Version Check
-		if (version != 0.1) return;
-		
-		// Read Parent
-		self.locators[locatorIndex].parent = buffer_read(buffer, buffer_s32);
-		if (self.locators[locatorIndex].parent >= array_length(self.bones)) self.locators[locatorIndex].parent = -1;
-		
-		// Read Matrix
-		self.locators[locatorIndex].matrix = [  ];
-		repeat(16) array_push(self.locators[locatorIndex].matrix, buffer_read(buffer, buffer_f32));
-		
-		// Locator Matrix Decomposed
-		self.locators[locatorIndex].decomposedMatrix = matrix_decompose(self.locators[locatorIndex].matrix);
-		
-		// Delete Buffer
-		buffer_delete(buffer);
-	}
-	
-	#endregion
-	
 	#region Destroy Function
 	
 	/// @func destroy()
@@ -2227,82 +1550,26 @@ function BactaTankModel(model = -1) constructor
 		// Layers Loop
 		for (var l = 0; l < array_length(self.layers); l++)
 		{
-			// Skip if Layer is Inactive
+			// Skip if layer is not active
 			if (!activeLayers[l]) continue;
 			
-			// Special Objects
-			var specialObjects = self.layers[l].specialObjects;
-			
-			// Special Objects Loop
-			for (var o = 0; o < array_length(specialObjects); o++)
-			{
-				// Get Model
-				var model = self.models[self.specialObjects[specialObjects[o]].model];
-				var bone = self.specialObjects[specialObjects[o]].bone;
-				
-				// Special Object Meshes Loop
-				for (var m = 0; m < array_length(model.meshes); m++)
-				{
-					// Mesh
-					var mesh = self.meshes[model.meshes[m].mesh];
-					
-					// Skip if mesh type isn't 6
-					if ((hideDisabledMeshes && !mesh.type) || mesh.vertexBufferObject == -1) continue;
-					
-					// Get Matrix
-					var matrix = matrix_build_identity();
-					if (bone != -1) matrix = self.bones[bone].matrix;
-					
-					// Create Render Struct
-					var renderStruct = {
-						vertexBuffer: mesh.vertexBufferObject,
-						material: self.materials[model.meshes[m].material],
-						textures: self.textures,
-						matrix: matrix,
-						shader: "StandardShader",
-						primitive: pr_trianglestrip,
-						dynamicBuffers: mesh.dynamicBuffers,
-					}
-					
-					// Organise Render Queue Based On Aplha Transparent Objects And Push
-					if ((renderStruct.material.alphaBlend >> BT_ALPHA_BLEND_SHIFT & BT_ALPHA_BLEND_BITS) != BTAlphaBlend.None) array_insert(renderer.renderQueue, 0, renderStruct);
-					else array_push(renderer.renderQueue, renderStruct);
-				}
-			}
-		}
-	}
-	
-	/// @func pushLayerToRenderQueue()
-	/// @desc Pushes layer onto the render queue
-	static pushLayerToRenderQueue = function(activeLayer = 0, hideDisabledMeshes = false)
-	{
-		// Special Objects
-		var specialObjects = self.layers[activeLayer].specialObjects;
-		
-		// Special Objects Loop
-		for (var o = 0; o < array_length(specialObjects); o++)
-		{
-			// Get Model
-			var model = self.models[self.specialObjects[specialObjects[o]].model];
-			var bone = self.specialObjects[specialObjects[o]].bone;
-			
-			// Special Object Meshes Loop
-			for (var m = 0; m < array_length(model.meshes); m++)
+			// Loop Through Layer Meshes
+			for (var m = 0; m < array_length(self.layers[l].meshes); m++)
 			{
 				// Mesh
-				var mesh = self.meshes[model.meshes[m].mesh];
+				var mesh = self.meshes[self.layers[l].meshes[m].mesh];
 				
 				// Skip if mesh type isn't 6
 				if ((hideDisabledMeshes && !mesh.type) || mesh.vertexBufferObject == -1) continue;
 				
 				// Get Matrix
 				var matrix = matrix_build_identity();
-				if (bone != -1) matrix = self.bones[bone].matrix;
+				if (self.layers[l].meshes[m].bone != -1) matrix = self.bones[self.layers[l].meshes[m].bone].matrix;
 				
 				// Create Render Struct
 				var renderStruct = {
 					vertexBuffer: mesh.vertexBufferObject,
-					material: self.materials[model.meshes[m].material],
+					material: self.materials[self.layers[l].meshes[m].material],
 					textures: self.textures,
 					matrix: matrix,
 					shader: "StandardShader",
@@ -2311,9 +1578,43 @@ function BactaTankModel(model = -1) constructor
 				}
 				
 				// Organise Render Queue Based On Aplha Transparent Objects And Push
-				if ((renderStruct.material.alphaBlend >> BT_ALPHA_BLEND_SHIFT & BT_ALPHA_BLEND_BITS) != BTAlphaBlend.None) array_insert(SECONDARY_RENDERER.debugRenderQueue, 0, renderStruct);
-				else array_push(SECONDARY_RENDERER.debugRenderQueue, renderStruct);
+				if ((renderStruct.material.alphaBlend >> BT_ALPHA_BLEND_SHIFT & BT_ALPHA_BLEND_BITS) != BTAlphaBlend.None) array_insert(renderer.renderQueue, 0, renderStruct);
+				else array_push(renderer.renderQueue, renderStruct);
 			}
+		}
+	}
+	
+	/// @func pushLayerToRenderQueue()
+	/// @desc Pushes layer onto the render queue
+	static pushLayerToRenderQueue = function(activeLayer = 0, hideDisabledMeshes = false)
+	{
+		// Loop Through Layer Meshes
+		for (var m = 0; m < array_length(self.layers[activeLayer].meshes); m++)
+		{
+			// Mesh
+			var mesh = self.meshes[self.layers[activeLayer].meshes[m].mesh];
+			
+			// Skip if mesh type isn't 6
+			if ((hideDisabledMeshes && !mesh.type) || mesh.vertexBufferObject == -1) continue;
+			
+			// Get Matrix
+			var matrix = matrix_build_identity();
+			if (self.layers[activeLayer].meshes[m].bone != -1) matrix = self.bones[self.layers[activeLayer].meshes[m].bone].matrix;
+			
+			// Create Render Struct
+			var renderStruct = {
+				vertexBuffer: mesh.vertexBufferObject,
+				material: self.materials[self.layers[activeLayer].meshes[m].material],
+				textures: self.textures,
+				matrix: matrix,
+				shader: "StandardShader",
+				primitive: pr_trianglestrip,
+				dynamicBuffers: mesh.dynamicBuffers,
+			}
+			
+			// Organise Render Queue Based On Aplha Transparent Objects And Push
+			if ((renderStruct.material.alphaBlend >> BT_ALPHA_BLEND_SHIFT & BT_ALPHA_BLEND_BITS) != BTAlphaBlend.None) array_insert(renderer.renderQueue, 0, renderStruct);
+			else array_push(renderer.renderQueue, renderStruct);
 		}
 	}
 	
@@ -2396,20 +1697,10 @@ function BactaTankModel(model = -1) constructor
 			// Layers Loop
 			for (var l = 0; l < array_length(self.layers); l++)
 			{
-				// Special Objects
-				var specialObjects = self.layers[l].specialObjects;
-				
-				// Special Objects Loop
-				for (var o = 0; o < array_length(specialObjects); o++)
+				// Loop Through Layer Meshes
+				for (var m = 0; m < array_length(self.layers[l].meshes); m++)
 				{
-					// Get Model
-					var model = self.models[self.specialObjects[specialObjects[o]].model];
-					
-					// Special Object Meshes Loop
-					for (var m = 0; m < array_length(model.meshes); m++)
-					{
-						if (model.meshes[m].mesh == mesh) return model.meshes[m].material;
-					}
+					if (self.layers[l].meshes[m].mesh == mesh) return self.layers[l].meshes[m].material;
 				}
 			}
 		}
@@ -2443,19 +1734,13 @@ function BactaTankModel(model = -1) constructor
 			// Layers Loop
 			for (var l = 0; l < array_length(self.layers); l++)
 			{
-				// Special Objects
-				var specialObjects = self.layers[l].specialObjects;
-			
-				// Special Objects Loop
-				for (var o = 0; o < array_length(specialObjects); o++)
+				// Loop Through Layer Meshes
+				for (var m = 0; m < array_length(self.layers[l].meshes); m++)
 				{
-					// Get Model
-					var model = self.models[self.specialObjects[specialObjects[o]].model];
-					
-					// Special Object Meshes Loop
-					for (var m = 0; m < array_length(model.meshes); m++)
+					if (self.layers[l].meshes[m].mesh == mesh)
 					{
-						if (model.meshes[m].mesh == mesh) model.meshes[m].material = index;
+						self.layers[l].meshes[m].material = index;
+						self.meshes[mesh].material = index;
 					}
 				}
 			}
@@ -2476,19 +1761,6 @@ function BactaTankModel(model = -1) constructor
 			}
 		}
 	}
-	
-	/// @func getTextureIndex()
-	/// @desc Get texture index
-	static getTextureIndex = function(index)
-	{
-		for (var i = 0; i < array_length(textures); i++)
-		{
-			if (textures[i].index == index) return i;
-		}
-		return -1;
-	}
-	
-	
 	
 	#endregion
 }

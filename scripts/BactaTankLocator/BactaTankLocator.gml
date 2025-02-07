@@ -66,4 +66,64 @@ function BactaTankLocator() constructor
 	
 	
 	#endregion
+	
+	#region Export / Replace Locators
+	
+	/// @func exportLocator()
+	/// @desc Export BactaTankLocator
+	static exportLocator = function(locatorIndex, filepath)
+	{
+		// Create Export Buffer
+		var buffer = buffer_create(1, buffer_grow, 1);
+		
+		// locator
+		var locator = self.locators[locatorIndex];
+		
+		// Write Header
+		buffer_write(buffer, buffer_string, "BactaTankLocator");
+		buffer_write(buffer, buffer_string, "PCGHG");
+		buffer_write(buffer, buffer_f32, 0.1);
+		
+		// Write Parent Index
+		buffer_write(buffer, buffer_s32, locator.parent);
+		
+		// Write Matrix
+		for (var i = 0; i < 16; i++) buffer_write(buffer, buffer_f32, locator.matrix[i]);
+		
+		// Buffer Save
+		buffer_save(buffer, filepath);
+		buffer_delete(buffer);
+	}
+	
+	/// @func replaceLocator()
+	/// @desc Replace BactaTankLocator
+	static replaceLocator = function(locatorIndex, filepath)
+	{
+		// Load Locator Buffer
+		var buffer = buffer_load(filepath);
+		
+		// Read Header
+		var magic = buffer_read(buffer, buffer_string); // BactaTankLocator
+		var format = buffer_read(buffer, buffer_string); // PCGHG
+		var version = buffer_read(buffer, buffer_f32); // 0.1
+		
+		// Version Check
+		if (version != 0.1) return;
+		
+		// Read Parent
+		self.locators[locatorIndex].parent = buffer_read(buffer, buffer_s32);
+		if (self.locators[locatorIndex].parent >= array_length(self.bones)) self.locators[locatorIndex].parent = -1;
+		
+		// Read Matrix
+		self.locators[locatorIndex].matrix = [  ];
+		repeat(16) array_push(self.locators[locatorIndex].matrix, buffer_read(buffer, buffer_f32));
+		
+		// Locator Matrix Decomposed
+		self.locators[locatorIndex].decomposedMatrix = matrix_decompose(self.locators[locatorIndex].matrix);
+		
+		// Delete Buffer
+		buffer_delete(buffer);
+	}
+	
+	#endregion
 }
