@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"ConfirmModal",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"ConfirmModal",
+  "parent":{
+    "name":"Modals",
+    "path":"folders/Environment/Modals.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

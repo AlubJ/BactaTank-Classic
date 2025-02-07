@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"AddModelModal",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"AddModelModal",
+  "parent":{
+    "name":"Modals",
+    "path":"folders/Environment/Modals.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

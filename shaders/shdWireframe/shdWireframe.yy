@@ -1,0 +1,12 @@
+{
+  "$GMShader":"",
+  "%Name":"shdWireframe",
+  "name":"shdWireframe",
+  "parent":{
+    "name":"Shaders",
+    "path":"folders/CalicoRenderer/Shaders.yy",
+  },
+  "resourceType":"GMShader",
+  "resourceVersion":"2.0",
+  "type":1,
+}

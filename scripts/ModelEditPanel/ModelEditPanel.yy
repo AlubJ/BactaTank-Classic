@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"ModelEditPanel",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"ModelEditPanel",
+  "parent":{
+    "name":"ModelEditor",
+    "path":"folders/Environment/Environments/ModelEditor.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

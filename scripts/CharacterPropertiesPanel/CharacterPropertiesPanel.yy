@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"CharacterPropertiesPanel",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"CharacterPropertiesPanel",
+  "parent":{
+    "name":"Characters",
+    "path":"folders/Environment/Environments/Characters.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

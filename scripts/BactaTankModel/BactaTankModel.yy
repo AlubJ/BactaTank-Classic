@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"BactaTankModel",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"BactaTankModel",
+  "parent":{
+    "name":"BactaTankModel",
+    "path":"folders/BactaTank/BactaTankModel.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

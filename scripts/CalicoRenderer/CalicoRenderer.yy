@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"CalicoRenderer",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"CalicoRenderer",
+  "parent":{
+    "name":"CalicoRenderer",
+    "path":"folders/CalicoRenderer.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"SnapBufferWriteCSV",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"SnapBufferWriteCSV",
+  "parent":{
+    "name":"CSV",
+    "path":"folders/Vendors/SNAP/CSV.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"SnapToQML",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"SnapToQML",
+  "parent":{
+    "name":"QML",
+    "path":"folders/Vendors/SNAP/QML.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

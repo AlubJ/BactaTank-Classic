@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"CharacterViewerPanel",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"CharacterViewerPanel",
+  "parent":{
+    "name":"Characters",
+    "path":"folders/Environment/Environments/Characters.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

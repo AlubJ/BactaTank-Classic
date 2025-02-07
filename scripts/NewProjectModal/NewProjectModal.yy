@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"NewProjectModal",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"NewProjectModal",
+  "parent":{
+    "name":"MenuBar",
+    "path":"folders/Environment/Modals/MenuBar.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

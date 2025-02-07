@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"AssetPacksModal",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"AssetPacksModal",
+  "parent":{
+    "name":"AssetPack",
+    "path":"folders/Environment/Modals/AssetPack.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

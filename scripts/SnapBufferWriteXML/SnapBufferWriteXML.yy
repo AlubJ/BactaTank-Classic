@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"SnapBufferWriteXML",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"SnapBufferWriteXML",
+  "parent":{
+    "name":"XML",
+    "path":"folders/Vendors/SNAP/XML.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

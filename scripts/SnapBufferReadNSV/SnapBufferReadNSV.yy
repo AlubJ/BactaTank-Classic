@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"SnapBufferReadNSV",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"SnapBufferReadNSV",
+  "parent":{
+    "name":"NSV",
+    "path":"folders/Vendors/SNAP/NSV.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

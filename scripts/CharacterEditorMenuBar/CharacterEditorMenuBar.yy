@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"CharacterEditorMenuBar",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"CharacterEditorMenuBar",
+  "parent":{
+    "name":"MenuBars",
+    "path":"folders/Environment/MenuBars.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

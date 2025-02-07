@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"PreferencesModal",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"PreferencesModal",
+  "parent":{
+    "name":"MenuBar",
+    "path":"folders/Environment/Modals/MenuBar.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}
