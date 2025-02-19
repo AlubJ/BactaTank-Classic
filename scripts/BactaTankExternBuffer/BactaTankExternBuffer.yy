@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"BactaTankExternBuffer",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"BactaTankExternBuffer",
+  "parent":{
+    "name":"BactaTankScriptExterns",
+    "path":"folders/BactaTankScriptExterns.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

@@ -60,10 +60,13 @@ SETTINGS = {
 	lastProjectPath: "",
 	lastCharacterPath: "",
 	lastModelPath: "",
+	
+	// Attribute Specific Paths
 	lastMeshPath: "",
 	lastTexturePath: "",
 	lastMaterialPath: "",
 	lastLocatorPath: "",
+	lastArmaturePath: "",
 	
 	// Default Paths
 	defaultProjectPath: environment_get_variable("USERPROFILE") + @"\Documents\BactaTank Projects",
@@ -133,7 +136,7 @@ VERSIONS = {
 	main: "v0.3.0",
 	renderer: "v1.0.0",
 	backend: "v0.2.0",
-	revision: "13",
+	revision: "16",
 }
 
 // Set Console Title
@@ -158,6 +161,26 @@ while (file != "")
 	assetPack.deserialize(file);
 	array_push(ASSET_PACKS, assetPack);
 	ConsoleLog($"Asset Pack {file} Loaded");
+    file = file_find_next();
+}
+
+file_find_close();
+
+#endregion
+
+#region Scripting
+
+// Initialize Scripting
+BactaTankExternInit();
+
+// Load All Scripts
+var file = file_find_first(SCRIPT_DIRECTORY + "*.bscript", fa_none);
+
+while (file != "")
+{
+	var buffer = buffer_load(SCRIPT_DIRECTORY + file);
+	catspeak_compile(buffer, true);
+	ConsoleLog($"Script {file} Loaded");
     file = file_find_next();
 }
 

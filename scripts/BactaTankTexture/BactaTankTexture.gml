@@ -103,6 +103,17 @@ function BactaTankTexture() constructor
 		buffer_seek(buffer, buffer_seek_relative, size);
 	}
 	
+	static inject = function(buffer, _model)
+	{
+		buffer_poke(buffer, offset, buffer_u32, width);
+		buffer_poke(buffer, offset + 0x04, buffer_u32, height);
+		if (_model.version == BTModelVersion.pcghgNU20First)
+		{
+			buffer_poke(buffer, offset + 0x38, buffer_u32, compression);
+			buffer_poke(buffer, offset + 0x44, buffer_u32, size);
+		}
+	}
+	
 	#endregion
 	
 	#region Serialize / Deserialize
@@ -113,55 +124,39 @@ function BactaTankTexture() constructor
 	
 	#region Export / Replace Textures
 	
-	/// @func exportTexture()
+	/// @func export()
 	/// @desc Export DDS Texture
-	static exportTexture = function(textureIndex, filepath)
+	static export = function(filepath)
 	{
-		// Log
-		ConsoleLog($"Exporting Texture {textureIndex} to \"{filepath}\"", CONSOLE_MODEL_LOADER);
-		
 		// Save Texture
-		buffer_save(self.textures[self.textureMetaData[textureIndex].index].data, filepath);
+		buffer_save(data, filepath);
 	}
 	
-	/// @func replaceTexture()
+	/// @func replace()
 	/// @desc Replace DDS Texture
-	static replaceTexture = function(textureIndex, filepath)
+	static replace = function(filepath)
 	{
-		// Log
-		ConsoleLog($"Replacing Texture {textureIndex} from \"{filepath}\"", CONSOLE_MODEL_LOADER);
+		// Delete Old Stuff
+		buffer_delete(data);
+		sprite_delete(sprite);
 		
 		// Load New Texture Buffer
-		var buffer = buffer_load(filepath);
+		data = buffer_load(filepath);
 		
 		// Get Metadata
-		var newWidth = buffer_peek(buffer, 0x10, buffer_u32);
-		var newHeight = buffer_peek(buffer, 0x0c, buffer_u32);
-		var newSize = buffer_get_size(buffer);
+		width = buffer_peek(data, 0x10, buffer_u32);
+		height = buffer_peek(data, 0x0c, buffer_u32);
+		size = buffer_get_size(data);
+		compression = array_get_index(BT_DXT_COMPRESSION, buffer_peek(data, 0x54, buffer_string));
 		
 		// Get Textures File Name For Saving
-		var name = buffer_sha1(buffer, 0, newSize);
-		self.textureMetaData[textureIndex].file = TEMP_DIRECTORY + @"\" + name;
+		var name = buffer_sha1(data, 0, size);
+		file = TEMP_DIRECTORY + @"\" + name;
 		
 		// Convert DDS to PNG
-		var sprite = ddsLoad(buffer);
-		sprite_save(sprite, 0, TEMP_DIRECTORY + @"\_textures\" + name + ".png")
-					
-		// Free Memory
-		var oldSpriteIndex = self.textures[self.textureMetaData[textureIndex].index].sprite;
-		buffer_delete(self.textures[self.textureMetaData[textureIndex].index].data);
-		
-		// Set Buffer
-		self.textures[self.textureMetaData[textureIndex].index].data = buffer;
-		self.textureMetaData[textureIndex].width = newWidth;
-		self.textureMetaData[textureIndex].height = newHeight;
-		self.textureMetaData[textureIndex].size = newSize;
-		self.textureMetaData[textureIndex].compression = array_get_index(BT_DXT_COMPRESSION, buffer_peek(buffer, 0x54, buffer_string));
-		
-		// Add Sprite
-		self.textures[self.textureMetaData[textureIndex].index].sprite = sprite;
-		self.textures[self.textureMetaData[textureIndex].index].texture = sprite_get_texture(sprite, 0);
-		sprite_delete(oldSpriteIndex);
+		sprite = ddsLoad(data);
+		sprite_save(sprite, 0, TEMP_DIRECTORY + @"\_textures\" + name + ".png");
+		texture = sprite_get_texture(sprite, 0);
 	}
 	
 	/// @func addTexture()

@@ -33,8 +33,8 @@ function BactaTankMesh() constructor
 	// Vertex Buffer
 	indexBufferID = 0;
 	vertexBufferID = 0;
-	indexBuffer = 0;
-	vertexBuffer = 0;
+	indexBuffer = -1;
+	vertexBuffer = -1;
 	
 	// Vertices and Indices
 	vertices = [  ];
@@ -106,10 +106,6 @@ function BactaTankMesh() constructor
 			// Seek back to temp offset
 			buffer_seek(buffer, buffer_seek_start, tempDynOffset);
 		}
-		
-		// Create Buffers
-		if (triangleCount != 0) indexBuffer = buffer_create((triangleCount + 2) * 2, buffer_fixed, 1);
-		if (vertexCount != 0 && vertexStride != 0) vertexBuffer = buffer_create(vertexCount * vertexStride, buffer_fixed, 1);
 			
 		// Log
 		//var offset = meshOffset + self.nu20Offset;
@@ -126,8 +122,59 @@ function BactaTankMesh() constructor
 		//ConsoleLog($"	Dynamic Buffer Count: {meshDynamicBufferCount}", CONSOLE_MODEL_LOADER_DEBUG, offset + 40);
 	}
 	
+	static inject = function(buffer)
+	{
+		// Edit Mesh Data
+		buffer_poke(buffer, offset,    buffer_s32, type);
+		buffer_poke(buffer, offset+4,  buffer_s32, triangleCount);
+		buffer_poke(buffer, offset+8,  buffer_s16, vertexStride);
+		buffer_poke(buffer, offset+10, buffer_s8,  bones[0]);
+		buffer_poke(buffer, offset+11, buffer_s8,  bones[1]);
+		buffer_poke(buffer, offset+12, buffer_s8,  bones[2]);
+		buffer_poke(buffer, offset+13, buffer_s8,  bones[3]);
+		buffer_poke(buffer, offset+14, buffer_s8,  bones[4]);
+		buffer_poke(buffer, offset+15, buffer_s8,  bones[5]);
+		buffer_poke(buffer, offset+16, buffer_s8,  bones[6]);
+		buffer_poke(buffer, offset+17, buffer_s8,  bones[7]);
+		buffer_poke(buffer, offset+20, buffer_s32, vertexOffset);
+		buffer_poke(buffer, offset+24, buffer_s32, vertexCount);
+		buffer_poke(buffer, offset+28, buffer_s32, indexOffset);
+		buffer_poke(buffer, offset+32, buffer_s32, indexBufferID);
+		buffer_poke(buffer, offset+36, buffer_s32, vertexBufferID);
+		buffer_poke(buffer, offset+40, buffer_s32, array_length(dynamicBuffers));
+		
+		// Some Offsets
+		var dynamicBufferOffset = offset + 56;
+		var dynamicBufferStartOffset = dynamicBufferOffset + array_length(dynamicBuffers) * 4;
+		var dynamicBufferStartPointer = array_length(dynamicBuffers) * 4;
+		ConsoleLog(dynamicBufferStartPointer)
+		
+		// Calculate Offsets
+		for (var i = 0; i < array_length(dynamicBuffers); i++)
+		{
+			if (array_length(dynamicBuffers[i]) > 0) buffer_poke(buffer, dynamicBufferOffset + i * 4, buffer_s32, i == 0 ? dynamicBufferStartPointer : dynamicBufferStartPointer + ((vertexCount * 12) * i) - (i * 4));
+			else buffer_poke(buffer, dynamicBufferOffset + i * 4, buffer_s32, 0);
+		}
+		
+		// Write Dynamic Buffers
+		for (var i = 0; i < array_length(dynamicBuffers); i++)
+		{
+			for (var j = 0; j < array_length(dynamicBuffers[i]); j++)
+			{
+				buffer_poke(buffer, dynamicBufferStartOffset, buffer_f32, dynamicBuffers[i][j]);
+				dynamicBufferStartOffset += 4;
+			}
+		}
+	}
+	
 	static link = function(buffer, vbOffsets, ibOffsets, _model)
 	{
+		// Create Buffers, otherwise skip over mesh
+		if (triangleCount != 0) indexBuffer = buffer_create((triangleCount + 2) * 2, buffer_fixed, 1);
+		else return;
+		if (vertexCount != 0 && vertexStride != 0) vertexBuffer = buffer_create(vertexCount * vertexStride, buffer_fixed, 1);
+		else return;
+		
 		// Copy Buffers
 		buffer_copy(buffer,
 						vbOffsets[vertexBufferID] + vertexOffset * vertexStride,
@@ -140,46 +187,362 @@ function BactaTankMesh() constructor
 					indexBuffer,
 					0);
 		
-		//// Vertices Loop
-		//repeat(vertexCount)
-		//{
-		//	// Get Vertex Format
-		//	var vertexFormat = _model.materials[material].vertexFormat;
+		// Vertices Loop
+		for (var i = 0; i < vertexCount; i++)
+		{
+			// Set Vertex
+			vertices[i] = {
+				position : [0, 0, 0],
+				normal: [0, 0, 0],
+				tangent: [0, 0, 0, 0],
+				bitangent: [0, 0, 0, 0],
+				colourSet1: [1, 1, 1, 1],
+				colourSet2: [1, 1, 1, 1],
+				uvSet1: [0, 0],
+				uvSet2: [0, 0],
+				uvSet3: [0, 0],
+				uvSet4: [0, 0],
+				blendIndices: [0, 0, 0, 0],
+				blendWeights: [0, 0, 0, 0],
+				lightDirection: [],
+			};
 			
-		//	// Loop Through Vertex Format
-		//	for (var k = 0; k < array_length(vertexFormat); k++)
-		//	{
-		//		switch (vertexFormat[k].attribute)
-		//		{
-		//			case BTVertexAttributes.position:
-		//				array_push(vertices, [buffer_peek(vertexBuffer, vertexStride + vertexFormat[k].position, buffer_f32),
-		//									  buffer_peek(vertexBuffer, vertexStride + vertexFormat[k].position + 4, buffer_f32),
-		//									  buffer_peek(vertexBuffer, vertexStride + vertexFormat[k].position + 8, buffer_f32)]);
-		//				break;
-		//			case BTVertexAttributes.normal:
-		//				array_push(vertices, [((buffer_peek(vertexBuffer, vertexStride + vertexFormat[k].position, buffer_u8)/255)*2)-1,
-		//									  ((buffer_peek(vertexBuffer, vertexStride + vertexFormat[k].position + 1, buffer_u8)/255)*2)-1,
-		//									  ((buffer_peek(vertexBuffer, vertexStride + vertexFormat[k].position + 2, buffer_u8)/255)*2)-1]);
-		//				break;
-		//			case BTVertexAttributes.tangent:
-		//				tangent = [make_colour_rgb(buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[k].position, buffer_u8),
-		//							buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[k].position + 1, buffer_u8),
-		//							buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[k].position + 2, buffer_u8)),
-		//							buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[k].position + 3, buffer_u8) / 255];
-		//				break;
-		//			case BTVertexAttributes.uv:
-		//				tex = [buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[k].position, buffer_f32),
-		//						buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[k].position + 4, buffer_f32)];
-		//				break;
-		//			case BTVertexAttributes.colour:
-		//				col = make_colour_rgb(
-		//						buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[k].position, buffer_u8),
-		//						buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[k].position + 1, buffer_u8),
-		//						buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[k].position + 2, buffer_u8));
-		//				break;
-		//		}
-		//	}
-		//}
+			// Get Vertex Format
+			var vertexFormat = _model.materials[material].vertexFormat;
+			
+			// Loop Through Vertex Format
+			for (var k = 0; k < array_length(vertexFormat); k++)
+			{
+				switch (vertexFormat[k].attribute)
+				{
+					case BTVertexAttributes.position:
+						vertices[i].position = [buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_f32),
+										   buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 4, buffer_f32),
+										   buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 8, buffer_f32)];
+						break;
+					case BTVertexAttributes.normal:
+						vertices[i].normal = [((buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_u8)/255)*2)-1,
+										 ((buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 1, buffer_u8)/255)*2)-1,
+										 ((buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 2, buffer_u8)/255)*2)-1];
+						break;
+					case BTVertexAttributes.tangent:
+						vertices[i].tangent = [((buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_u8)/255)*2)-1,
+										  ((buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 1, buffer_u8)/255)*2)-1,
+										  ((buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 2, buffer_u8)/255)*2)-1,
+										  ((buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 3, buffer_u8)/255)*2)-1];
+						break;
+					case BTVertexAttributes.bitangent:
+						vertices[i].bitangent = [((buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_u8)/255)*2)-1,
+										  ((buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 1, buffer_u8)/255)*2)-1,
+										  ((buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 2, buffer_u8)/255)*2)-1,
+										  ((buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 3, buffer_u8)/255)*2)-1];
+						break;
+					case BTVertexAttributes.colourSet1:
+						vertices[i].colourSet1 = [buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_u8)/255,
+											 buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 1, buffer_u8)/255,
+											 buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 2, buffer_u8)/255,
+											 buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 3, buffer_u8)/255];
+						break;
+					case BTVertexAttributes.colourSet2:
+						vertices[i].colourSet2 = [buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_u8)/255,
+											 buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 1, buffer_u8)/255,
+											 buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 2, buffer_u8)/255,
+											 buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 3, buffer_u8)/255];
+						break;
+					case BTVertexAttributes.uvSet1:
+						vertices[i].uvSet1 = [buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_f32),
+										 buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 4, buffer_f32)];
+						break;
+					case BTVertexAttributes.uvSet2:
+						vertices[i].uvSet2 = [buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_f32),
+										 buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 4, buffer_f32)];
+						break;
+					case BTVertexAttributes.uvSet3:
+						vertices[i].uvSet3 = [buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_f32),
+										 buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 4, buffer_f32)];
+						break;
+					case BTVertexAttributes.uvSet4:
+						vertices[i].uvSet4 = [buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_f32),
+										 buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 4, buffer_f32)];
+						break;
+					case BTVertexAttributes.blendWeights:
+						vertices[i].blendWeights = [buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_u8)/255,
+											   buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 1, buffer_u8)/255,
+											   buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 2, buffer_u8)/255,
+											   buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 3, buffer_u8)/255];
+						break;
+					case BTVertexAttributes.blendIndices:
+						vertices[i].blendIndices = [buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_s8),
+											   buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 1, buffer_s8),
+											   buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 2, buffer_s8),
+											   buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 3, buffer_s8)];
+						break;
+				}
+			}
+		}
+		
+		// Delete Vertex Buffer
+		buffer_delete(vertexBuffer);
+		
+		// Triangles Loop
+		for (var i = 0; i < triangleCount + 2; i++)
+		{
+			array_push(triangles, buffer_peek(indexBuffer, i * 2, buffer_u16));
+		}
+		
+		// Delete Index Buffer
+		buffer_delete(indexBuffer);
+	}
+	
+	static build = function(_model = noone)
+	{
+		// Get Mesh And Skip If Null Mesh
+		if (triangleCount == 0 || vertexCount == 0)
+		{
+			vertexBufferObject = -1;
+			return;
+		}
+		
+		// Delete Old VB
+		if (vertexBufferObject != noone && vertexBufferObject != -1) vertex_delete_buffer(vertexBufferObject);
+		
+		// Vertex Buffer
+		var currentVertexBuffer = noone;
+		
+		// Get Cached Mesh If Possible
+		//var name = sha1_string_utf8(buffer_sha1(vertexBuffer, 0, buffer_get_size(vertexBuffer)) + buffer_sha1(indexBuffer, 0, buffer_get_size(indexBuffer))) + ".mesh";
+		name = "a.mesh";
+		if (file_exists(TEMP_DIRECTORY + @"\_maeshes\" + name))
+		{
+			var cachedMesh = buffer_load(TEMP_DIRECTORY + @"\_meshes\" + name);
+			currentVertexBuffer = vertex_create_buffer_from_buffer(cachedMesh, BT_VERTEX_FORMAT);
+			buffer_delete(cachedMesh);
+		}
+		else
+		{
+			// Create Vertex Buffer
+			currentVertexBuffer = vertex_create_buffer();
+			vertex_begin(currentVertexBuffer, BT_VERTEX_FORMAT);
+			
+			// Build VBO
+			for (var i = 0; i < triangleCount + 2; i++)
+			{
+				// Get Index
+				var index = triangles[i];
+				
+				var position = array_create(3, 0);
+				var normal = array_create(3, 0);
+				var tangent = [0, 0];
+				var uv = array_create(2, 0);
+				var colour = #ffffff;
+				
+				// Attributes
+				if (array_length(vertices[index].position) == 3) position = vertices[index].position;
+				if (array_length(vertices[index].normal) == 3) normal = vertices[index].normal;
+				if (array_length(vertices[index].tangent) == 4) tangent = [make_colour_rgb(vertices[index].tangent[0] / 2 + 1, vertices[index].tangent[1] / 2 + 1, vertices[index].tangent[2] / 2 + 1), vertices[index].tangent[3]];
+				if (_model.materials[material].surfaceUVMapIndex == 1)
+					if (array_length(vertices[index].uvSet1) == 2) uv = vertices[index].uvSet1;
+				else
+					if (array_length(vertices[index].uvSet2) == 2) uv = vertices[index].uvSet2;
+				if (array_length(vertices[index].colourSet1) == 4) colour = make_colour_rgb(vertices[index].colourSet1[0] * 255, vertices[index].colourSet1[1] * 255, vertices[index].colourSet1[2] * 255);
+				
+				// Add Vertex Positions
+				vertex_position_3d(currentVertexBuffer, position[0], position[1], position[2]);
+				vertex_normal(currentVertexBuffer, normal[0], normal[1], normal[2]);
+				vertex_texcoord(currentVertexBuffer, uv[0], uv[1]);
+				vertex_colour(currentVertexBuffer, colour, 1);
+				vertex_colour(currentVertexBuffer, tangent[0], tangent[1]);
+				vertex_texcoord(currentVertexBuffer, index, 0);
+				
+				// Update Average Position
+				averagePosition[0] += position[0];
+				averagePosition[1] += position[1];
+				averagePosition[2] += position[2];
+			}
+				
+			// Average Position
+			averagePosition[0] /= triangleCount+2;
+			averagePosition[1] /= triangleCount+2;
+			averagePosition[2] /= triangleCount+2;
+			
+			// End Vertex
+			vertex_end(currentVertexBuffer);
+		}
+		
+		// Freeze VBO For Better Performance
+		vertex_freeze(currentVertexBuffer);
+		vertexBufferObject = currentVertexBuffer;
+	}
+	
+	static buildVertexBuffer = function(_model = noone)
+	{
+		// Create Vertex Buffer
+		var vertexBuffer = buffer_create(vertexCount * vertexStride, buffer_fixed, 1);
+		
+		// Get Vertex Format
+		var vertexFormat = _model.materials[material].vertexFormat;
+		
+		// Build New Vertex Buffer
+		for (var i = 0; i < vertexCount; i++)
+		{
+			// Loop Through Vertex Format
+			for (var k = 0; k < array_length(vertexFormat); k++)
+			{
+				switch (vertexFormat[k].attribute)
+				{
+					case BTVertexAttributes.position:
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_f32, vertices[i].position[0]);
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 4, buffer_f32, vertices[i].position[1]);
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 8, buffer_f32, vertices[i].position[2]);
+						break;
+					case BTVertexAttributes.normal:
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_u8, floor(((vertices[i].normal[0] + 1) / 2) * 255));
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 1, buffer_u8, floor(((vertices[i].normal[1] + 1) / 2) * 255));
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 2, buffer_u8, floor(((vertices[i].normal[2] + 1) / 2) * 255));
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 3, buffer_u8, 0x7f);
+						break;
+					case BTVertexAttributes.tangent:
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_u8, floor(((vertices[i].tangent[0] + 1) / 2) * 255));
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 1, buffer_u8, floor(((vertices[i].tangent[1] + 1) / 2) * 255));
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 2, buffer_u8, floor(((vertices[i].tangent[2] + 1) / 2) * 255));
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 3, buffer_u8, floor(((vertices[i].tangent[3] + 1) / 2) * 255));
+						break;
+					case BTVertexAttributes.bitangent:
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_u8, floor(((vertices[i].bitangent[0] + 1) / 2) * 255));
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 1, buffer_u8, floor(((vertices[i].bitangent[1] + 1) / 2) * 255));
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 2, buffer_u8, floor(((vertices[i].bitangent[2] + 1) / 2) * 255));
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 3, buffer_u8, floor(((vertices[i].bitangent[3] + 1) / 2) * 255));
+						break;
+					case BTVertexAttributes.colourSet1:
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_u8, floor(vertices[i].colourSet1[0] * 255));
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 1, buffer_u8, floor(vertices[i].colourSet1[1] * 255));
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 2, buffer_u8, floor(vertices[i].colourSet1[2] * 255));
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 3, buffer_u8, floor(vertices[i].colourSet1[3] * 255));
+						break;
+					case BTVertexAttributes.colourSet2:
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_u8, floor(vertices[i].colourSet2[0] * 255));
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 1, buffer_u8, floor(vertices[i].colourSet2[1] * 255));
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 2, buffer_u8, floor(vertices[i].colourSet2[2] * 255));
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 3, buffer_u8, floor(vertices[i].colourSet2[3] * 255));
+						break;
+					case BTVertexAttributes.uvSet1:
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_f32, vertices[i].uvSet1[0]);
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 4, buffer_f32, vertices[i].uvSet1[1]);
+						break;
+					case BTVertexAttributes.uvSet2:
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_f32, vertices[i].uvSet2[0]);
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 4, buffer_f32, vertices[i].uvSet2[1]);
+						break;
+					case BTVertexAttributes.uvSet3:
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_f32, vertices[i].uvSet3[0]);
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 4, buffer_f32, vertices[i].uvSet3[1]);
+						break;
+					case BTVertexAttributes.uvSet4:
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_f32, vertices[i].uvSet4[0]);
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 4, buffer_f32, vertices[i].uvSet4[1]);
+						break;
+					case BTVertexAttributes.blendIndices:
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_s8, floor(vertices[i].blendIndices[0]));
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 1, buffer_s8, floor(vertices[i].blendIndices[1]));
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 2, buffer_s8, floor(vertices[i].blendIndices[2]));
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 3, buffer_s8, floor(vertices[i].blendIndices[3]));
+						break;
+					case BTVertexAttributes.blendWeights:
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_u8, floor(vertices[i].blendWeights[0] * 255));
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 1, buffer_u8, floor(vertices[i].blendWeights[1] * 255));
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 2, buffer_u8, floor(vertices[i].blendWeights[2] * 255));
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 3, buffer_u8, floor(vertices[i].blendWeights[3] * 255));
+						break;
+				}
+			}
+			
+			//if (array_length(vertices[i].position) == 3)
+			//{
+			//	buffer_write(vertexBuffer, buffer_f32, vertices[i].position[0]);
+			//	buffer_write(vertexBuffer, buffer_f32, vertices[i].position[1]);
+			//	buffer_write(vertexBuffer, buffer_f32, vertices[i].position[2]);
+			//}
+			
+			//if (array_length(vertices[i].normal) == 3)
+			//{
+			//	buffer_write(vertexBuffer, buffer_u8, floor((vertices[i].normal[0] + 1) / 2) * 255);
+			//	buffer_write(vertexBuffer, buffer_u8, floor((vertices[i].normal[1] + 1) / 2) * 255);
+			//	buffer_write(vertexBuffer, buffer_u8, floor((vertices[i].normal[2] + 1) / 2) * 255);
+			//	buffer_write(vertexBuffer, buffer_u8, 0x7f);
+			//}
+			
+			//if (array_length(vertices[i].tangent) == 4)
+			//{
+			//	buffer_write(vertexBuffer, buffer_u8, floor((vertices[i].tangent[0] + 1) / 2) * 255);
+			//	buffer_write(vertexBuffer, buffer_u8, floor((vertices[i].tangent[1] + 1) / 2) * 255);
+			//	buffer_write(vertexBuffer, buffer_u8, floor((vertices[i].tangent[2] + 1) / 2) * 255);
+			//	buffer_write(vertexBuffer, buffer_u8, floor((vertices[i].tangent[3] + 1) / 2) * 255);
+			//}
+			
+			//if (array_length(vertices[i].bitangent) == 4)
+			//{
+			//	buffer_write(vertexBuffer, buffer_u8, floor((vertices[i].bitangent[0] + 1) / 2) * 255);
+			//	buffer_write(vertexBuffer, buffer_u8, floor((vertices[i].bitangent[1] + 1) / 2) * 255);
+			//	buffer_write(vertexBuffer, buffer_u8, floor((vertices[i].bitangent[2] + 1) / 2) * 255);
+			//	buffer_write(vertexBuffer, buffer_u8, floor((vertices[i].bitangent[3] + 1) / 2) * 255);
+			//}
+			
+			//if (array_length(vertices[i].colourSet1) == 4)
+			//{
+			//	buffer_write(vertexBuffer, buffer_u8, floor(vertices[i].colourSet1[0] * 255));
+			//	buffer_write(vertexBuffer, buffer_u8, floor(vertices[i].colourSet1[1] * 255));
+			//	buffer_write(vertexBuffer, buffer_u8, floor(vertices[i].colourSet1[2] * 255));
+			//	buffer_write(vertexBuffer, buffer_u8, floor(vertices[i].colourSet1[3] * 255));
+			//}
+			
+			//if (array_length(vertices[i].colourSet2) == 4)
+			//{
+			//	buffer_write(vertexBuffer, buffer_u8, floor(vertices[i].colourSet2[0] * 255));
+			//	buffer_write(vertexBuffer, buffer_u8, floor(vertices[i].colourSet2[1] * 255));
+			//	buffer_write(vertexBuffer, buffer_u8, floor(vertices[i].colourSet2[2] * 255));
+			//	buffer_write(vertexBuffer, buffer_u8, floor(vertices[i].colourSet2[3] * 255));
+			//}
+			
+			//if (array_length(vertices[i].uvSet1) == 2)
+			//{
+			//	buffer_write(vertexBuffer, buffer_f32, vertices[i].uvSet1[0]);
+			//	buffer_write(vertexBuffer, buffer_f32, vertices[i].uvSet1[1]);
+			//}
+			
+			//if (array_length(vertices[i].blendWeights) == 4)
+			//{
+			//	buffer_write(vertexBuffer, buffer_u8, floor(vertices[i].blendWeights[0]));
+			//	buffer_write(vertexBuffer, buffer_u8, floor(vertices[i].blendWeights[1]));
+			//	buffer_write(vertexBuffer, buffer_u8, floor(vertices[i].blendWeights[2]));
+			//	buffer_write(vertexBuffer, buffer_u8, floor(vertices[i].blendWeights[3]));
+			//}
+			
+			//if (array_length(vertices[i].blendIndices) == 4)
+			//{
+			//	buffer_write(vertexBuffer, buffer_s8, floor(vertices[i].blendIndices[0]));
+			//	buffer_write(vertexBuffer, buffer_s8, floor(vertices[i].blendIndices[1]));
+			//	buffer_write(vertexBuffer, buffer_s8, floor(vertices[i].blendIndices[2]));
+			//	buffer_write(vertexBuffer, buffer_s8, floor(vertices[i].blendIndices[3]));
+			//}
+		}
+		
+		// Return Buffer
+		return vertexBuffer;
+	}
+	
+	static buildIndexBuffer = function()
+	{
+		// Create Index Buffer
+		var indexBuffer = buffer_create((triangleCount + 2) * 2, buffer_fixed, 1);
+		
+		// Build New Index Buffer
+		for (var i = 0; i < (triangleCount + 2); i++)
+		{
+			buffer_write(indexBuffer, buffer_u16, triangles[i]);
+		}
+		
+		// Return Index Buffer
+		return indexBuffer;
 	}
 	
 	#endregion
@@ -190,471 +553,59 @@ function BactaTankMesh() constructor
 	
 	#endregion
 	
-	#region Export / Replace Mesh
+	#region Export / Replace
 	
-	/// @func exportMesh()
-	/// @desc Export BactaTankMesh
-	static exportMesh = function(meshIndex, filepath)
+	/// @func export()
+	/// @desc Export v0.4 BactaTankMesh
+	static export = function(filepath, _model = noone)
 	{
-		// Create Export Buffer
-		var buffer = buffer_create(1, buffer_grow, 1);
-		
-		// Mesh
-		var mesh = self.meshes[meshIndex];
-		var material = getMaterial(meshIndex);
-		var bones = self.bones;
-		
-		// VF value
-		var vfValue = 0;
-		if (mesh.vertexStride == 28) vfValue = 2313;
-		if (mesh.vertexStride == 36) vfValue = 33556745;
-		
-		// Get Vertex Format
-		var vertexFormat = self.materials[material].vertexFormat;
-		
-		// Write Header
-		buffer_write(buffer, buffer_string, "BactaTank");
-		buffer_write(buffer, buffer_string, "PCGHG");
-		buffer_write(buffer, buffer_f32, 0.3);
-		buffer_write(buffer, buffer_string, "Materials");
-		buffer_write(buffer, buffer_u32, 0);
-		
-		// Bones
-		buffer_write(buffer, buffer_string, "Bones");
-		//buffer_write(buffer, buffer_u32, array_length(bones));
-		buffer_write(buffer, buffer_u32, 0);
-		
-		//for (var i = 0; i < array_length(bones); i++)
-		//{
-		//	var bone = bones[i];
-		//	buffer_write(buffer, buffer_string, bone.name);
-		//	buffer_write(buffer, buffer_s32, bone.parent);
-		//	for (var j = 0; j < 16; j++) buffer_write(buffer, buffer_f32, bone.matrix[j]);
-		//}
-		
-		buffer_write(buffer, buffer_string, "Meshes");
-		buffer_write(buffer, buffer_u32, 1);
-		buffer_write(buffer, buffer_string, "MeshData");
-		
-		// Write Mesh Data
-		buffer_write(buffer, buffer_u32, mesh.triangleCount);
-		buffer_write(buffer, buffer_u32, mesh.vertexCount);
-		for (var i = 0; i < 8; i++) buffer_write(buffer, buffer_s8, mesh.bones[i]);
-		
-		// Write Mesh Attributes
-		buffer_write(buffer, buffer_string, "MeshAttributes");
-		buffer_write(buffer, buffer_u32, 6);
-		buffer_write(buffer, buffer_string, "Position");
-		buffer_write(buffer, buffer_string, "Normal");
-		buffer_write(buffer, buffer_string, "Colour");
-		buffer_write(buffer, buffer_string, "UV");
-		buffer_write(buffer, buffer_string, "BlendIndices");
-		buffer_write(buffer, buffer_string, "BlendWeights");
-		
-		// Write Vertex Buffer
-		buffer_write(buffer, buffer_string, "VertexBuffer");
-	
-		// Write Positions
-		buffer_write(buffer, buffer_string, "Position");
-		for (var i = 0; i < mesh.vertexCount; i++)
-		{
-			for (var j = 0; j < array_length(vertexFormat); j++)
-			{
-				if (vertexFormat[j].attribute == BTVertexAttributes.position)
-				{
-					buffer_write(buffer, buffer_f32, buffer_peek(mesh.vertexBuffer, (i*mesh.vertexStride) + vertexFormat[j].position, buffer_f32));
-					buffer_write(buffer, buffer_f32, buffer_peek(mesh.vertexBuffer, (i*mesh.vertexStride) + vertexFormat[j].position + 4, buffer_f32));
-					buffer_write(buffer, buffer_f32, buffer_peek(mesh.vertexBuffer, (i*mesh.vertexStride) + vertexFormat[j].position + 8, buffer_f32));
-				}
-			}
-		}
-		
-		// Write Normals
-		buffer_write(buffer, buffer_string, "Normal");
-		for (var i = 0; i < mesh.vertexCount; i++)
-		{
-			for (var j = 0; j < array_length(vertexFormat); j++)
-			{
-				if (vertexFormat[j].attribute == BTVertexAttributes.normal)
-				{
-					buffer_write(buffer, buffer_u32, buffer_peek(mesh.vertexBuffer, (i*mesh.vertexStride) + vertexFormat[j].position, buffer_u32));
-				}
-			}
-		}
-		
-		// Write Colour
-		buffer_write(buffer, buffer_string, "Colour");
-		for (var i = 0; i < mesh.vertexCount; i++)
-		{
-			for (var j = 0; j < array_length(vertexFormat); j++)
-			{
-				if (vertexFormat[j].attribute == BTVertexAttributes.colour)
-				{
-					buffer_write(buffer, buffer_u32, buffer_peek(mesh.vertexBuffer, (i*mesh.vertexStride) + vertexFormat[j].position, buffer_u32));
-				}
-			}
-		}
-		
-		// Write UVs
-		buffer_write(buffer, buffer_string, "UV");
-		for (var i = 0; i < mesh.vertexCount; i++)
-		{
-			for (var j = 0; j < array_length(vertexFormat); j++)
-			{
-				if (vertexFormat[j].attribute == BTVertexAttributes.uv)
-				{
-					buffer_write(buffer, buffer_f32, buffer_peek(mesh.vertexBuffer, (i*mesh.vertexStride) + vertexFormat[j].position, buffer_f32));
-					buffer_write(buffer, buffer_f32, buffer_peek(mesh.vertexBuffer, (i*mesh.vertexStride) + vertexFormat[j].position + 4, buffer_f32));
-				}
-			}
-		}
-		
-		// Write Blend Indices
-		buffer_write(buffer, buffer_string, "BlendIndices");
-		for (var i = 0; i < mesh.vertexCount; i++)
-		{
-			var write = false;
-			for (var j = 0; j < array_length(vertexFormat); j++)
-			{
-				if (vertexFormat[j].attribute == BTVertexAttributes.blendWeights)
-				{
-					buffer_write(buffer, buffer_u32, buffer_peek(mesh.vertexBuffer, (i*mesh.vertexStride) + vertexFormat[j].position, buffer_u32));
-					write = true;
-				}
-			}
-			if (!write) buffer_write(buffer, buffer_s32, -1);
-		}
-		
-		// Write Blend Weights
-		buffer_write(buffer, buffer_string, "BlendWeights");
-		for (var i = 0; i < mesh.vertexCount; i++)
-		{
-			var write = false;
-			for (var j = 0; j < array_length(vertexFormat); j++)
-			{
-				if (vertexFormat[j].attribute == BTVertexAttributes.blendIndices)
-				{
-					buffer_write(buffer, buffer_u32, buffer_peek(mesh.vertexBuffer, (i*mesh.vertexStride) + vertexFormat[j].position, buffer_u32));
-					write = true;
-				}
-			}
-			if (!write) buffer_write(buffer, buffer_s32, -1);
-		}
-		
-		// Write Index Buffer
-		buffer_write(buffer, buffer_string, "IndexBuffer");
-		buffer_write(buffer, buffer_u32, buffer_get_size(mesh.indexBuffer));
-		buffer_copy(mesh.indexBuffer, 0, buffer_get_size(mesh.indexBuffer), buffer, buffer_tell(buffer));
-		buffer_seek(buffer, buffer_seek_relative, buffer_get_size(mesh.indexBuffer));
-		
-		// Buffer Save
-		buffer_save(buffer, filepath);
-		buffer_delete(buffer);
+		var bmesh = new BactaTankBMesh();
+		bmesh.fromMesh(self, _model);
+		bmesh.export(filepath, _model);
 	}
 	
-	/// @func replaceMesh()
+	/// @func replace()
 	/// @desc Replace BactaTankMesh
-	static replaceMesh = function(meshIndex, filepath)
+	static replace = function(filepath, _model = noone)
 	{
-		// Load Mesh File
-		var buffer = buffer_load(filepath);
+		var bmesh = new BactaTankBMesh();
+		bmesh.import(filepath, _model);
+		bmesh.toMesh(self, _model);
 		
-		// Current Mesh
-		var mesh = self.meshes[meshIndex];
-		var material = getMaterial(meshIndex);
+		// Collect Garbage (Because we've derefereced an older mesh here, I need to use this more!)
+		gc_collect();
 		
-		// VF value
-		var vfValue = 0;
-		if (mesh.vertexStride == 28) vfValue = 2313;
-		if (mesh.vertexStride == 36) vfValue = 33556745;
-		
-		// Get Vertex Format
-		var vertexFormat = self.materials[material].vertexFormat;
-		
-		// Read Mesh File
-		buffer_read(buffer, buffer_string);					// BactaTank
-		buffer_read(buffer, buffer_string);					// PCGHG
-		var version = buffer_read(buffer, buffer_f32);		// 0.3
-		if (version != 0.3) return;
-		buffer_read(buffer, buffer_string);					// Materials
-		buffer_read(buffer, buffer_u32);					// 0
-		buffer_read(buffer, buffer_string);					// Bones
-		buffer_read(buffer, buffer_u32);					// 0
-		buffer_read(buffer, buffer_string);					// Meshes
-		buffer_read(buffer, buffer_u32);					// 1
-		buffer_read(buffer, buffer_string);					// MeshData
-		
-		// Mesh Data
-		var newTriangleCount = buffer_read(buffer, buffer_u32);
-		var newVertexCount = buffer_read(buffer, buffer_u32);
-		var newBoneLinks = [];
-		repeat(8) array_push(newBoneLinks, buffer_read(buffer, buffer_s8));
-		
-		// Mesh Attributes
-		buffer_read(buffer, buffer_string);	// Mesh Attributes
-		var attributeCount = buffer_read(buffer, buffer_u32);
-		repeat (attributeCount) buffer_read(buffer, buffer_string); // Position, Normal, Colour, UV
-		
-		// Vertex Buffer
-		buffer_read(buffer, buffer_string);
-		
-		// Position Attribute
-		buffer_read(buffer, buffer_string);
-		var position = [];
-		
-		for (var i = 0; i < newVertexCount; i++)
-		{
-			var positionX = buffer_read(buffer, buffer_f32);
-			var positionY = buffer_read(buffer, buffer_f32);
-			var positionZ = buffer_read(buffer, buffer_f32);
-			array_push(position, [positionX, positionY, positionZ])
-		}
-		
-		// Normal Attribute
-		buffer_read(buffer, buffer_string);
-		var normal = [];
-		
-		for (var i = 0; i < newVertexCount; i++)
-		{
-			array_push(normal, buffer_read(buffer, buffer_u32));
-		}
-		
-		// Colour Attribute
-		buffer_read(buffer, buffer_string);
-		var colour = [];
-		
-		for (var i = 0; i < newVertexCount; i++)
-		{
-			array_push(colour, buffer_read(buffer, buffer_u32));
-		}
-		
-		// UV Attribute
-		buffer_read(buffer, buffer_string);
-		var uv = [];
-		
-		for (var i = 0; i < newVertexCount; i++)
-		{
-			var uvX = buffer_read(buffer, buffer_f32);
-			var uvY = buffer_read(buffer, buffer_f32);
-			array_push(uv, [uvX, uvY]);
-		}
-		
-		if (attributeCount > 4)
-		{
-			// Bone Indices Attribute
-			buffer_read(buffer, buffer_string);
-			var boneIndices = [];
-			
-			for (var i = 0; i < newVertexCount; i++)
-			{
-				boneIndices[i] = buffer_read(buffer, buffer_u32);
-			}
-			
-			// Bone Indices Attribute
-			buffer_read(buffer, buffer_string);
-			var boneWeights = [];
-			
-			for (var i = 0; i < newVertexCount; i++)
-			{
-				boneWeights[i] = buffer_read(buffer, buffer_u32);
-			}
-		}
-		
-		// Check if mesh Vertex Stride is More then 0
-		var size = 0;
-		for (var i = 0; i < array_length(vertexFormat); i++)
-		{
-			switch (vertexFormat[i].attribute)
-			{
-				case BTVertexAttributes.position:
-					size += 12;
-					break;
-				case BTVertexAttributes.uv:
-					size += 8;
-					break;
-				case BTVertexAttributes.normal:
-				case BTVertexAttributes.colour:
-				case BTVertexAttributes.tangent:
-				case BTVertexAttributes.bitangent:
-				case BTVertexAttributes.blendIndices:
-				case BTVertexAttributes.blendWeights:
-					size += 4;
-					break;
-			}
-		}
-		mesh.vertexStride = size;
-		
-		// Delete Old Vertex Buffer
-		if (buffer_exists(mesh.vertexBuffer)) buffer_delete(mesh.vertexBuffer);
-		
-		// Build New Vertex Buffer
-		mesh.vertexBuffer = buffer_create(newVertexCount * mesh.vertexStride, buffer_fixed, 1);
-		
-		for (var i = 0; i < newVertexCount; i++)
-		{
-			//show_debug_message(position[i][1]);
-			for (var j = 0; j < array_length(vertexFormat); j++)
-			{
-				switch (vertexFormat[j].attribute)
-				{
-					case BTVertexAttributes.position:
-						buffer_write(mesh.vertexBuffer, buffer_f32, position[i][0]);
-						buffer_write(mesh.vertexBuffer, buffer_f32, position[i][1]);
-						buffer_write(mesh.vertexBuffer, buffer_f32, position[i][2]);
-						break;
-					case BTVertexAttributes.normal:
-						buffer_write(mesh.vertexBuffer, buffer_u32, normal[i]);
-						break;
-					case BTVertexAttributes.colour:
-						buffer_write(mesh.vertexBuffer, buffer_u32, colour[i]);
-						break;
-					case BTVertexAttributes.uv:
-						buffer_write(mesh.vertexBuffer, buffer_f32, uv[i][0]);
-						buffer_write(mesh.vertexBuffer, buffer_f32, uv[i][1]);
-						break;
-					case BTVertexAttributes.tangent:
-						buffer_write(mesh.vertexBuffer, buffer_u32, 0);
-						break;
-					case BTVertexAttributes.bitangent:
-						buffer_write(mesh.vertexBuffer, buffer_u32, 0);
-						break;
-					case BTVertexAttributes.blendIndices:
-						buffer_write(mesh.vertexBuffer, buffer_u32, boneWeights[i]);
-						break;
-					case BTVertexAttributes.blendWeights:
-						buffer_write(mesh.vertexBuffer, buffer_u32, boneIndices[i]);
-						break;
-				}
-			}
-		}
-		
-		// Index Buffer
-		buffer_read(buffer, buffer_string); // IndexBuffer
-		var newIndexBufferSize = buffer_read(buffer, buffer_u32);
-		if (buffer_exists(mesh.indexBuffer)) buffer_delete(mesh.indexBuffer);
-		mesh.indexBuffer = buffer_create(newIndexBufferSize, buffer_fixed, 1);
-		buffer_copy(buffer, buffer_tell(buffer), newIndexBufferSize, mesh.indexBuffer, 0);
-		buffer_seek(buffer, buffer_seek_relative, newIndexBufferSize);
-		
-		// Delete Mesh Buffer
-		buffer_delete(buffer);
-		if (mesh.vertexBufferObject != -1) vertex_delete_buffer(mesh.vertexBufferObject);
-		
-		// Set New Variables
-		mesh.type = 6;
-		mesh.triangleCount = newTriangleCount;
-		mesh.vertexCount = newVertexCount;
-		mesh.bones = newBoneLinks;
-		
-		// Build New VBO
-		if (mesh.triangleCount == 0 || mesh.vertexCount == 0)
-		{
-			mesh.vertexBufferObject = -1;
-			return;
-		}
-		
-		// Create New Vertex Buffer
-		var currentVertexBuffer = vertex_create_buffer();
-		vertex_begin(currentVertexBuffer, BT_VERTEX_FORMAT);
-		
-		// Build VBO
-		for (var i = 0; i < mesh.triangleCount+2; i++)
-		{
-			var index = buffer_peek(mesh.indexBuffer, i*2, buffer_u16);
-			var pos = array_create(3, 0);
-			var norm = array_create(3, 0);
-			var tangent = [0, 0];
-			var tex = array_create(2, 0);
-			var col = 0;
-			for (var j = 0; j < array_length(vertexFormat); j++)
-			{
-				switch (vertexFormat[j].attribute)
-				{
-					case BTVertexAttributes.position:
-						pos = [buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[j].position, buffer_f32),
-								buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[j].position + 4, buffer_f32),
-								buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[j].position + 8, buffer_f32)];
-						break;
-					case BTVertexAttributes.normal:
-						norm = [((buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[j].position, buffer_u8)/255)*2)-1,
-								((buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[j].position + 1, buffer_u8)/255)*2)-1,
-								((buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[j].position + 2, buffer_u8)/255)*2)-1];
-					case BTVertexAttributes.tangent:
-						tangent = [make_colour_rgb(buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[j].position, buffer_u8),
-									buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[j].position + 1, buffer_u8),
-									buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[j].position + 2, buffer_u8)),
-									buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[j].position + 3, buffer_u8) / 255];
-						break;
-					case BTVertexAttributes.uv:
-						tex = [buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[j].position, buffer_f32),
-								buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[j].position + 4, buffer_f32)];
-						break;
-					case BTVertexAttributes.colour:
-						col = make_colour_rgb(
-								buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[j].position, buffer_u8),
-								buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[j].position + 1, buffer_u8),
-								buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[j].position + 2, buffer_u8));
-						break;
-				}
-			}
-			
-			// Add Vertex Positions
-			vertex_position_3d(currentVertexBuffer, pos[0], pos[1], pos[2]);
-			vertex_normal(currentVertexBuffer, norm[0], norm[1], norm[2]);
-			vertex_texcoord(currentVertexBuffer, tex[0], tex[1]);
-			vertex_colour(currentVertexBuffer, #ffffff, 1);
-			vertex_colour(currentVertexBuffer, tangent[0], tangent[1]);
-			vertex_texcoord(currentVertexBuffer, index, 0);
-		}
-		
-		// End Vertex Buffer
-		vertex_end(currentVertexBuffer);
-		
-		// Freeze Vertex Buffer
-		vertex_freeze(currentVertexBuffer);
-		
-		// Set VBO
-		mesh.vertexBufferObject = currentVertexBuffer;
-		
-		// Set Mesh
-		self.meshes[meshIndex] = mesh;
-	}
-	
-	/// @func dereferenceMesh()
-	/// @desc Dereferences a mesh, and removes it from the model
-	static dereferenceMesh = function(meshIndex)
-	{
-		// Mesh
-		var mesh = self.meshes[meshIndex];
-		
-		// Destroy Vertex Buffer
-		if (mesh.vertexBufferObject != -1) vertex_delete_buffer(mesh.vertexBufferObject);
-		mesh.vertexBufferObject = -1;
-		
-		// Destroy Buffers
-		if (mesh.indexBuffer != -1) buffer_delete(mesh.indexBuffer);
-		if (mesh.vertexBuffer != -1) buffer_delete(mesh.vertexBuffer);
-		mesh.indexBuffer = -1;
-		mesh.vertexBuffer = -1;
-		
-		// Zero out all variables
-		mesh.type = 0;
-		mesh.triangleCount = 0;
-		mesh.vertexStride = 0;
-		mesh.bones = array_create(8, 0);
-		mesh.flags = 0;
-		mesh.vertexOffset = 0;
-		mesh.vertexCount = 0;
-		mesh.indexOffset = 0;
-		mesh.indexBufferID = 0;
-		mesh.vertexBufferID = 0;
-		mesh.dynamicBuffers = [  ];
-		
-		// Set Mesh
-		self.meshes[meshIndex] = mesh;
+		// Build Mesh
+		build(_model);
 	}
 	
 	#endregion
+	
+	/// @func dereference()
+	/// @desc Dereferences a mesh, and removes it from the model
+	static dereference = function()
+	{
+		// Destroy Vertex Buffer
+		if (vertexBufferObject != -1) vertex_delete_buffer(vertexBufferObject);
+		vertexBufferObject = -1;
+		
+		// Destroy Buffers
+		indexBuffer = -1;
+		vertexBuffer = -1;
+		
+		// Zero out all variables
+		type = 0;
+		triangleCount = 0;
+		vertexStride = 0;
+		bones = array_create(8, 0);
+		flags = 0;
+		vertexOffset = 0;
+		vertexCount = 0;
+		indexOffset = 0;
+		indexBufferID = 0;
+		vertexBufferID = 0;
+		dynamicBuffers = [  ];
+	}
 
 	#region Rendering
 	

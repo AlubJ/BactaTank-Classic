@@ -68,6 +68,31 @@ function ModelEditorMenuBar() constructor
 			ImGui.EndMenu();
 		}
 		
+		// Model Menu
+		if (ImGui.BeginMenu("Model"))
+		{
+			// Export Armature Tool
+			if (ImGui.MenuItem("Export Armature")) uiExportArmature(PROJECT.currentModel);
+			
+			// Tools Menu
+			if (ImGui.BeginMenu("Tools"))
+			{
+				// Loop Tools
+				var names = variable_struct_get_names(TOOL_SCRIPTS);
+				
+				for (var i = 0; i < array_length(names); i++)
+				{
+					if (ImGui.MenuItem(names[i])) catspeak_function_execute(TOOL_SCRIPTS[$ names[i]], [ PROJECT ]);
+				}
+				
+				// End Menu
+				ImGui.EndMenu();
+			}
+			
+			// End Menu
+			ImGui.EndMenu();
+		}
+		
 		// Help Menu
 		if (ImGui.BeginMenu("Help"))
 		{

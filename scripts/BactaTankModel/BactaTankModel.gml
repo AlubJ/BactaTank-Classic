@@ -131,11 +131,16 @@ function BactaTankModel(model = -1) constructor
 		{
 			// Scene Specific Code Here
 			// Seek to DISP (Special Object Count)
+			buffer_seek(buffer, buffer_seek_start, gsnhOffset + 0x10C);
 			buffer_seek(buffer, buffer_seek_relative, buffer_read(buffer, buffer_s32) - 4);
-			buffer_seek(buffer, buffer_seek_relative, 0x6c);
+			var dispOffset = buffer_tell(buffer);
+			
+			// Read Mesh Links
+			buffer_seek(buffer, buffer_seek_start, dispOffset + 0x10);
+			readModels(buffer);
 			
 			// Read Special Objects
-			buffer_seek(buffer, buffer_seek_start, gsnhOffset + 0x10C);
+			buffer_seek(buffer, buffer_seek_start, dispOffset + 0x6c);
 			readSpecialObjects(buffer);
 		}
 		
@@ -238,7 +243,7 @@ function BactaTankModel(model = -1) constructor
 		}
 		
 		// Watermark
-		buffer_write(buffer, buffer_string, "Made With BactaTankClassic v0.2");
+		buffer_write(buffer, buffer_string, "Made With BactaTankClassic v0.3");
 		
 		// Pre-NU20Size
 		if (self.version == BTModelVersion.pcghgNU20Last)
@@ -250,7 +255,7 @@ function BactaTankModel(model = -1) constructor
 		}
 		else
 		{
-			buffer_poke(buffer, preNU20Size, buffer_u32, (buffer_get_size(buffer) - 4) - preNU20Size);
+			buffer_poke(buffer, preNU20Size, buffer_u32, buffer_get_size(buffer) - 4 - preNU20Size);
 		}
 		
 		// Save Buffer
@@ -337,18 +342,42 @@ function BactaTankModel(model = -1) constructor
 	{
 		// Mesh List
 		self.meshes = [];
+		
+		// Mesh Block 1
 		var meshCount = buffer_read(buffer, buffer_u32);
-		buffer_seek(buffer, buffer_seek_relative, 0x08);
+		var meshBlock2StartPointer = buffer_read(buffer, buffer_s32);
+		var meshBlock2Count = buffer_read(buffer, buffer_u32);
 		
 		// Log
-		ConsoleLog($"Reading {meshCount} Meshes", CONSOLE_MODEL_LOADER);
+		ConsoleLog($"Reading {meshCount + meshBlock2Count} Meshes", CONSOLE_MODEL_LOADER);
 		
-		// Mesh Loop
+		// Mesh Block 1 Loop
 		for (var i = 0; i < meshCount; i++)
 		{
+			ConsoleLog(i);
 			// Seek to mesh entry
 			var tempOffset = buffer_tell(buffer) + 4;
 			buffer_seek(buffer, buffer_seek_relative, buffer_read(buffer, buffer_u32) - 4);
+			
+			// Create New Mesh
+			self.meshes[i] = new BactaTankMesh();
+			
+			// Parse Mesh Data
+			self.meshes[i].parse(buffer, self);
+			
+			// Seek back to start
+			buffer_seek(buffer, buffer_seek_start, tempOffset);
+		}
+		
+		// Mesh Block 2 Loop
+		for (var i = meshCount; i < meshCount + meshBlock2Count; i++)
+		{
+			ConsoleLog(i);
+			// Seek to mesh entry
+			var tempOffset = buffer_tell(buffer) + 4;
+			buffer_seek(buffer, buffer_seek_relative, buffer_read(buffer, buffer_u32) - 4);
+			
+			ConsoleLog(buffer_tell(buffer));
 			
 			// Create New Mesh
 			self.meshes[i] = new BactaTankMesh();
@@ -442,11 +471,11 @@ function BactaTankModel(model = -1) constructor
 		// Log
 		ConsoleLog($"Reading {modelCount} Models", CONSOLE_MODEL_LOADER);
 		
+		// Temp Offset
+		var tempOffset = buffer_tell(buffer);
+		
 		// Seek to Models
 		buffer_seek(buffer, buffer_seek_relative, buffer_read(buffer, buffer_u32) - 4);
-		
-		// Current Mesh
-		var currentMesh = 0;
 		
 		// Models Loop
 		for (var i = 0; i < modelCount; i++)
@@ -455,10 +484,18 @@ function BactaTankModel(model = -1) constructor
 			self.models[i] = new BactaTankGameModel();
 			
 			// Parse
-			self.models[i].parse(buffer, self, currentMesh);
-			
-			// Increase Current Mesh
-			currentMesh += array_length(self.models[i].meshes);
+			self.models[i].parse(buffer, self);
+		}
+		
+		// Seek to Model Mesh Start Indices
+		buffer_seek(buffer, buffer_seek_start, tempOffset + 0x08);
+		buffer_seek(buffer, buffer_seek_relative, buffer_read(buffer, buffer_u32) - 4);
+		
+		// Models Loop
+		for (var i = 0; i < modelCount; i++)
+		{
+			// Create New Model
+			self.models[i].parseMesh(buffer, self);
 		}
 		
 		//ConsoleLog(json_stringify(self.models, true));
@@ -495,7 +532,7 @@ function BactaTankModel(model = -1) constructor
 			currentMesh += array_length(self.layers[i].meshes);
 		}
 		
-		ConsoleLog(self.layers);
+		//ConsoleLog(self.layers);
 	}
 
 	static readSpecialObjects = function(buffer)
@@ -605,166 +642,8 @@ function BactaTankModel(model = -1) constructor
 		// Build VBOs
 		for (var i = 0; i < array_length(self.meshes); i++)
 		{
-			//var timer = get_timer();
-			// Get Mesh And Skip If Null Mesh
-			var mesh = self.meshes[i];
-			if (mesh.triangleCount == 0 || mesh.vertexCount == 0)
-			{
-				mesh.vertexBufferObject = -1;
-				continue;
-			}
-			
-			// UV
-			//var linelist = new CalicoLineList();
-			
-			// VF value
-			var vfValue = 0;
-			if (mesh.vertexStride == 28) vfValue = 2313;
-			if (mesh.vertexStride == 36) vfValue = 33556745;
-			
-			// Get Vertex Format
-			var material = getMaterial(i);
-			var vertexFormat = self.materials[material].vertexFormat;
-			
-			// Vertex Buffer
-			var currentVertexBuffer = noone;
-			var uvVertexBuffer = noone;
-			
-			// Get Cached Mesh If Possible
-			var name = sha1_string_utf8(buffer_sha1(mesh.vertexBuffer, 0, buffer_get_size(mesh.vertexBuffer)) + buffer_sha1(mesh.indexBuffer, 0, buffer_get_size(mesh.indexBuffer))) + ".mesh";
-			if (file_exists(TEMP_DIRECTORY + @"\_maeshes\" + name))
-			{
-				var cachedMesh = buffer_load(TEMP_DIRECTORY + @"\_meshes\" + name);
-				currentVertexBuffer = vertex_create_buffer_from_buffer(cachedMesh, BT_VERTEX_FORMAT);
-				buffer_delete(cachedMesh);
-			}
-			else
-			{
-				// Create Vertex Buffer
-				currentVertexBuffer = vertex_create_buffer();
-				vertex_begin(currentVertexBuffer, BT_VERTEX_FORMAT);
-				
-				// Create Vertex Buffer
-				//uvVertexBuffer = vertex_create_buffer();
-				//vertex_begin(uvVertexBuffer, global.uvVertexFormat);
-				
-				// Last UV
-				var lastUV1 = [0, 0];
-				var lastUV2 = [0, 0];
-				
-				// Build VBO
-				for (var j = 0; j < mesh.triangleCount+2; j++)
-				{
-					var index = buffer_peek(mesh.indexBuffer, j*2, buffer_u16);
-					var pos = array_create(3, 0);
-					var norm = array_create(3, 0);
-					var tangent = [0, 0];
-					var tex = array_create(2, 0);
-					var col = 0;
-					for (var k = 0; k < array_length(vertexFormat); k++)
-					{
-						switch (vertexFormat[k].attribute)
-						{
-							case BTVertexAttributes.position:
-								pos = [buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[k].position, buffer_f32),
-									   buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[k].position + 4, buffer_f32),
-									   buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[k].position + 8, buffer_f32)];
-								break;
-							case BTVertexAttributes.normal:
-								norm = [((buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[k].position, buffer_u8)/255)*2)-1,
-									   ((buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[k].position + 1, buffer_u8)/255)*2)-1,
-									   ((buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[k].position + 2, buffer_u8)/255)*2)-1];
-							case BTVertexAttributes.tangent:
-								tangent = [make_colour_rgb(buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[k].position, buffer_u8),
-										  buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[k].position + 1, buffer_u8),
-										  buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[k].position + 2, buffer_u8)),
-										  buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[k].position + 3, buffer_u8) / 255];
-								break;
-							case BTVertexAttributes.uv:
-								tex = [buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[k].position, buffer_f32),
-										buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[k].position + 4, buffer_f32)];
-								break;
-							case BTVertexAttributes.colour:
-								col = make_colour_rgb(
-										buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[k].position, buffer_u8),
-										buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[k].position + 1, buffer_u8),
-										buffer_peek(mesh.vertexBuffer, (mesh.vertexStride * index) + vertexFormat[k].position + 2, buffer_u8));
-								break;
-						}
-					}
-					
-					// Add Vertex Positions
-					vertex_position_3d(currentVertexBuffer, pos[0], pos[1], pos[2]);
-					vertex_normal(currentVertexBuffer, norm[0], norm[1], norm[2]);
-					vertex_texcoord(currentVertexBuffer, tex[0], tex[1]);
-					vertex_colour(currentVertexBuffer, #ffffff, 1);
-					vertex_colour(currentVertexBuffer, tangent[0], tangent[1]);
-					vertex_texcoord(currentVertexBuffer, index, 0);
-					
-					// UV
-					//vertex_position(uvVertexBuffer, tex[0], tex[1]);
-					//vertex_colour(uvVertexBuffer, #ffffff, 1);
-					//vertex_texcoord(uvVertexBuffer, tex[0], tex[1]);
-					//if (j >= 2)
-					//{
-						//vertex_position(uvVertexBuffer, lastUV2[0], lastUV2[1]);
-						//vertex_colour(uvVertexBuffer, #ffffff, 1);
-						//vertex_texcoord(uvVertexBuffer, lastUV2[0], lastUV2[1]);
-						//vertex_texcoord(uvVertexBuffer, lastUV1[0], lastUV1[1]);
-					//}
-					
-					//lastUV2[0] = lastUV1[0];
-					//lastUV2[1] = lastUV1[1];
-					//lastUV1[0] = tex[0];
-					//lastUV1[1] = tex[1];
-					
-					// Update Average Position
-					mesh.averagePosition[0] += pos[0];
-					mesh.averagePosition[1] += pos[1];
-					mesh.averagePosition[2] += pos[2];
-				}
-				
-				// Average Position
-				mesh.averagePosition[0] /= mesh.triangleCount+2;
-				mesh.averagePosition[1] /= mesh.triangleCount+2;
-				mesh.averagePosition[2] /= mesh.triangleCount+2;
-				
-				// End Vertex
-				vertex_end(currentVertexBuffer);
-				//vertex_end(uvVertexBuffer);
-				
-				// Cache Vertex Buffer
-				//var cachedMesh = buffer_create_from_vertex_buffer(currentVertexBuffer, buffer_fixed, 1);
-				//buffer_save(cachedMesh, global.tempDirectory + @"\_meshes\" + name);
-				//buffer_delete(cachedMesh);
-			}
-			
-			//show_debug_message("Mesh " + string(i) + " took " + string((get_timer() - timer) / 1000) + "ms to generate a VBO");
-			
-			// Freeze VBO For Better Performance
-			vertex_freeze(currentVertexBuffer);
-				
-			// UV
-			//global.canvas.add(uvVertexBuffer);
-			//var cachedMesh = buffer_create_from_vertex_buffer(uvVertexBuffer, buffer_fixed, 1);
-			//buffer_save(cachedMesh, $"{i}.buff");
-			//buffer_delete(cachedMesh);
-			mesh.vertexBufferObject = currentVertexBuffer;
-			
-			//for (var j = 0; j < array_length(model.meshes[i].dynamicBuffers); j++)
-			//{
-			//	var vertexBuffer = buffer_create_from_vertex_buffer(currentVertexBuffer, buffer_fixed, 1);
-			//	for (var k = 0; k < model.meshes[i].vertexCount; k++)
-			//	{
-			//		buffer_poke(vertexBuffer, k*model.meshes[i].vertexSize, buffer_f32, buffer_peek(model.meshes[i].dynamicBuffers[j], k*3, buffer_f32));
-			//		buffer_poke(vertexBuffer, k*model.meshes[i].vertexSize+4, buffer_f32, buffer_peek(model.meshes[i].dynamicBuffers[j], k*3+4, buffer_f32));
-			//		buffer_poke(vertexBuffer, k*model.meshes[i].vertexSize+8, buffer_f32, buffer_peek(model.meshes[i].dynamicBuffers[j], k*3+8, buffer_f32));
-			//	}
-			//	model.meshes[i].dynamicBuffers[j] = vertex_create_buffer_from_buffer(vertexBuffer, VERTEX_FORMAT);
-			//	buffer_delete(vertexBuffer);
-			//}
-			
-			//ConsoleLog($"Mesh {i} took {(get_timer()-timer) / 1000}ms to build");
+			// Build Mesh
+			self.meshes[i].build(self);
 		}
 	}
 	
@@ -782,37 +661,32 @@ function BactaTankModel(model = -1) constructor
 			// Layers Loop
 			for (var l = 0; l < array_length(self.layers); l++)
 			{
-				// Special Objects
-				var specialObjects = self.layers[l].specialObjects;
+				// Layer Meshes
+				var meshes = self.layers[l].meshes;
 			
-				// Special Objects Loop
-				for (var o = 0; o < array_length(specialObjects); o++)
+				// Loop Layer Meshes
+				for (var m = 0; m < array_length(meshes); m++)
 				{
 					// Get Model
-					var model = self.models[self.specialObjects[specialObjects[o]].model];
-					var bone = self.specialObjects[specialObjects[o]].bone;
 					
-					// Special Object Meshes Loop
-					for (var m = 0; m < array_length(model.meshes); m++)
-					{
-						// Mesh
-						var mesh = self.meshes[model.meshes[m].mesh];
+					// Mesh
+					var mesh = self.meshes[meshes[m].mesh];
+					var bone = meshes[m].bone;
 					
-						// Get Matrix
-						var matrix = matrix_build_identity();
-						if (bone != -1) matrix = self.bones[bone].matrix;
+					// Get Matrix
+					var matrix = matrix_build_identity();
+					if (bone != -1) matrix = self.bones[bone].matrix;
 					
-						// Get Average Position
-						var average = matrix_transform_vertex(matrix, mesh.averagePosition[0], mesh.averagePosition[1], mesh.averagePosition[2]);
+					// Get Average Position
+					var average = matrix_transform_vertex(matrix, mesh.averagePosition[0], mesh.averagePosition[1], mesh.averagePosition[2]);
 					
-						// Add To Global Average
-						self.averagePosition[0] += average[0];
-						self.averagePosition[1] += average[1];
-						self.averagePosition[2] += average[2];
+					// Add To Global Average
+					self.averagePosition[0] += average[0];
+					self.averagePosition[1] += average[1];
+					self.averagePosition[2] += average[2];
 					
-						// Increase Count
-						count++;
-					}
+					// Increase Count
+					count++;
 				}
 			}
 			
@@ -844,8 +718,7 @@ function BactaTankModel(model = -1) constructor
 		for (var i = 0; i < array_length(self.meshes); i++)
 		{
 			// Skip Over If Buffers Don't Exist
-			if (self.meshes[i].vertexBuffer == -1 || self.meshes[i].indexBuffer == -1) continue;
-			else if (!buffer_exists(self.meshes[i].vertexBuffer) || !buffer_exists(self.meshes[i].indexBuffer)) continue;
+			if (array_length(self.meshes[i].vertices) == 0 || array_length(self.meshes[i].triangles) == 0) continue;
 			
 			// If the vertex stride isn't in the array, add a new entry. Each vertex stride is treated as a new vertexBuffer.
 			if (array_get_index(vbIndex, self.meshes[i].vertexStride) == -1) {
@@ -853,16 +726,28 @@ function BactaTankModel(model = -1) constructor
 				writeVertexBuffers[array_get_index(vbIndex, self.meshes[i].vertexStride)] = buffer_create(1, buffer_grow, 1);
 			}
 			
+			// Get Vertex Buffer
+			var vertexBuffer = self.meshes[i].buildVertexBuffer(self);
+			
 			// Set Vertex Buffer Index
 			self.meshes[i].vertexBufferID = array_get_index(vbIndex, self.meshes[i].vertexStride);
 			self.meshes[i].vertexOffset = buffer_tell(writeVertexBuffers[array_get_index(vbIndex, self.meshes[i].vertexStride)]) / self.meshes[i].vertexStride;
-			buffer_copy(self.meshes[i].vertexBuffer, 0, buffer_get_size(self.meshes[i].vertexBuffer), writeVertexBuffers[array_get_index(vbIndex, self.meshes[i].vertexStride)], buffer_tell(writeVertexBuffers[array_get_index(vbIndex, self.meshes[i].vertexStride)]));
-			buffer_seek(writeVertexBuffers[array_get_index(vbIndex, self.meshes[i].vertexStride)], buffer_seek_relative, buffer_get_size(self.meshes[i].vertexBuffer));
+			buffer_copy(vertexBuffer, 0, buffer_get_size(vertexBuffer), writeVertexBuffers[array_get_index(vbIndex, self.meshes[i].vertexStride)], buffer_tell(writeVertexBuffers[array_get_index(vbIndex, self.meshes[i].vertexStride)]));
+			buffer_seek(writeVertexBuffers[array_get_index(vbIndex, self.meshes[i].vertexStride)], buffer_seek_relative, buffer_get_size(vertexBuffer));
+			
+			// Delete Vertex Buffer
+			buffer_delete(vertexBuffer);
+			
+			// Build Index Buffer
+			var indexBuffer = self.meshes[i].buildIndexBuffer();
 			
 			self.meshes[i].indexBufferID = 0;
 			self.meshes[i].indexOffset = buffer_tell(writeIndexBuffers[0]) / 2;
-			buffer_copy(self.meshes[i].indexBuffer, 0, buffer_get_size(self.meshes[i].indexBuffer), writeIndexBuffers[0], buffer_tell(writeIndexBuffers[0]));
-			buffer_seek(writeIndexBuffers[0], buffer_seek_relative, buffer_get_size(self.meshes[i].indexBuffer));
+			buffer_copy(indexBuffer, 0, buffer_get_size(indexBuffer), writeIndexBuffers[0], buffer_tell(writeIndexBuffers[0]));
+			buffer_seek(writeIndexBuffers[0], buffer_seek_relative, buffer_get_size(indexBuffer));
+			
+			// Delete Vertex Buffer
+			buffer_delete(indexBuffer);
 		}
 		
 		// Return Buffers
@@ -876,73 +761,20 @@ function BactaTankModel(model = -1) constructor
 		// Edit NU20
 		for (var i = 0; i < array_length(self.textures); i++)
 		{
-			var currentTexture = self.textures[i];
-			if (currentTexture == 0) continue;
-			buffer_poke(self.data, currentTexture.offset, buffer_u32, currentTexture.width);
-			buffer_poke(self.data, currentTexture.offset + 0x04, buffer_u32, currentTexture.height);
-			if (self.data == BTModelVersion.pcghgNU20First)
-			{
-				buffer_poke(self.data, currentTexture.offset + 0x38, buffer_u32, currentTexture.compression);
-				buffer_poke(self.data, currentTexture.offset + 0x44, buffer_u32, currentTexture.size);
-			}
+			// Inject Texture
+			if (self.textures[i] != 0) self.textures[i].inject(self.data, self);
 		}
 		
 		for (var i = 0; i < array_length(self.materials); i++)
 		{
-			// Variables
-			var material = self.materials[i];
-			var offset = material.offset;
-			
-			// Edit Material Data
-			buffer_poke(self.data, offset + 0x40,    buffer_u32, material.alphaBlend);
-			buffer_poke(self.data, offset + 0x54,    buffer_f32, material.colour[0]);
-			buffer_poke(self.data, offset + 0x58,    buffer_f32, material.colour[1]);
-			buffer_poke(self.data, offset + 0x5c,    buffer_f32, material.colour[2]);
-			buffer_poke(self.data, offset + 0x60,    buffer_f32, material.colour[3]);
-			buffer_poke(self.data, offset + 0x74,    buffer_s16, material.textureID);
-			buffer_poke(self.data, offset + 0xb4 + 0x04,    buffer_s32, material.textureID);
-			buffer_poke(self.data, offset + 0xb4 + 0x4c,    buffer_s32, material.normalID);
-			buffer_poke(self.data, offset + 0xb4 + 0x54,    buffer_s32, material.shineID);
-			buffer_poke(self.data, offset + 0xB4 + 0x6C,    buffer_u8,  floor(material.ambientTint[0] * 255));
-			buffer_poke(self.data, offset + 0xB4 + 0x6D,    buffer_u8,  floor(material.ambientTint[1] * 255));
-			buffer_poke(self.data, offset + 0xB4 + 0x6E,    buffer_u8,  floor(material.ambientTint[2] * 255));
-			buffer_poke(self.data, offset + 0xB4 + 0x6F,    buffer_u8,  floor(material.ambientTint[3] * 255));
-			buffer_poke(self.data, offset + 0xb4 + 0x1b8,   buffer_u32, material.shaderFlags);
-			
-			// NU20 First Material Colours
-			if (self.version == BTModelVersion.pcghgNU20First)
-			{
-				buffer_poke(self.data, offset + 0xc8,    buffer_u8, floor(material.colour[0] * 255));
-				buffer_poke(self.data, offset + 0xc9,    buffer_u8, floor(material.colour[1] * 255));
-				buffer_poke(self.data, offset + 0xca,    buffer_u8, floor(material.colour[2] * 255));
-				buffer_poke(self.data, offset + 0xcb,    buffer_u8, floor(material.colour[3] * 255));
-			}
+			// Inject Material
+			self.materials[i].inject(self.data, self);
 		}
 		
 		for (var i = 0; i < array_length(self.meshes); i++)
 		{
-			// Variables
-			var mesh = self.meshes[i];
-			var offset = mesh.offset;
-			
-			// Edit Mesh Data
-			buffer_poke(self.data, offset,    buffer_s32, mesh.type);
-			buffer_poke(self.data, offset+4,  buffer_s32, mesh.triangleCount);
-			buffer_poke(self.data, offset+8,  buffer_s16, mesh.vertexStride);
-			buffer_poke(self.data, offset+10, buffer_s8,  mesh.bones[0]);
-			buffer_poke(self.data, offset+11, buffer_s8,  mesh.bones[1]);
-			buffer_poke(self.data, offset+12, buffer_s8,  mesh.bones[2]);
-			buffer_poke(self.data, offset+13, buffer_s8,  mesh.bones[3]);
-			buffer_poke(self.data, offset+14, buffer_s8,  mesh.bones[4]);
-			buffer_poke(self.data, offset+15, buffer_s8,  mesh.bones[5]);
-			buffer_poke(self.data, offset+16, buffer_s8,  mesh.bones[6]);
-			buffer_poke(self.data, offset+17, buffer_s8,  mesh.bones[7]);
-			buffer_poke(self.data, offset+20, buffer_s32, mesh.vertexOffset);
-			buffer_poke(self.data, offset+24, buffer_s32, mesh.vertexCount);
-			buffer_poke(self.data, offset+28, buffer_s32, mesh.indexOffset);
-			buffer_poke(self.data, offset+32, buffer_s32, mesh.indexBufferID);
-			buffer_poke(self.data, offset+36, buffer_s32, mesh.vertexBufferID);
-			buffer_poke(self.data, offset+40, buffer_s32, array_length(mesh.dynamicBuffers));
+			// Inject Mesh
+			self.meshes[i].inject(self.data);
 		}
 		
 		// Model Specific Things
@@ -951,35 +783,15 @@ function BactaTankModel(model = -1) constructor
 			// Edit Locators
 			for (var i = 0; i < array_length(self.locatorData); i++)
 			{
-				// Variables
-				var locator = self.locatorData[i];
-				var offset = locator.offset;
-				
-				// Edit Locator Matrix
-				for (var j = 0; j < 16; j++)
-				{
-					buffer_poke(self.data, offset + (j * 4), buffer_f32, locator.matrix[j]);
-				}
-				
-				// Edit Locator Parent
-				buffer_poke(self.data, offset + 0x44, buffer_s32, locator.parent);
+				// Inject Locators
+				self.locatorData[i].inject(self.data);
 			}
 			
-			// Edit Layers
-			var layers = self.layers;
-			
 			// Loop Through Layers
-			for (var l = 0; l < array_length(layers); l++)
+			for (var l = 0; l < array_length(self.layers); l++)
 			{
-				// Loop Through Special Objects
-				for (var o = 0; o < array_length(layers[l].specialObjects); o++)
-				{
-					// Loop Through Special Object Meshes
-					for (var m = 0; m < array_length(layers[l].specialObjects[o].meshes); m++)
-					{
-						buffer_poke(self.data, layers[l].specialObjects[o].meshes[m].matOffset, buffer_s32, layers[l].specialObjects[o].meshes[m].material);
-					}
-				}
+				// Inject Layer
+				self.layers[l].inject(self.data);
 			}
 		}
 		else
@@ -1586,7 +1398,7 @@ function BactaTankModel(model = -1) constructor
 	
 	/// @func pushLayerToRenderQueue()
 	/// @desc Pushes layer onto the render queue
-	static pushLayerToRenderQueue = function(activeLayer = 0, hideDisabledMeshes = false)
+	static pushLayerToRenderQueue = function(activeLayer = 0, renderer = RENDERER, hideDisabledMeshes = false)
 	{
 		// Loop Through Layer Meshes
 		for (var m = 0; m < array_length(self.layers[activeLayer].meshes); m++)
@@ -1613,8 +1425,8 @@ function BactaTankModel(model = -1) constructor
 			}
 			
 			// Organise Render Queue Based On Aplha Transparent Objects And Push
-			if ((renderStruct.material.alphaBlend >> BT_ALPHA_BLEND_SHIFT & BT_ALPHA_BLEND_BITS) != BTAlphaBlend.None) array_insert(renderer.renderQueue, 0, renderStruct);
-			else array_push(renderer.renderQueue, renderStruct);
+			if ((renderStruct.material.alphaBlend >> BT_ALPHA_BLEND_SHIFT & BT_ALPHA_BLEND_BITS) != BTAlphaBlend.None) array_insert(renderer.debugRenderQueue, 0, renderStruct);
+			else array_push(renderer.debugRenderQueue, renderStruct);
 		}
 	}
 	
@@ -1711,6 +1523,7 @@ function BactaTankModel(model = -1) constructor
 			{
 				// Get Model
 				var model = self.models[self.specialObjects[specialObjects[o]].model];
+				show_debug_message(model);
 				
 				// Special Object Meshes Loop
 				for (var m = 0; m < array_length(model.meshes); m++)

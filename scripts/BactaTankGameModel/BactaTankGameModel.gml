@@ -23,7 +23,7 @@ function BactaTankGameModel() constructor
 	
 	#region Parse / Inject
 	
-	static parse = function(buffer, _model, _index)
+	static parse = function(buffer, _model)
 	{
 		// Get Offset
 		offset = buffer_tell(buffer) - _model.nu20Offset;
@@ -57,12 +57,28 @@ function BactaTankGameModel() constructor
 			
 			// Mesh
 			meshes[i] = {
-				mesh: _index++,
+				mesh: noone,
 				material: meshMaterial,
 				meshID: meshID,
 				materialOffset: meshMaterialOffset,
 				idOffset: meshIDOffset,
 			}
+		}
+	}
+	
+	static parseMesh = function(buffer, _model)
+	{
+		// Loop Over Existing Meshes
+		for (var i = 0; i < array_length(meshes); i++)
+		{
+			// Mesh Start Index
+			var meshStartIndex = buffer_read(buffer, buffer_u16);
+			
+			// Apply Mesh Start Index + I
+			meshes[i].mesh = meshStartIndex + i;
+			
+			// Apply Material
+			_model.meshes[meshStartIndex + i].material = meshes[i].material;
 		}
 	}
 	

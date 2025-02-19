@@ -230,14 +230,14 @@ function saveSettings()
 function uiExportTexture(model, index)
 {
 	// Get Save File Name For DDS Export
-	var file = get_save_filename_ext(FILTERS.texture, $"texture{model.textureMetaData[index].index}.dds", SETTINGS.lastTexturePath, "Export Texture");
+	var file = get_save_filename_ext(FILTERS.texture, $"texture{index}.dds", SETTINGS.lastTexturePath, "Export Texture");
 	if (file != "" && ord(file) != 0)
 	{
 		// User Feedback
 		//ENVIRONMENT.openInfoModal("Please wait", "Converting GHG model to BactaTankModel");
 		window_set_cursor(cr_hourglass);
 		
-		model.exportTexture(index, file);
+		model.textures[index].export(file);
 		
 		SETTINGS.lastTexturePath = filename_path(file);
 		
@@ -259,7 +259,7 @@ function uiReplaceTexture(model, index)
 		var func = function(model, index, file)
 		{
 			// Replace Texture
-			model.replaceTexture(index, file);
+			model.textures[index].replace(file);
 			
 			// Set Last Texture Path
 			SETTINGS.lastTexturePath = filename_path(file);
@@ -291,7 +291,7 @@ function uiExportMaterial(model, index)
 		// User Feedback
 		window_set_cursor(cr_hourglass);
 		
-		model.exportMaterial(index, file);
+		model.materials[index].export(file);
 		
 		SETTINGS.lastMaterialPath = filename_path(file);
 		
@@ -309,7 +309,7 @@ function uiReplaceMaterial(model, index)
 		window_set_cursor(cr_hourglass);
 		
 		// Replace Material
-		model.replaceMaterial(index, file);
+		model.materials[index].replace(file);
 		
 		// Set Last Material Path
 		SETTINGS.lastMaterialPath = filename_path(file);
@@ -330,12 +330,12 @@ function uiReplaceMaterial(model, index)
 function uiExportMesh(model, index)
 {
 	// Get Save File Name For Mesh Export
-	var file = get_save_filename_ext(FILTERS.mesh, $"mesh{index}.btank", SETTINGS.lastMeshPath, "Export Mesh");
+	var file = get_save_filename_ext(FILTERS.mesh, $"mesh{index}.bmesh", SETTINGS.lastMeshPath, "Export Mesh");
 	if (file != "" && ord(file) != 0)
 	{
 		window_set_cursor(cr_hourglass);
 		
-		model.exportMesh(index, file);
+		model.meshes[index].export(file, model);
 		
 		SETTINGS.lastMeshPath = filename_path(file);
 		
@@ -346,7 +346,7 @@ function uiExportMesh(model, index)
 function uiReplaceMesh(model, index)
 {
 	// Get Open File Name For Mesh Replacement
-	var file = get_open_filename_ext(FILTERS.mesh, $"mesh.btank", SETTINGS.lastMeshPath, "Replace Mesh");
+	var file = get_open_filename_ext(FILTERS.mesh, $"mesh.bmesh", SETTINGS.lastMeshPath, "Replace Mesh");
 	if (file != "" && ord(file) != 0)
 	{
 		// User Feedback
@@ -357,7 +357,7 @@ function uiReplaceMesh(model, index)
 		var func = function(model, index, file)
 		{
 			// Replace Texture
-			model.replaceMesh(index, file);
+			model.meshes[index].replace(file, model);
 			
 			// Set Last Texture Path
 			SETTINGS.lastMeshPath = filename_path(file);
@@ -393,7 +393,7 @@ function uiExportLocator(model, index)
 		// User Feedback
 		window_set_cursor(cr_hourglass);
 		
-		model.exportLocator(index, file);
+		model.locators[index].export(file);
 		
 		SETTINGS.lastLocatorPath = filename_path(file);
 		
@@ -411,7 +411,7 @@ function uiReplaceLocator(model, index)
 		window_set_cursor(cr_hourglass);
 		
 		// Replace Locator
-		model.replaceLocator(index, file);
+		model.locators[index].replace(file, model);
 		
 		// Set Last Locator Path
 		SETTINGS.lastLocatorPath = filename_path(file);
@@ -427,17 +427,25 @@ function uiReplaceLocator(model, index)
 
 #endregion
 
+function uiExportArmature(model)
+{
+	// Get Save File Name For Armature
+	var file = get_save_filename_ext(FILTERS.armature, $"armature.barm", SETTINGS.lastArmaturePath, "Export Locator");
+	if (file != "" && ord(file) != 0)
+	{
+		// User Feedback
+		window_set_cursor(cr_hourglass);
+		
+		model.armature.export(file);
+		
+		SETTINGS.lastArmaturePath = filename_path(file);
+		
+		window_set_cursor(cr_default);
+	}
+}
+
 function exportArmature(model, file)
 {
 	ConsoleLog("Exporting Armature");
-	var buffer = buffer_create(1, buffer_grow, 1);
-	buffer_write(buffer, buffer_s32, array_length(model.bones));
-	for (var i = 0; i < array_length(model.bones); i++)
-	{
-		buffer_write(buffer, buffer_string, model.bones[i].name);
-		buffer_write(buffer, buffer_s32, model.bones[i].parent);
-		for (var m = 0; m < 16; m++) buffer_write(buffer, buffer_f32, model.bones[i].matrix[m]);
-	}
-	buffer_save(buffer, file);
-	buffer_delete(buffer);
+	model.armature.export(file);
 }

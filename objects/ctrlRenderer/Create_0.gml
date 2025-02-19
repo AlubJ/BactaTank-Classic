@@ -21,10 +21,9 @@ SECONDARY_RENDERER = new CalicoRenderer();
 CANVAS = new CalicoCanvas();
 SECONDARY_CANVAS = new CalicoCanvas();
 
+// GSC Texture Replacements Work Fine
 //model = new BactaTankModel("THINGS_PC.GSC");
-//clipboard_set_text(json_stringify(model, true));
-//show_message("");
-
+//model.destroy();
 
 //model.replaceMesh(9, @"C:\Users\Alun\Desktop\sphere.btank");
 //var cachedMesh = buffer_create_from_vertex_buffer(model.meshes[9].vertexBufferObject, buffer_fixed, 1);

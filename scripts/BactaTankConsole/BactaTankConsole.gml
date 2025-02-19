@@ -13,6 +13,7 @@
 */
 
 #macro CONSOLE_DEFAULT					"BactaTank"
+#macro CONSOLE_SCRIPT					"BactaTankScript"
 #macro CONSOLE_MODEL_LOADER				"BactaTankModel"
 #macro CONSOLE_MODEL_LOADER_DEBUG		"BactaTankModelDebug"
 #macro CONSOLE_RENDERER					"CalicoRenderer"

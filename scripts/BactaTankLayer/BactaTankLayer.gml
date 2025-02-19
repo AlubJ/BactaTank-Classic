@@ -319,6 +319,15 @@ function BactaTankLayer() constructor
 		buffer_seek(buffer, buffer_seek_start, tempOffset + 20);
 	}
 	
+	static inject = function(buffer)
+	{
+		// Loop Through Layer Meshes
+		for (var m = 0; m < array_length(meshes); m++)
+		{
+			buffer_poke(buffer, meshes[m].matOffset, buffer_s32, meshes[m].material);
+		}
+	}
+	
 	static parseOld = function(buffer, _model, _index)
 	{
 		// Temp Offset

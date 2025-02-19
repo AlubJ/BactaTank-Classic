@@ -59,6 +59,18 @@ function BactaTankLocator() constructor
 		//ConsoleLog($"	Parent: {locatorParent}", CONSOLE_MODEL_LOADER_DEBUG, offset + 0x44);
 	}
 	
+	static inject = function(buffer)
+	{
+		// Edit Locator Matrix
+		for (var j = 0; j < 16; j++)
+		{
+			buffer_poke(buffer, offset + (j * 4), buffer_f32, matrix[j]);
+		}
+		
+		// Edit Locator Parent
+		buffer_poke(buffer, offset + 0x44, buffer_s32, parent);
+	}
+	
 	#endregion
 	
 	#region Serialize / Deserialize
@@ -69,15 +81,12 @@ function BactaTankLocator() constructor
 	
 	#region Export / Replace Locators
 	
-	/// @func exportLocator()
+	/// @func export()
 	/// @desc Export BactaTankLocator
-	static exportLocator = function(locatorIndex, filepath)
+	static export = function(filepath)
 	{
 		// Create Export Buffer
 		var buffer = buffer_create(1, buffer_grow, 1);
-		
-		// locator
-		var locator = self.locators[locatorIndex];
 		
 		// Write Header
 		buffer_write(buffer, buffer_string, "BactaTankLocator");
@@ -85,19 +94,19 @@ function BactaTankLocator() constructor
 		buffer_write(buffer, buffer_f32, 0.1);
 		
 		// Write Parent Index
-		buffer_write(buffer, buffer_s32, locator.parent);
+		buffer_write(buffer, buffer_s32, parent);
 		
 		// Write Matrix
-		for (var i = 0; i < 16; i++) buffer_write(buffer, buffer_f32, locator.matrix[i]);
+		for (var i = 0; i < 16; i++) buffer_write(buffer, buffer_f32, matrix[i]);
 		
 		// Buffer Save
 		buffer_save(buffer, filepath);
 		buffer_delete(buffer);
 	}
 	
-	/// @func replaceLocator()
+	/// @func replace()
 	/// @desc Replace BactaTankLocator
-	static replaceLocator = function(locatorIndex, filepath)
+	static replace = function(filepath, _model = noone)
 	{
 		// Load Locator Buffer
 		var buffer = buffer_load(filepath);
@@ -111,15 +120,15 @@ function BactaTankLocator() constructor
 		if (version != 0.1) return;
 		
 		// Read Parent
-		self.locators[locatorIndex].parent = buffer_read(buffer, buffer_s32);
-		if (self.locators[locatorIndex].parent >= array_length(self.bones)) self.locators[locatorIndex].parent = -1;
+		parent = buffer_read(buffer, buffer_s32);
+		if (parent >= array_length(_model.bones)) parent = -1;
 		
 		// Read Matrix
-		self.locators[locatorIndex].matrix = [  ];
-		repeat(16) array_push(self.locators[locatorIndex].matrix, buffer_read(buffer, buffer_f32));
+		matrix = [  ];
+		repeat(16) array_push(matrix, buffer_read(buffer, buffer_f32));
 		
 		// Locator Matrix Decomposed
-		self.locators[locatorIndex].decomposedMatrix = matrix_decompose(self.locators[locatorIndex].matrix);
+		decomposedMatrix = matrix_decompose(matrix);
 		
 		// Delete Buffer
 		buffer_delete(buffer);

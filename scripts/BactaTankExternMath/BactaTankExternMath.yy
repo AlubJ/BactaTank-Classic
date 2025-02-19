@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"BactaTankExternMath",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"BactaTankExternMath",
+  "parent":{
+    "name":"BactaTankScriptExterns",
+    "path":"folders/BactaTankScriptExterns.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

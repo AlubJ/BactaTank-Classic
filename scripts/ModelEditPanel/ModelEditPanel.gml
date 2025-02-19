@@ -469,6 +469,21 @@ function ModelEditPanel() constructor
 			if (ImGui.MenuItem("Export Material")) uiExportMaterial(model, index);
 			if (ImGui.MenuItem("Replace Material")) uiReplaceMaterial(model, index);
 			
+			// Material Scripts
+			var names = variable_struct_get_names(MATERIAL_SCRIPTS);
+			
+			// Validate
+			if (array_length(names) > 0)
+			{
+				ImGui.Separator();
+				
+				// Material Tools
+				for (var i = 0; i < array_length(names); i++)
+				{
+					if (ImGui.MenuItem(names[i])) catspeak_function_execute(MATERIAL_SCRIPTS[$ names[i]], [ model.materials[index] ]);
+				}
+			}
+			
 			// End Popup
 			ImGui.EndPopup();
 		}
@@ -597,6 +612,7 @@ function ModelEditPanel() constructor
 			var material = ImGui.ComboBoxCustom($"Material", model.getMaterial(index), materials, $"##hiddenMeshMaterial", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly);
 			if (material != model.getMaterial(index))
 			{
+				// TODO: add material method to get vertex stride from the vertex format, change vertex stride.
 				model.setMaterial(index, material);
 				RENDERER.flush();
 				model.pushToRenderQueue(ENVIRONMENT.displayLayers, RENDERER, ENVIRONMENT.hideDisabledMeshes);
@@ -644,7 +660,7 @@ function ModelEditPanel() constructor
 			{
 				ENVIRONMENT.openConfirmModal("Dereference Mesh", "Dereferencing this mesh will delete everything associated with this mesh. Are you sure you want to continue? This cannot be undone.", function(model, index) {
 					// Dereference Mesh
-					model.dereferenceMesh(index);
+					model.meshes[index].dereference();
 					
 					// Clear Render Queue and Push Model Again
 					RENDERER.flush();
@@ -657,6 +673,21 @@ function ModelEditPanel() constructor
 					RENDERER.activate();
 					RENDERER.deactivate(2);
 				}, [model, index]);
+			}
+			
+			// Mesh Scripts
+			var names = variable_struct_get_names(MESH_SCRIPTS);
+			
+			// Validate
+			if (array_length(names) > 0)
+			{
+				ImGui.Separator();
+				
+				// Material Tools
+				for (var i = 0; i < array_length(names); i++)
+				{
+					if (ImGui.MenuItem(names[i])) catspeak_function_execute(MESH_SCRIPTS[$ names[i]], [ model.meshes[index] ]);
+				}
 			}
 			
 			// End Popup
@@ -683,7 +714,7 @@ function ModelEditPanel() constructor
 		// Step Camera
 		if (!ENVIRONMENT.anyModalOpen()) SECONDARY_RENDERER.orbitCamera(windowPos[0] + 8, windowPos[1] + 32);
 		array_push(SECONDARY_RENDERER.debugRenderQueue, ctrlRenderer.gridRenderStruct);
-		model.pushLayerToRenderQueue(index);
+		model.pushLayerToRenderQueue(index, SECONDARY_RENDERER);
 		
 		// Render Layer Preview
 		ImGui.Surface(SECONDARY_RENDERER.surface);
@@ -702,42 +733,25 @@ function ModelEditPanel() constructor
 		ImGui.InputTextCustom("Layer Offset", "0x" + string_hex(model.nu20Offset + lay.offset), "##hiddenLayerOffset", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly);
 		
 		// Layer Meshes Child
-		if (ImGui.BeginChild("LayerSpecialObjects", 0, -1))
+		if (ImGui.BeginChild("Layer Meshes", 0, -1))
 		{
-			// Layer Special Objects
-			for (var o = 0; o < array_length(lay.specialObjects); o++)
+			// Layer Meshes
+			for (var m = 0; m < array_length(lay.meshes); m++)
 			{
-				// Layer Special Object Header
+				// Layer Meshes Header
 				ImGui.Spacing();
-				ImGui.Text($"Layer Special Object {o} | {lay.specialObjects[o].name}");
+				ImGui.Text($"Layer Mesh {m}");
 				
-				// Layer Special Object Bone
+				// Layer Mesh Bone
 				var bone = "-1 | None";
-				if (lay.specialObjects[o].bone != -1) bone = $"{lay.specialObjects[o].bone} | {model.bones[lay.specialObjects[o].bone].name}";
-				ImGui.InputTextCustom("Bone Index", bone, $"##hiddenLayerBone{o}", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly);
+				if (lay.meshes[m].bone != -1) bone = $"{lay.meshes[m].bone} | {model.bones[lay.meshes[m].bone].name}";
+				ImGui.InputTextCustom("Bone Index", bone, $"##hiddenLayerBone{m}", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly);
 				
-				// Layer Special Object Offset
-				ImGui.InputTextCustom("Special Object Offset", "0x" + string_hex(model.nu20Offset + lay.specialObjects[o].offset), $"##hiddenLayerSpecialObject{o}Offset", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly);
+				// Layer Mesh
+				ImGui.InputTextCustom("Mesh Index", lay.meshes[m].mesh, $"##hiddenLayerMesh{m}", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly);
 				
-				// Special Object Meshes
-				for (var m = 0; m < array_length(lay.specialObjects[o].meshes); m++)
-				{
-					// Mesh
-					var mesh = lay.specialObjects[o].meshes[m]
-					
-					// Special Object Mesh Header
-					ImGui.Spacing();
-					ImGui.Text($"Special Object Mesh {m}");
-					
-					// Separator
-					ImGui.Separator();
-					
-					// Layer Mesh
-					ImGui.InputTextCustom("Mesh Index", mesh.mesh, $"##hiddenLayerMesh{o}{m}", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly);
-					
-					// Layer Material
-					ImGui.InputTextCustom("Material Index", mesh.material, $"##hiddenLayerMaterial{o}{m}", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly);
-				}
+				// Layer Material
+				ImGui.InputTextCustom("Material Index", lay.meshes[m].material, $"##hiddenLayerMaterial{m}", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly);
 			}
 			
 			// End Child

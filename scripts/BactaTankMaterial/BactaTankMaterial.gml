@@ -10,6 +10,7 @@
 	 - Created 04/02/2025 by Alun Jones
 	
 	To Do:
+	 - Write Vertex Format Encoder
 */
 
 function BactaTankMaterial() constructor
@@ -37,6 +38,12 @@ function BactaTankMaterial() constructor
 	shaderFlags			= 0;
 	inputFlags			= 0;
 	alphaBlend			= 0;
+	uvSetCoords			= 0;
+	
+	// UV Sets
+	surfaceUVMapIndex	= 0;
+	specularUVMapIndex	= 0;
+	normalUVMapIndex	= 0;
 	
 	// Other
 	offset				= 0;
@@ -87,10 +94,16 @@ function BactaTankMaterial() constructor
 		fresnelMultiplier	= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0x90, buffer_f32);
 		fresnelCoeff		= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0x94, buffer_f32);
 		
+		// Define UV Sets
+		surfaceUVMapIndex	= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0xA9, buffer_u8);
+		specularUVMapIndex	= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0xAA, buffer_u8);
+		normalUVMapIndex	= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0xAB, buffer_u8);
+		
 		// Other Bitfields
 		vertexFormatFlags	= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0x13C, buffer_u32);
 		inputFlags			= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0x1B4, buffer_u32);
 		shaderFlags			= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0x1B8, buffer_u32);
+		uvSetCoords			= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0x1BC, buffer_u32);
 		
 		// Generate Vertex Format
 		vertexFormat = decodeVertexFormat(vertexFormatFlags);
@@ -119,6 +132,34 @@ function BactaTankMaterial() constructor
 		//ConsoleLog($"	Shader Flags:  {materialShaderFlags}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0xB4 + 0x1B8);
 	}
 	
+	static inject = function(buffer, _model)
+	{
+		// Edit Material Data
+		buffer_poke(buffer, offset + 0x40,    buffer_u32, alphaBlend);
+		buffer_poke(buffer, offset + 0x54,    buffer_f32, colour[0]);
+		buffer_poke(buffer, offset + 0x58,    buffer_f32, colour[1]);
+		buffer_poke(buffer, offset + 0x5c,    buffer_f32, colour[2]);
+		buffer_poke(buffer, offset + 0x60,    buffer_f32, colour[3]);
+		buffer_poke(buffer, offset + 0x74,    buffer_s16, textureID);
+		buffer_poke(buffer, offset + 0xb4 + 0x04,    buffer_s32, textureID);
+		buffer_poke(buffer, offset + 0xb4 + 0x4c,    buffer_s32, normalID);
+		buffer_poke(buffer, offset + 0xb4 + 0x54,    buffer_s32, shineID);
+		buffer_poke(buffer, offset + 0xB4 + 0x6C,    buffer_u8,  floor(ambientTint[0] * 255));
+		buffer_poke(buffer, offset + 0xB4 + 0x6D,    buffer_u8,  floor(ambientTint[1] * 255));
+		buffer_poke(buffer, offset + 0xB4 + 0x6E,    buffer_u8,  floor(ambientTint[2] * 255));
+		buffer_poke(buffer, offset + 0xB4 + 0x6F,    buffer_u8,  floor(ambientTint[3] * 255));
+		buffer_poke(buffer, offset + 0xb4 + 0x1b8,   buffer_u32, shaderFlags);
+		
+		// NU20 First Material Colours
+		if (_model.version == BTModelVersion.pcghgNU20First)
+		{
+			buffer_poke(buffer, offset + 0xc8,    buffer_u8, floor(colour[0] * 255));
+			buffer_poke(buffer, offset + 0xc9,    buffer_u8, floor(colour[1] * 255));
+			buffer_poke(buffer, offset + 0xca,    buffer_u8, floor(colour[2] * 255));
+			buffer_poke(buffer, offset + 0xcb,    buffer_u8, floor(colour[3] * 255));
+		}
+	}
+	
 	#endregion
 	
 	#region Serialize / Deserialize
@@ -129,15 +170,12 @@ function BactaTankMaterial() constructor
 	
 	#region Export / Replace Material
 	
-	/// @func exportMaterial()
+	/// @func export()
 	/// @desc Export BactaTankMaterial
-	static exportMaterial = function(materialIndex, filepath)
+	static export = function( filepath)
 	{
 		// Create Export Buffer
 		var buffer = buffer_create(1, buffer_grow, 1);
-		
-		// Material
-		var material = self.materials[materialIndex];
 		
 		// Write Header
 		buffer_write(buffer, buffer_string, "BactaTankMaterial");
@@ -145,34 +183,34 @@ function BactaTankMaterial() constructor
 		buffer_write(buffer, buffer_f32, 0.1);
 		
 		// Write Blend Colour
-		buffer_write(buffer, buffer_f32, material.colour[0]);
-		buffer_write(buffer, buffer_f32, material.colour[1]);
-		buffer_write(buffer, buffer_f32, material.colour[2]);
-		buffer_write(buffer, buffer_f32, material.colour[3]);
+		buffer_write(buffer, buffer_f32, colour[0]);
+		buffer_write(buffer, buffer_f32, colour[1]);
+		buffer_write(buffer, buffer_f32, colour[2]);
+		buffer_write(buffer, buffer_f32, colour[3]);
 		
 		// Write Ambient Tint
-		buffer_write(buffer, buffer_f32, material.ambientTint[0]);
-		buffer_write(buffer, buffer_f32, material.ambientTint[1]);
-		buffer_write(buffer, buffer_f32, material.ambientTint[2]);
-		buffer_write(buffer, buffer_f32, material.ambientTint[3]);
+		buffer_write(buffer, buffer_f32, ambientTint[0]);
+		buffer_write(buffer, buffer_f32, ambientTint[1]);
+		buffer_write(buffer, buffer_f32, ambientTint[2]);
+		buffer_write(buffer, buffer_f32, ambientTint[3]);
 		
 		// Write Specular Exponent and Reflection Power
-		buffer_write(buffer, buffer_f32, material.specularExponent);
-		buffer_write(buffer, buffer_f32, material.reflectionPower);
+		buffer_write(buffer, buffer_f32, specularExponent);
+		buffer_write(buffer, buffer_f32, reflectionPower);
 		
 		// Write Other Attributes
-		buffer_write(buffer, buffer_u32, material.vertexFormat);
-		buffer_write(buffer, buffer_u32, material.alphaBlend);
-		buffer_write(buffer, buffer_u32, material.shaderFlags);
+		buffer_write(buffer, buffer_u32, 0x00); //vertexFormat);
+		buffer_write(buffer, buffer_u32, alphaBlend);
+		buffer_write(buffer, buffer_u32, shaderFlags);
 		
 		// Buffer Save
 		buffer_save(buffer, filepath);
 		buffer_delete(buffer);
 	}
 	
-	/// @func replaceMaterial()
+	/// @func replace()
 	/// @desc Replace BactaTankMaterial
-	static replaceMaterial = function(materialIndex, filepath, replaceVertexFormat = false)
+	static replace = function(filepath, replaceVertexFormat = false)
 	{
 		// Load Material Buffer
 		var buffer = buffer_load(filepath);
@@ -186,26 +224,26 @@ function BactaTankMaterial() constructor
 		if (version != 0.1) return;
 		
 		// Read Blend Colour
-		self.materials[materialIndex].colour[0] = buffer_read(buffer, buffer_f32);
-		self.materials[materialIndex].colour[1] = buffer_read(buffer, buffer_f32);
-		self.materials[materialIndex].colour[2] = buffer_read(buffer, buffer_f32);
-		self.materials[materialIndex].colour[3] = buffer_read(buffer, buffer_f32);
+		colour[0] = buffer_read(buffer, buffer_f32);
+		colour[1] = buffer_read(buffer, buffer_f32);
+		colour[2] = buffer_read(buffer, buffer_f32);
+		colour[3] = buffer_read(buffer, buffer_f32);
 		
 		// Read Ambient Tint
-		self.materials[materialIndex].ambientTint[0] = buffer_read(buffer, buffer_f32);
-		self.materials[materialIndex].ambientTint[1] = buffer_read(buffer, buffer_f32);
-		self.materials[materialIndex].ambientTint[2] = buffer_read(buffer, buffer_f32);
-		self.materials[materialIndex].ambientTint[3] = buffer_read(buffer, buffer_f32);
+		ambientTint[0] = buffer_read(buffer, buffer_f32);
+		ambientTint[1] = buffer_read(buffer, buffer_f32);
+		ambientTint[2] = buffer_read(buffer, buffer_f32);
+		ambientTint[3] = buffer_read(buffer, buffer_f32);
 		
 		// Read Specular Exponent and Reflection Power
-		self.materials[materialIndex].specularExponent = buffer_read(buffer, buffer_f32);
-		self.materials[materialIndex].reflectionPower = buffer_read(buffer, buffer_f32);
+		specularExponent = buffer_read(buffer, buffer_f32);
+		reflectionPower = buffer_read(buffer, buffer_f32);
 		
 		// Read Other Attributes
-		if (replaceVertexFormat) self.materials[materialIndex].vertexFormat = buffer_read(buffer, buffer_u32);
+		if (replaceVertexFormat) vertexFormat = buffer_read(buffer, buffer_u32);
 		else buffer_read(buffer, buffer_u32);
-		self.materials[materialIndex].alphaBlend = buffer_read(buffer, buffer_u32);
-		self.materials[materialIndex].shaderFlags = buffer_read(buffer, buffer_u32);
+		alphaBlend = buffer_read(buffer, buffer_u32);
+		shaderFlags = buffer_read(buffer, buffer_u32);
 		
 		// Delete Buffer
 		buffer_delete(buffer);
@@ -346,14 +384,14 @@ function BactaTankMaterial() constructor
 		// Colour Set 1
 		if (colourSet1 != 0)
 		{
-			array_push(arrayFormat, {attribute: BTVertexAttributes.colour, type: BTVertexAttributeTypes.byte4, position: offset});
+			array_push(arrayFormat, {attribute: BTVertexAttributes.colourSet1, type: BTVertexAttributeTypes.byte4, position: offset});
 			offset += 0x04;
 		}
 		
 		// Colour Set 2
 		if (colourSet2 != 0)
 		{
-			array_push(arrayFormat, {attribute: BTVertexAttributes.colour2, type: BTVertexAttributeTypes.byte4, position: offset});
+			array_push(arrayFormat, {attribute: BTVertexAttributes.colourSet2, type: BTVertexAttributeTypes.byte4, position: offset});
 			offset += 0x04;
 		}
 		
@@ -362,7 +400,7 @@ function BactaTankMaterial() constructor
 		{
 		    for(var i = 0; i < uvSetCount; i++)
 			{
-				array_push(arrayFormat, {attribute: BTVertexAttributes.uv, type: BTVertexAttributeTypes.float2, position: offset});
+				array_push(arrayFormat, {attribute: BTVertexAttributes.uvSet1 + i, type: BTVertexAttributeTypes.float2, position: offset});
 				offset += 0x08;
 		    }
 		}
@@ -370,7 +408,223 @@ function BactaTankMaterial() constructor
 		{
 		    for(var i = 0; i < halfFloatUVType; i++)
 			{
-				array_push(arrayFormat, {attribute: BTVertexAttributes.uv, type: BTVertexAttributeTypes.half2, position: offset});
+				array_push(arrayFormat, {attribute: BTVertexAttributes.uvSet1 + i, type: BTVertexAttributeTypes.half2, position: offset});
+				offset += 0x04;
+		    }
+		}
+		
+		// Blend Indices
+		if (blendIndicesType == 1)
+		{
+			array_push(arrayFormat, {attribute: BTVertexAttributes.blendWeights, type: BTVertexAttributeTypes.float2, position: offset});
+			offset += 0x08;
+		}
+		else if (blendIndicesType == 2)
+		{
+			array_push(arrayFormat, {attribute: BTVertexAttributes.blendWeights, type: BTVertexAttributeTypes.byte4, position: offset});
+			offset += 0x04;
+		}
+		
+		// Blend Weights
+		if (blendWeightsType == 1)
+		{
+			array_push(arrayFormat, {attribute: BTVertexAttributes.blendIndices, type: BTVertexAttributeTypes.float3, position: offset});
+			offset += 0x0c;
+		}
+		else if (blendWeightsType == 2)
+		{
+			array_push(arrayFormat, {attribute: BTVertexAttributes.blendIndices, type: BTVertexAttributeTypes.byte4, position: offset});
+			offset += 0x08;
+		}
+		
+		// Other
+		if (local_c != 0)
+		{
+			array_push(arrayFormat, {attribute: BTVertexAttributes.lightDirection, type: BTVertexAttributeTypes.byte4, position: offset});
+			array_push(arrayFormat, {attribute: BTVertexAttributes.bitangent, type: BTVertexAttributeTypes.byte4, position: offset});
+			offset += 0x08;
+		}
+		
+		return arrayFormat;
+	}
+	
+	/// @func decodeVertexFormat()
+	/// @desc Decode Vertex Format
+	static encodeVertexFormat = function()
+	{
+		// New Vertex Format
+		var _vertexFormat = 0;
+		
+		// Vertex Format Loop
+		for (var i = 0; i < array_length(vertexFormat); i++)
+		{
+			// Attribute
+			var attribute = vertexFormat[i];
+			
+			// Attribute Switch
+			switch (attribute.attribute)
+			{
+				case BTVertexAttributes.position:
+					// Do nothing here as position is there by default
+					break;
+				case BTVertexAttributes.normal:
+					break;
+					
+			}
+		}
+		
+		var normalType;
+		var uvSetCount;
+		var bitangentType;
+		var tangentType;
+		var blendIndicesType;
+		var blendWeightsType;
+		var halfFloatUVType;
+		var colourSet1;
+		var colourSet2;
+		var local_c;
+		var arrayFormat = [];
+		
+		// Get Normal Type (Float3 / Byte4)
+		if (((_vertexFormat & 8) == 0) && ((_vertexFormat & 0x880000) == 0))
+		{
+		    normalType = _vertexFormat >> 2 & 1;
+		}
+		else
+		{
+		    normalType = 2;
+		}
+		
+		// Get Tangent Type (Float3 / Byte4)
+		if (((_vertexFormat & 0x20) == 0) && ((_vertexFormat & 0x1000000) == 0))
+		{
+		    tangentType = _vertexFormat >> 4 & 1;
+		}
+		else
+		{
+		    tangentType = 2;
+		}
+		
+		// Get Bitangent Type (Float3 / Byte4)
+		if ((_vertexFormat < 0) || ((_vertexFormat & 0x2000000) != 0))
+		{
+		    bitangentType = 2;
+		}
+		else
+		{
+		    bitangentType = _vertexFormat >> 6 & 1;
+		}
+		
+		// Colour Flag
+		colourSet1 = _vertexFormat >> 8 & 1;
+		colourSet2 = _vertexFormat & 0x600;
+		
+		// Get UV Set Count
+		if ((_vertexFormat >> 0x1b & 1) == 0)
+		{
+		    uvSetCount = _vertexFormat >> 0xb & 7;
+		    halfFloatUVType = 0;
+		}
+		else
+		{
+		    uvSetCount = 0;
+		    halfFloatUVType = _vertexFormat >> 0xb & 7;
+		}
+		
+		// Get Blend Indices Type
+		if ((_vertexFormat & 0x8000) == 0)
+		{
+		    blendIndicesType = _vertexFormat >> 0xe & 1;
+		}
+		else
+		{
+		    blendIndicesType = 2;
+		}
+		
+		// Blend Weights Type
+		if ((_vertexFormat & 0x20000) == 0)
+		{
+		    blendWeightsType = _vertexFormat >> 0x10 & 1;
+		}
+		else
+		{
+		    blendWeightsType = 2;
+		}
+		
+		// Other Stuff
+		local_c = _vertexFormat >> 0x1a & 1;
+		//var local_4 = _vertexFormat >> 0x16 & 1;
+		
+		// Always Has Position
+		array_push(arrayFormat, {attribute: BTVertexAttributes.position, type: BTVertexAttributeTypes.float3, position: 0x00});
+		
+		// Begin Offset
+		var offset = 0x0c;
+		
+		// Normals
+		if (normalType == 1)
+		{
+			array_push(arrayFormat, {attribute: BTVertexAttributes.normal, type: BTVertexAttributeTypes.float3, position: offset});
+			offset += 0x0c;
+		}
+		else if (normalType == 2)
+		{
+			array_push(arrayFormat, {attribute: BTVertexAttributes.normal, type: BTVertexAttributeTypes.byte4, position: offset});
+			offset += 0x04;
+		}
+		
+		// Tangents
+		if (tangentType == 1)
+		{
+			array_push(arrayFormat, {attribute: BTVertexAttributes.tangent, type: BTVertexAttributeTypes.float3, position: offset});
+			offset += 0x0c;
+		}
+		else if (tangentType == 2)
+		{
+			array_push(arrayFormat, {attribute: BTVertexAttributes.tangent, type: BTVertexAttributeTypes.byte4, position: offset});
+			offset += 0x04;
+		}
+		
+		// Bitangents
+		if (bitangentType == 1)
+		{
+			array_push(arrayFormat, {attribute: BTVertexAttributes.bitangent, type: BTVertexAttributeTypes.float3, position: offset});
+			offset += 0x0c;
+		}
+		else if (bitangentType == 2)
+		{
+			array_push(arrayFormat, {attribute: BTVertexAttributes.bitangent, type: BTVertexAttributeTypes.byte4, position: offset});
+			offset += 0x04;
+		}
+		
+		// Colour Set 1
+		if (colourSet1 != 0)
+		{
+			array_push(arrayFormat, {attribute: BTVertexAttributes.colourSet1, type: BTVertexAttributeTypes.byte4, position: offset});
+			offset += 0x04;
+		}
+		
+		// Colour Set 2
+		if (colourSet2 != 0)
+		{
+			array_push(arrayFormat, {attribute: BTVertexAttributes.colourSet2, type: BTVertexAttributeTypes.byte4, position: offset});
+			offset += 0x04;
+		}
+		
+		// UV Sets
+		if(uvSetCount != 0)
+		{
+		    for(var i = 0; i < uvSetCount; i++)
+			{
+				array_push(arrayFormat, {attribute: BTVertexAttributes.uvSet1, type: BTVertexAttributeTypes.float2, position: offset});
+				offset += 0x08;
+		    }
+		}
+		else
+		{
+		    for(var i = 0; i < halfFloatUVType; i++)
+			{
+				array_push(arrayFormat, {attribute: BTVertexAttributes.uvSet2, type: BTVertexAttributeTypes.half2, position: offset});
 				offset += 0x08;
 		    }
 		}
@@ -378,24 +632,24 @@ function BactaTankMaterial() constructor
 		// Blend Indices
 		if (blendIndicesType == 1)
 		{
-			array_push(arrayFormat, {attribute: BTVertexAttributes.blendIndices, type: BTVertexAttributeTypes.float2, position: offset});
+			array_push(arrayFormat, {attribute: BTVertexAttributes.blendWeights, type: BTVertexAttributeTypes.float2, position: offset});
 			offset += 0x08;
 		}
 		else if (blendIndicesType == 2)
 		{
-			array_push(arrayFormat, {attribute: BTVertexAttributes.blendIndices, type: BTVertexAttributeTypes.byte4, position: offset});
+			array_push(arrayFormat, {attribute: BTVertexAttributes.blendWeights, type: BTVertexAttributeTypes.byte4, position: offset});
 			offset += 0x04;
 		}
 		
 		// Blend Weights
 		if (blendWeightsType == 1)
 		{
-			array_push(arrayFormat, {attribute: BTVertexAttributes.blendWeights, type: BTVertexAttributeTypes.float3, position: offset});
+			array_push(arrayFormat, {attribute: BTVertexAttributes.blendIndices, type: BTVertexAttributeTypes.float3, position: offset});
 			offset += 0x0c;
 		}
 		else if (blendWeightsType == 2)
 		{
-			array_push(arrayFormat, {attribute: BTVertexAttributes.blendWeights, type: BTVertexAttributeTypes.byte4, position: offset});
+			array_push(arrayFormat, {attribute: BTVertexAttributes.blendIndices, type: BTVertexAttributeTypes.byte4, position: offset});
 			offset += 0x08;
 		}
 		

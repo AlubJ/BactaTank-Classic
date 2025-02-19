@@ -13,7 +13,7 @@
 */
 
 // Global Version ([Major].[Minor][Patch][Revision])
-#macro VERSION 0.3013
+#macro VERSION 0.3016
 
 // Run From IDE
 #macro RUN_FROM_IDE parameter_count() == 3 && string_count("GMS2TEMP", parameter_string(2))
@@ -26,6 +26,7 @@
 #macro TEMP_DIRECTORY			cache_directory
 #macro CONFIG_DIRECTORY			game_save_id
 #macro ASSET_PACK_DIRECTORY		CONFIG_DIRECTORY + "assetpacks/"
+#macro SCRIPT_DIRECTORY			CONFIG_DIRECTORY + "scripts/"
 #macro WORKING_DIRECTORY		working_directory
 #macro LOG_DIRECTORY			game_save_id + "log/"
 
@@ -52,10 +53,23 @@ PRIMITIVES = {};
 #macro SETTINGS		global.settings
 #macro CONFIG		global.config
 #macro ASSET_PACKS	global.assetPacks
+#macro SCRIPTS		global.scripts
 #macro ABOUT		global.about
 #macro VERSIONS		global.versions
 #macro FILTERS		global.filters
 #macro CONTEXT		global.context
+
+// Scripting
+#macro TOOL_SCRIPTS		global.toolScripts
+TOOL_SCRIPTS = {  };
+#macro MATERIAL_SCRIPTS	global.materialScripts
+MATERIAL_SCRIPTS = {  };
+#macro MESH_SCRIPTS		global.meshScripts
+MESH_SCRIPTS = {  };
+
+// Scripting Helper
+#macro SCRIPT_BUFFERS	global.__scriptBuffers
+SCRIPT_BUFFERS = [  ];
 
 // Filters
 FILTERS = {
@@ -71,8 +85,9 @@ FILTERS = {
 	// Induvidual Model Attributes
 	texture: "DirectDraw Surface (*.dds)|*.dds",
 	material: "BactaTank Material (*.bmat)|*.bmat",
-	mesh: "BactaTank Mesh (*.btank)|*.btank",
+	mesh: "BactaTank Mesh (*.bmesh;*.btank)|*.bmesh;*.btank|BactaTank Mesh (*.bmesh)|*.bmesh|BactaTank Legacy Mesh (*.btank)|*.btank",
 	locator: "BactaTank Locator (*.bloc)|*.bloc",
+	armature: "BactaTank Armature (*.barm)|*.barm",
 };
 
 // Viewer

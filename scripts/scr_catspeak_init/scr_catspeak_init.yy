@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"scr_catspeak_init",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"scr_catspeak_init",
+  "parent":{
+    "name":"Catspeak",
+    "path":"folders/Vendors/Catspeak.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

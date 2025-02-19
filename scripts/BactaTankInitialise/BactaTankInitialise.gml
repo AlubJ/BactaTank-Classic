@@ -57,15 +57,18 @@ enum BTVertexAttributes
 	normal,
 	tangent,
 	bitangent,
-	colour,
-	colour2,
-	uv,
+	colourSet1,
+	colourSet2,
+	uvSet1,
+	uvSet2,
+	uvSet3,
+	uvSet4,
 	blendIndices,
 	blendWeights,
 	lightDirection,
 	lightColour,
 }
-global.__attributes = ["Position", "Normal", "Tangent", "BiTangent", "Colour", "Colour2", "UV", "BlendIndices", "BlendWeights", "LightDirection", "LightColour"];
+global.__attributes = ["Position", "Normal", "Tangent", "BiTangent", "ColourSet1", "ColourSet2", "UVSet1", "UVSet2", "UVSet3", "UVSet4", "BlendIndices", "BlendWeights", "LightDirection", "LightColour"];
 #macro BT_VERTEX_ATTRIBUTES global.__attributes
 
 // Model Vertex Attributes

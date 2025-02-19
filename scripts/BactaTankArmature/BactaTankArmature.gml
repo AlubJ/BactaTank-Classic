@@ -81,6 +81,46 @@ function BactaTankArmature() constructor
 	
 	
 	#endregion
+	
+	#region Export
+	
+	static export = function(filepath)
+	{
+		// Create buffer
+		var buffer = buffer_create(1, buffer_grow, 1);
+		
+		// Header
+		buffer_write(buffer, buffer_string, "BactaTankArmature");
+		buffer_write(buffer, buffer_string, "PCGHG");
+		buffer_write(buffer, buffer_f32, 0.4);
+		
+		// Write Bones
+		buffer_write(buffer, buffer_string, "Bones");
+		
+		// Bone Count
+		buffer_write(buffer, buffer_s32, array_length(bones));
+		
+		// Write All Bones
+		for (var i = 0; i < array_length(bones); i++)
+		{
+			// Write Bone Name
+			buffer_write(buffer, buffer_string, bones[i].name);
+			
+			// Write Bone Parent
+			buffer_write(buffer, buffer_s32, bones[i].parent);
+			
+			// Write Bone Matrix
+			for (var m = 0; m < 16; m++) buffer_write(buffer, buffer_f32, bones[i].matrix[m]);
+		}
+		
+		// Save Buffer
+		buffer_save(buffer, filepath);
+		
+		// Delete Buffer
+		buffer_delete(buffer);
+	}
+	
+	#endregion
 }
 
 function BactaTankBone() constructor

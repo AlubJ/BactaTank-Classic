@@ -60,7 +60,8 @@ void main()
     
 	// Local
     vNormal = in_Normal;
-    vColour = in_Colour0;
+    vColour = clamp(vec4(in_Colour0.r, in_Colour0.g, in_Colour0.b, in_Colour0.a) * 2.0, 0.0, 1.0);
+	vColour = vec4(1.0);
     vTexcoord = in_TextureCoord0;
 	
 	// World

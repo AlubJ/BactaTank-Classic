@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"BactaTankBMesh",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"BactaTankBMesh",
+  "parent":{
+    "name":"BactaTankMesh",
+    "path":"folders/BactaTank/BactaTankMesh.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

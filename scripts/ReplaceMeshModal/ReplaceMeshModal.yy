@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"ReplaceMeshModal",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"ReplaceMeshModal",
+  "parent":{
+    "name":"ModelEditPanel",
+    "path":"folders/Environment/Modals/Panels/ModelEditPanel.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

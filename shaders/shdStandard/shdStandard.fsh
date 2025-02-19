@@ -352,9 +352,9 @@ void main()
 	float reflectionStrength = uReflectionStrength;
 	
 	// Base Colour
-	vec4 baseColour;
-	if (uUseDiffuseMap) baseColour = texture2D(gm_BaseTexture, vTexcoord);
-	else baseColour = uBlendColour;
+	vec4 baseColour = vColour;
+	if (uUseDiffuseMap) baseColour = texture2D(gm_BaseTexture, vTexcoord) * vColour;
+	else baseColour = uBlendColour * vColour;
 	
 	// Normal Map
 	vec3 normal;
