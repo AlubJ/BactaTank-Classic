@@ -31,7 +31,7 @@ function BactaTankLayer() constructor
 		offset = tempOffset - _model.nu20Offset
 		
 		// Log
-		//ConsoleLog($"Layer {i}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer));
+		ConsoleLog($"Layer {_index}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer));
 			
 		// Goto layer name
 		buffer_seek(buffer, buffer_seek_relative, buffer_read(buffer, buffer_s32)-4);
@@ -42,7 +42,7 @@ function BactaTankLayer() constructor
 		// If No Layer Name, Default To "TT[i]_None"
 		if (name == "") name = "TT" + string(_index) + "_None";
 			
-		//ConsoleLog($"	Name: {layerName}", CONSOLE_MODEL_LOADER_DEBUG, offset);
+		ConsoleLog($" Name: {name}", CONSOLE_MODEL_LOADER_DEBUG, offset);
 		
 		// Mesh Index
 		var mesh = 0;
@@ -56,7 +56,7 @@ function BactaTankLayer() constructor
 			buffer_seek(buffer, buffer_seek_relative, layerStatic1 - 4);
 			
 			// Debug
-			//ConsoleLog($"		Layer Static:", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer));
+			ConsoleLog($"    Layer Static:", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer));
 			
 			// Bones
 			for (var j = 0; j < array_length(_model.bones); j++)
@@ -132,7 +132,7 @@ function BactaTankLayer() constructor
 			buffer_seek(buffer, buffer_seek_relative, specialObjectPointer-4);
 			
 			// Debug Output
-			//ConsoleLog($"		Layer Skinned:", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer));
+			ConsoleLog($"    Layer Skinned:", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer));
 			
 			// Special Object Offset
 			var specialObjectOffset = buffer_tell(buffer) - _model.nu20Offset;
@@ -190,7 +190,7 @@ function BactaTankLayer() constructor
 			buffer_seek(buffer, buffer_seek_relative, layerStatic2-4);
 			
 			// Debug
-			//ConsoleLog($"		Layer Static:", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer));
+			ConsoleLog($"    Layer Static:", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer));
 			
 			// Bones
 			for (var j = 0; j < array_length(_model.bones); j++)
@@ -266,7 +266,7 @@ function BactaTankLayer() constructor
 			buffer_seek(buffer, buffer_seek_relative, specialObjectPointer - 4);
 			
 			// Debug Output
-			//ConsoleLog($"		Layer Skinned:", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer));
+			ConsoleLog($"    Layer Skinned:", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer));
 			
 			// Special Object Offset
 			var specialObjectOffset = buffer_tell(buffer) - _model.nu20Offset;

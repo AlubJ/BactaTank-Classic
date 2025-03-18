@@ -61,9 +61,10 @@ function CalicoCanvas() constructor
 		var bounds = [xx, yy, xx + width, yy + height];
 		if (CURSOR_POSITION[0] > bounds[0] && CURSOR_POSITION[0] < bounds[2] && CURSOR_POSITION[1] > bounds[1] && CURSOR_POSITION[1] < bounds[3])
 		{
-			if ((device_mouse_check_button_pressed(0, mb_left) || device_mouse_check_button_pressed(0, mb_right)) || device_mouse_check_button(0, mb_middle) && !active)
+			if (device_mouse_check_button_pressed(0, mb_right) || device_mouse_check_button(0, mb_middle) && !active)
 			{
 				active = true;
+				window_set_cursor(device_mouse_check_button(0, mb_middle) ? cr_size_ns : cr_size_all);
 			}
 			
 			if (mouse_wheel_up())
@@ -82,7 +83,7 @@ function CalicoCanvas() constructor
 			positionX += window_mouse_get_delta_x();
 			positionY += window_mouse_get_delta_y();
 		}
-		if (device_mouse_check_button(0, mb_middle) && active)
+		else if (device_mouse_check_button(0, mb_middle) && active)
 		{
 			zoom -= window_mouse_get_delta_y() * 0.005;
 		}
@@ -90,6 +91,7 @@ function CalicoCanvas() constructor
 		if ((device_mouse_check_button_released(0, mb_left) || device_mouse_check_button_released(0, mb_right)) || device_mouse_check_button_released(0, mb_middle) && active)
 		{
 			active = false;
+			window_set_cursor(cr_default);
 		}
 		
 		zoom = clamp(zoom, 0.25, 10);

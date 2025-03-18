@@ -446,7 +446,7 @@ function ImGui() constructor {
 		ImGui.Text("");
 		ImGui.SameLine(space);
 		ImGui.PushItemWidth(-2);
-		var ret = ImGui.DragFloat(label, (val != NULL) ? val : NaN, v_speed, v_min, v_max, format, flags);
+		var ret = ImGui.SliderFloat(label, (val != NULL) ? val : NaN, v_min, v_max, format, flags);
 		if (ret == NaN) ret = NULL;
 		ImGui.SetCursorPosY(ypos + 2);
 		ImGui.Text(title);

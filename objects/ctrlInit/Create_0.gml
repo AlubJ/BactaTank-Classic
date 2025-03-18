@@ -128,18 +128,22 @@ loadTemplates();
 // Initialize Scripting
 BactaTankExternInit();
 
-// Load All Scripts
-var file = file_find_first(SCRIPT_DIRECTORY + "*.bscript", fa_none);
-
-while (file != "")
-{
-	var buffer = buffer_load(SCRIPT_DIRECTORY + file);
-	catspeak_compile(buffer, true);
-	ConsoleLog($"Script {file} Loaded");
-    file = file_find_next();
+// Scripting Enabled
+if (SETTINGS.enableScripting)
+	{
+	// Load All Scripts
+	var file = file_find_first(SCRIPT_DIRECTORY + "*.bscript", fa_none);
+	
+	while (file != "")
+	{
+		var buffer = buffer_load(SCRIPT_DIRECTORY + file);
+		catspeak_compile(buffer, true);
+		ConsoleLog($"Script {file} Loaded");
+	    file = file_find_next();
+	}
+	
+	file_find_close();
 }
-
-file_find_close();
 
 #endregion
 

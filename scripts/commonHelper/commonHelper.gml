@@ -76,9 +76,6 @@ function openProjectOrModel(file)
 			PROJECT.currentModel = model;
 			model.pushToRenderQueue(array_create(array_length(model.layers), true));
 			
-			// Test
-			exportArmature(model, "test.arm");
-			
 			// Reset Camera
 			RENDERER.camera.lookDistance = 0.6;
 			RENDERER.camera.lookPitch = -20;
@@ -437,7 +434,7 @@ function uiReplaceLocator(model, index)
 function uiExportArmature(model)
 {
 	// Get Save File Name For Armature
-	var file = get_save_filename_ext(FILTERS.armature, $"armature.barm", SETTINGS.lastArmaturePath, "Export Locator");
+	var file = get_save_filename_ext(FILTERS.armature, $"armature.barm", SETTINGS.lastArmaturePath, "Export Armature");
 	if (file != "" && ord(file) != 0)
 	{
 		// User Feedback
@@ -616,7 +613,7 @@ function newSettings()
 		showAssignedMeshes: true,
 		
 		// Console
-		consoleEnabled: true,
+		consoleEnabled: false,
 		verboseOutput: false,
 	}
 }

@@ -33,14 +33,19 @@ function BactaTankTexture() constructor
 	
 	#region Parse / Inject
 	
-	static parseMetadata = function(buffer, _model)
+	static parseMetadata = function(buffer, _index, _model)
 	{
 		// Texture Metadata
 		offset = buffer_tell(buffer) - _model.nu20Offset;
 		
+		// Log
+		ConsoleLog($"Texture {_index}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer));
+		
 		// Texture Dimensions
 		width = buffer_read(buffer, buffer_u32);
+		ConsoleLog($"    Width:        {width}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) - 4);
 		height = buffer_read(buffer, buffer_u32);
+		ConsoleLog($"    Height:       {height}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) - 4);
 			
 		// NU20 Last MetaData
 		if (_model.version == BTModelVersion.pcghgNU20First)
@@ -48,20 +53,20 @@ function BactaTankTexture() constructor
 			// Seek to cubemap
 			buffer_seek(buffer, buffer_seek_relative, 0x2c);
 			cubemap = buffer_read(buffer, buffer_u32);
+			ConsoleLog($"    Is Cubemap:    {cubemap > 0 ? "True" : "False"}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) - 4);
 			
 			// Read DXT Compression
 			compression = buffer_read(buffer, buffer_u32);
+			ConsoleLog($"    Compression:   {BT_DXT_COMPRESSION[compression]}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) - 4);
 				
 			// Seek to size
 			buffer_seek(buffer, buffer_seek_relative, 0x08);
 			size = buffer_read(buffer, buffer_u32);
+			ConsoleLog($"    Size:          {size}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) - 4);
 		}
-		
-		// Log
-		//ConsoleLog($"Texture {i} Meta Data: Width: {textureWidth}  Height: {textureHeight}  Size: {textureSize}", CONSOLE_MODEL_LOADER_DEBUG, textureOffset + self.nu20Offset);
 	}
 	
-	static parse = function(buffer, _model)
+	static parse = function(buffer, _index, _model)
 	{
 		// PCGHG Last
 		if (_model.version == BTModelVersion.pcghgNU20Last)
@@ -70,10 +75,13 @@ function BactaTankTexture() constructor
 			width = buffer_read(buffer, buffer_s32);
 			height = buffer_read(buffer, buffer_s32);
 			mipmapCount = buffer_read(buffer, buffer_s32);
+			ConsoleLog($"    Mipmaps:       {mipmapCount}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) - 4);
 			var unknown = buffer_read(buffer, buffer_s32);
 			var unknown = buffer_read(buffer, buffer_s32);
 			size = buffer_read(buffer, buffer_u32);
+			ConsoleLog($"    Size:          {size}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) - 4);
 			compression = array_get_index(BT_DXT_COMPRESSION, buffer_peek(buffer, buffer_tell(buffer) + 0x54, buffer_string));
+			ConsoleLog($"    Compression:   {BT_DXT_COMPRESSION[compression]}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0x54);
 			if (width < 0) width = -width;
 		}
 		
@@ -89,9 +97,8 @@ function BactaTankTexture() constructor
 		// Convert DDS to PNG
 		if (!file_exists(TEMP_DIRECTORY + @"\_textures\" + name + ".png"))
 		{
-			var timer = current_time;
+			ConsoleLog($"    Decoding DDS Texture", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) - 4);
 			sprite = ddsLoad(data);
-			ConsoleLog($"Texture took {(current_time - timer) / 1000}ms to decode");
 			sprite_save(sprite, 0, TEMP_DIRECTORY + @"\_textures\" + name + ".png");
 		}
 		else

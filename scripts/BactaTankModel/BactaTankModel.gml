@@ -28,8 +28,6 @@ function BactaTankModel(model = -1) constructor
 		{
 			if (filename_ext(string_lower(model)) == ".ghg" || filename_ext(string_lower(model)) == ".gsc") loadGHG(model);
 			else if (filename_ext(string_lower(model)) == ".bcanister") loadCanister(model);
-			
-			draw_texture_flush();
 		}
 		catch (exception)
 		{
@@ -163,12 +161,22 @@ function BactaTankModel(model = -1) constructor
 		
 		// Delete Buffer
 		buffer_delete(buffer);
+		
+		// Log
+		ConsoleLog($"Successfully Loaded \"{model}\"", CONSOLE_MODEL_LOADER);
 	}
 	
 	/// @func saveGHG()
 	/// @desc Save Model to GHG file
 	static saveGHG = function(filepath)
 	{
+		// Log
+		ConsoleLog($"Attempting To Save \"{filepath}\"", CONSOLE_MODEL_SAVER);
+		
+		// Log
+		ConsoleLog($"Version: {BT_MODEL_VERSION[self.version]}", CONSOLE_MODEL_SAVER);
+		ConsoleLog($"Type: {BT_MODEL_TYPE[self.type]}", CONSOLE_MODEL_SAVER);
+		
 		// Create Buffer
 		var buffer = buffer_create(1, buffer_grow, 1);
 		
@@ -184,12 +192,20 @@ function BactaTankModel(model = -1) constructor
 		// Write NU20 if NU20 First
 		if (self.version == BTModelVersion.pcghgNU20First)
 		{
+			// Log
+			ConsoleLog($"Writing NU20", CONSOLE_MODEL_SAVER);
+			
 			buffer_copy(self.data, 0, preNU20Size, buffer, 0);
 			buffer_seek(buffer, buffer_seek_relative, preNU20Size);
 		}
 		
-		// Write Textures
+		// Pre-NU20 Size
 		buffer_write(buffer, buffer_u32, 0); // Pre-NU20 Size
+		
+		// Log
+		ConsoleLog($"Writing {array_length(self.textures)} Textures", CONSOLE_MODEL_SAVER);
+		
+		// Write Textures
 		if (self.version == BTModelVersion.pcghgNU20Last) buffer_write(buffer, buffer_u16, array_length(self.textures)); // Texture Count
 		
 		for (var i = 0; i < array_length(self.textures); i++)
@@ -222,6 +238,9 @@ function BactaTankModel(model = -1) constructor
 			buffer_seek(buffer, buffer_seek_relative, texture.size);
 		}
 		
+		// Log
+		ConsoleLog($"Writing {array_length(buffers[0])} Vertex Buffers", CONSOLE_MODEL_SAVER);
+		
 		// Write Vertex Buffers
 		buffer_write(buffer, buffer_u16, array_length(buffers[0]));
 	
@@ -231,6 +250,9 @@ function BactaTankModel(model = -1) constructor
 			buffer_copy(buffers[0][i], 0, buffer_get_size(buffers[0][i]), buffer, buffer_tell(buffer));
 			buffer_seek(buffer, buffer_seek_relative, buffer_get_size(buffers[0][i]));
 		}
+		
+		// Log
+		ConsoleLog($"Writing {array_length(buffers[1])} Index Buffers", CONSOLE_MODEL_SAVER);
 		
 		// Write Index Buffers
 		buffer_write(buffer, buffer_u16, array_length(buffers[1]));
@@ -248,6 +270,9 @@ function BactaTankModel(model = -1) constructor
 		// Pre-NU20Size
 		if (self.version == BTModelVersion.pcghgNU20Last)
 		{
+			// Log
+			ConsoleLog($"Writing NU20", CONSOLE_MODEL_SAVER);
+			
 			buffer_poke(buffer, 0, buffer_u32, buffer_tell(buffer) - 4);
 			self.nu20Offset = buffer_tell(buffer);
 			buffer_copy(self.data, 0, preNU20Size, buffer, buffer_tell(buffer));
@@ -265,6 +290,9 @@ function BactaTankModel(model = -1) constructor
 		buffer_delete(buffer);
 		for (var i = 0; i < array_length(buffers[0]); i++) buffer_delete(buffers[0][i]);
 		for (var i = 0; i < array_length(buffers[1]); i++) buffer_delete(buffers[1][i]);
+		
+		// Log
+		ConsoleLog($"Successfully Saved \"{filepath}\"", CONSOLE_MODEL_SAVER);
 	}
 	
 	#region Loader Functions
@@ -293,7 +321,7 @@ function BactaTankModel(model = -1) constructor
 			self.textures[i] = new BactaTankTexture();
 			
 			// Parse Texture Data
-			self.textures[i].parseMetadata(buffer, self);
+			self.textures[i].parseMetadata(buffer, i, self);
 			
 			// Increase Current Texture Index
 			if (self.textures[i].width == 0)
@@ -362,7 +390,7 @@ function BactaTankModel(model = -1) constructor
 			self.meshes[i] = new BactaTankMesh();
 			
 			// Parse Mesh Data
-			self.meshes[i].parse(buffer, self);
+			self.meshes[i].parse(buffer, i, self);
 			
 			// Seek back to start
 			buffer_seek(buffer, buffer_seek_start, tempOffset);
@@ -572,7 +600,7 @@ function BactaTankModel(model = -1) constructor
 		for (var i = 0; i < array_length(self.textures); i++)
 		{
 			ConsoleLog($"Texture {i}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer));
-			if (self.textures[i] != 0) self.textures[i].parse(buffer, self);
+			if (self.textures[i] != 0) self.textures[i].parse(buffer, i, self);
 		}
 	}
 	
@@ -592,7 +620,7 @@ function BactaTankModel(model = -1) constructor
 			
 			// Buffer Size
 			var bufferSize = buffer_read(buffer, buffer_u32);
-			ConsoleLog($"	Size: 0x{bufferSize}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) - 4);
+			ConsoleLog($"    Size: 0x{bufferSize}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) - 4);
 			
 			// Copy Buffer into new buffer
 			self.offsets.vertexBuffer[i] = buffer_tell(buffer);
@@ -613,7 +641,7 @@ function BactaTankModel(model = -1) constructor
 			
 			// Buffer Size
 			var bufferSize = buffer_read(buffer, buffer_u32);
-			ConsoleLog($"	Size: 0x{bufferSize}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) - 4);
+			ConsoleLog($"    Size: 0x{bufferSize}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) - 4);
 			
 			// Copy Buffer into new buffer
 			self.offsets.indexBuffer[i] = buffer_tell(buffer);
@@ -703,6 +731,9 @@ function BactaTankModel(model = -1) constructor
 	/// @desc Build Vertex and Index Buffers
 	static buildBuffers = function()
 	{
+		// Log
+		ConsoleLog($"Building Buffers", CONSOLE_MODEL_SAVER);
+		
 		// Create New Buffers
 		var writeVertexBuffers = [];
 		var writeIndexBuffers = [];
@@ -748,6 +779,9 @@ function BactaTankModel(model = -1) constructor
 			buffer_delete(indexBuffer);
 		}
 		
+		// Log
+		ConsoleLog($"Successfully built {array_length(writeVertexBuffers)} vertex buffers and {array_length(writeIndexBuffers)} index buffers from {array_length(self.meshes)} meshes", CONSOLE_MODEL_SAVER);
+		
 		// Return Buffers
 		return [writeVertexBuffers, writeIndexBuffers];
 	}
@@ -756,6 +790,12 @@ function BactaTankModel(model = -1) constructor
 	/// @desc Modify NU20
 	static modifyNU20 = function()
 	{
+		// Log
+		ConsoleLog($"Injecting into NU20", CONSOLE_MODEL_SAVER);
+		
+		// Log
+		ConsoleLog($"Injecting {array_length(self.textures)} Textures", CONSOLE_MODEL_SAVER);
+		
 		// Edit NU20
 		for (var i = 0; i < array_length(self.textures); i++)
 		{
@@ -763,12 +803,16 @@ function BactaTankModel(model = -1) constructor
 			if (self.textures[i] != 0) self.textures[i].inject(self.data, self);
 		}
 		
+		// Log
+		ConsoleLog($"Injecting {array_length(self.materials)} Materials", CONSOLE_MODEL_SAVER);
 		for (var i = 0; i < array_length(self.materials); i++)
 		{
 			// Inject Material
 			self.materials[i].inject(self.data, self);
 		}
 		
+		// Log
+		ConsoleLog($"Injecting {array_length(self.meshes)} Meshes", CONSOLE_MODEL_SAVER);
 		for (var i = 0; i < array_length(self.meshes); i++)
 		{
 			// Inject Mesh
@@ -778,12 +822,18 @@ function BactaTankModel(model = -1) constructor
 		// Model Specific Things
 		if (self.type == BTModelType.model)
 		{
+			// Log
+			ConsoleLog($"Injecting {array_length(self.locatorData)} Locators", CONSOLE_MODEL_SAVER);
+			
 			// Edit Locators
 			for (var i = 0; i < array_length(self.locatorData); i++)
 			{
 				// Inject Locators
 				self.locatorData[i].inject(self.data);
 			}
+			
+			// Log
+			ConsoleLog($"Injecting {array_length(self.layers)} Layers", CONSOLE_MODEL_SAVER);
 			
 			// Loop Through Layers
 			for (var l = 0; l < array_length(self.layers); l++)

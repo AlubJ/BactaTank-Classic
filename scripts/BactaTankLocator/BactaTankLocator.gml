@@ -52,11 +52,11 @@ function BactaTankLocator() constructor
 		buffer_seek(buffer, buffer_seek_relative, 0x08);
 		
 		// Log
-		//var offset = locatorOffset + self.nu20Offset;
-		//ConsoleLog($"Locator {i}", CONSOLE_MODEL_LOADER_DEBUG, offset);
-		//ConsoleLog($"	Matrix: {locatorMatrix}", CONSOLE_MODEL_LOADER_DEBUG, offset);
-		//ConsoleLog($"	Name:   {locatorName}", CONSOLE_MODEL_LOADER_DEBUG, offset + 0x40);
-		//ConsoleLog($"	Parent: {locatorParent}", CONSOLE_MODEL_LOADER_DEBUG, offset + 0x44);
+		var dOffset = offset + _model.nu20Offset;
+		ConsoleLog($"Locator {_index}", CONSOLE_MODEL_LOADER_DEBUG, dOffset);
+		ConsoleLog($"    Matrix: {matrix}", CONSOLE_MODEL_LOADER_DEBUG, dOffset);
+		ConsoleLog($"    Name:   {name}", CONSOLE_MODEL_LOADER_DEBUG, dOffset + 0x40);
+		ConsoleLog($"    Parent: {parent}", CONSOLE_MODEL_LOADER_DEBUG, dOffset + 0x44);
 	}
 	
 	static inject = function(buffer)

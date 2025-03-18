@@ -57,56 +57,80 @@ function BactaTankMaterial() constructor
 		offset = buffer_tell(buffer) - _model.nu20Offset;
 		
 		// Read Material Things
-		// var materialIndex	= buffer_peek(buffer, buffer_tell(buffer) + 0x38, buffer_u32);
+		var materialIndex	= buffer_peek(buffer, buffer_tell(buffer) + 0x38, buffer_u32);
+		
+		// Log
+		ConsoleLog($"Material {materialIndex}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer));
 		
 		// Alpha Blend
 		alphaBlend			= buffer_peek(buffer, buffer_tell(buffer) + 0x40, buffer_u32);
+		ConsoleLog($"    Alpha Blend:          {alphaBlend}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0x40);
 		
 		// Blend Colour
 		colour[0]			= buffer_peek(buffer, buffer_tell(buffer) + 0x54, buffer_f32);
 		colour[1]			= buffer_peek(buffer, buffer_tell(buffer) + 0x58, buffer_f32);
 		colour[2]			= buffer_peek(buffer, buffer_tell(buffer) + 0x5C, buffer_f32);
 		colour[3]			= buffer_peek(buffer, buffer_tell(buffer) + 0x60, buffer_f32);
+		ConsoleLog($"    Blend Colour:          {colour}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0x54);
 		
 		// Texture ID
 		textureID			= buffer_peek(buffer, buffer_tell(buffer) + 0x74, buffer_s16);
+		ConsoleLog($"    Texture Index:         {textureID}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0x74);
 		
 		// Texture Flags
 		textureFlags		= buffer_peek(buffer, buffer_tell(buffer) + 0xB4, buffer_u32);
+		ConsoleLog($"    Texture Flags:         {textureFlags}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0xB4);
 		
 		// Textures
 		specularID			= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0x48, buffer_s32);
+		ConsoleLog($"    Specular Index:        {specularID}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0xB4 + 0x48);
 		normalID			= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0x4C, buffer_s32);
+		ConsoleLog($"    Normal Index:          {normalID}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0xB4 + 0x4C);
 		cubemapID			= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0x50, buffer_s32);
+		ConsoleLog($"    Cubemap Index:         {cubemapID}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0xB4 + 0x50);
 		shineID				= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0x54, buffer_s32);
+		ConsoleLog($"    Shine Index:           {shineID}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0xB4 + 0x54);
 		
 		// Ambient Tint
 		ambientTint[0]		= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0x6C, buffer_u8) / 255;
 		ambientTint[1]		= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0x6D, buffer_u8) / 255;
 		ambientTint[2]		= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0x6E, buffer_u8) / 255;
 		ambientTint[3]		= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0x6F, buffer_u8) / 255;
+		ConsoleLog($"    Ambient Tint:          {ambientTint}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0xB4 + 0x6C);
 		
 		// Reflection / Specular
 		reflectionPower		= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0x78, buffer_f32);
+		ConsoleLog($"    Reflection Power:      {reflectionPower}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0xB4 + 0x78);
 		specularExponent	= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0x7C, buffer_f32);
+		ConsoleLog($"    Specular Exponent:     {specularExponent}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0xB4 + 0x7C);
 		
 		// Fresnel
 		fresnelMultiplier	= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0x90, buffer_f32);
+		ConsoleLog($"    Fresnel Multiplier:    {fresnelMultiplier}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0xB4 + 0x90);
 		fresnelCoeff		= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0x94, buffer_f32);
+		ConsoleLog($"    Fresnel Coeff:         {fresnelCoeff}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0xB4 + 0x94);
 		
 		// Define UV Sets
 		surfaceUVMapIndex	= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0xA9, buffer_u8);
+		ConsoleLog($"    Surface UV Index:      {surfaceUVMapIndex}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0xB4 + 0xA9);
 		specularUVMapIndex	= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0xAA, buffer_u8);
+		ConsoleLog($"    Specular UV Index:     {specularUVMapIndex}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0xB4 + 0xAA);
 		normalUVMapIndex	= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0xAB, buffer_u8);
+		ConsoleLog($"    Normal UV Index:       {normalUVMapIndex}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0xB4 + 0xAB);
 		
 		// Other Bitfields
 		vertexFormatFlags	= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0x13C, buffer_u32);
+		ConsoleLog($"    Vertex Format:         {vertexFormatFlags}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0xB4 + 0x13C);
 		inputFlags			= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0x1B4, buffer_u32);
+		ConsoleLog($"    Input Flags:           {inputFlags}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0xB4 + 0x1B4);
 		shaderFlags			= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0x1B8, buffer_u32);
+		ConsoleLog($"    Shader Flags:          {shaderFlags}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0xB4 + 0x1B8);
 		uvSetCoords			= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0x1BC, buffer_u32);
+		ConsoleLog($"    UV Set Coords:         {uvSetCoords}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0xB4 + 0x1BC);
 		
 		// Generate Vertex Format
 		vertexFormat = decodeVertexFormat(vertexFormatFlags);
+		ConsoleLog($"    Decoded Vertex Format: {vertexFormat}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0xB4 + 0x13C);
 		
 		// NU20 Last Colour Values
 		if (_model.version == BTModelVersion.pcghgNU20First)
@@ -115,21 +139,8 @@ function BactaTankMaterial() constructor
 			colour[1]		= buffer_peek(buffer, buffer_tell(buffer) + 0xC9, buffer_u8) / 255;
 			colour[2]		= buffer_peek(buffer, buffer_tell(buffer) + 0xCA, buffer_u8) / 255;
 			colour[3]		= buffer_peek(buffer, buffer_tell(buffer) + 0xCB, buffer_u8) / 255;
+			ConsoleLog($"    Alternate Colour:       {colour}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0xB4 + 0xC8);
 		}
-		
-		// Log
-		//ConsoleLog($"Material {i}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer));
-		//ConsoleLog($"	Alpha Blend:   {materialAlphaBlend}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0x40);
-		//ConsoleLog($"	Colour[f32*4]: [{materialColourRed}, {materialColourGreen}, {materialColourBlue}, {materialColourAlpha}]", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0x54);
-		//if (self.version == BTModelVersion.pcghgNU20First)
-		//	ConsoleLog($"	Colour[u8*4]:  [{round(materialColourRed * 255)}, {round(materialColourGreen * 255)}, {round(materialColourBlue * 255)}, {round(materialColourAlpha * 255)}]", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0xC8);
-		//ConsoleLog($"	Texture ID:    {materialTextureID}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0x74);
-		//ConsoleLog($"	Specular ID:   {materialSpecularID}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0xB4 + 0x48);
-		//ConsoleLog($"	Normal ID:     {materialNormalID}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0xB4 + 0x4C);
-		//ConsoleLog($"	Cubemap ID:    {materialCubemapID}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0xB4 + 0x50);
-		//ConsoleLog($"	Shine ID:      {materialShineID}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0xB4 + 0x54);
-		//ConsoleLog($"	Vertex Format: {materialVertexFormat}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0xB4 + 0x13C);
-		//ConsoleLog($"	Shader Flags:  {materialShaderFlags}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0xB4 + 0x1B8);
 	}
 	
 	static inject = function(buffer, _model)

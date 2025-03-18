@@ -87,7 +87,7 @@ function ModelEditorMenuBar() constructor
 			if (ImGui.MenuItem("Export Model From Preview")) uiExportModelFromPreview(PROJECT.currentModel, ENVIRONMENT.displayLayers);
 			
 			// Tools Menu
-			if (ImGui.BeginMenu("Tools"))
+			if (array_length(TOOL_SCRIPTS) > 0 && ImGui.BeginMenu("Tools"))
 			{
 				// Loop Tools
 				var names = variable_struct_get_names(TOOL_SCRIPTS);

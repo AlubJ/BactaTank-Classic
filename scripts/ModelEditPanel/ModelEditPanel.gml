@@ -298,10 +298,10 @@ function ModelEditPanel() constructor
 			ImGui.Separator();
 			
 			// Specular Exponent
-			ImGui.InputTextCustom("Specular Exponent", material.specularExponent, "##hiddenMaterialSpecularExponent", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly);
+			material.specularExponent = ImGui.DragFloatCustom("Specular Exponent", material.specularExponent, "##hiddenMaterialSpecularExponent", 1, 0, 30, space, NO_DEFAULT);
 			
 			// Reflection Power
-			ImGui.InputTextCustom("Reflection Power", material.reflectionPower, "##hiddenMaterialReflectionPower", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly);
+			material.reflectionPower = ImGui.DragFloatCustom("Reflection Power", material.reflectionPower, "##hiddenMaterialReflectionPower", 1, 0, 1, space, NO_DEFAULT);
 			
 			// Surface & Lighting Text
 			ImGui.Spacing();
@@ -629,24 +629,21 @@ function ModelEditPanel() constructor
 				mesh.bones[i] = bone - 1;
 			}
 			
-			//// Dynamic Buffers
-			//ImGui.Spacing();
-			//ImGui.Text("Dynamic Buffers");
-			
-			//// Separator
-			//ImGui.Separator();
-			
-			//// Dynamic Buffers List
-			//if (ImGui.BeginChild("DynamicBufferList", 0, 100))
-			//{
-			//	for (var i = 0; i < array_length(dynamicBuffers); i++)
-			//	{
-			//		if (ImGui.Selectable($"##hidden{dynamicBuffers[i]}", ENVIRONMENT.dynamicBufferIndex + 1 == i)) ENVIRONMENT.dynamicBufferIndex = i - 1;
-			//		ImGui.SameLine(16);
-			//		ImGui.Text(dynamicBuffers[i]);
-			//	}
-			//	ImGui.EndChild();
-			//}
+			// Dynamic Buffers
+			if (array_length(mesh.dynamicBuffers) > 0)
+			{
+				ImGui.Spacing();
+				ImGui.Text("Dynamic Buffers");
+				
+				// Separator
+				ImGui.Separator();
+				for (var i = 0; i < array_length(dynamicBuffers); i++)
+				{
+					ImGui.Selectable($"##hidden{dynamicBuffers[i]}", false);
+					ImGui.SameLine(16);
+					ImGui.Text(dynamicBuffers[i]);
+				}
+			}
 			
 			// Other Information Text
 			ImGui.Spacing();

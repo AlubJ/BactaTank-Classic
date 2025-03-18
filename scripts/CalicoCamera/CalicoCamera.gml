@@ -83,10 +83,10 @@ function CalicoCamera() constructor
 		positionSmooth = {x:0, y:0, z:0};
 		lookAtPositionSmooth = {x:0, y:0, z:0};
 	
-		lookDirection = -65;
-		lookDirectionSmooth = -65;
-		lookPitch = -15;
-		lookPitchSmooth = -15;
+		lookDirection = -45;
+		lookDirectionSmooth = -45;
+		lookPitch = -20;
+		lookPitchSmooth = -20;
 	
 		lookDistance = 0.6;
 		lookDistanceSmooth = 0.6;
@@ -102,6 +102,7 @@ function CalicoCamera() constructor
 			{
 				renderer.activate();
 				active = true;
+				window_set_cursor(device_mouse_check_button(0, mb_middle) ? cr_size_ns : cr_size_all);
 			}
 			
 			if (mouse_wheel_up())
@@ -125,7 +126,7 @@ function CalicoCamera() constructor
 			lookPitch -= window_mouse_get_delta_y() * sensitivity;
 			lookPitch = clamp(lookPitch, -89.999, 89.999);
 		}
-		if (device_mouse_check_button(0, mb_right) && !renderer.idle && active)
+		else if (device_mouse_check_button(0, mb_right) && !renderer.idle && active)
 		{
 			vectorH = [
 				dcos(lookDirectionSmooth - 90),
@@ -144,7 +145,7 @@ function CalicoCamera() constructor
 			//lookAtPosition.z += dcos(lookDirection) * window_mouse_get_delta_x() * 0.001;
 			//lookAtPosition.y += dcos(lookPitch) * window_mouse_get_delta_y() * 0.001;
 		}
-		if (device_mouse_check_button(0, mb_middle) && !renderer.idle && active)
+		else if (device_mouse_check_button(0, mb_middle) && !renderer.idle && active)
 		{
 			lookDistance += window_mouse_get_delta_y() * 0.005;
 		}
@@ -153,6 +154,7 @@ function CalicoCamera() constructor
 		{
 			renderer.deactivate(1);
 			active = false;
+			window_set_cursor(cr_default);
 		}
 		
 		lookAtPosition.x = clamp(lookAtPosition.x, -20, 20);
@@ -160,6 +162,14 @@ function CalicoCamera() constructor
 		lookAtPosition.z = clamp(lookAtPosition.z, -20, 20);
 		
 		lookDistance = clamp(lookDistance, 0.05, 10);
+		
+		//if (active)
+		//{
+		//	if (CURSOR_POSITION[0] < bounds[0]) window_mouse_set(bounds[2], CURSOR_POSITION[1]);
+		//	else if (CURSOR_POSITION[0] > bounds[2]) window_mouse_set(bounds[0], CURSOR_POSITION[1]);
+		//	if (CURSOR_POSITION[1] < bounds[1]) window_mouse_set(CURSOR_POSITION[0], bounds[3]);
+		//	else if (CURSOR_POSITION[1] > bounds[3]) window_mouse_set(CURSOR_POSITION[0], bounds[1]);
+		//}
 	}
 	
 	static step = function(smooth = false)

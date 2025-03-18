@@ -58,7 +58,7 @@ function BactaTankMesh() constructor
 	
 	#region Parse / Inject
 	
-	static parse = function(buffer, _model)
+	static parse = function(buffer, _index, _model)
 	{
 		// Get Offset
 		offset = buffer_tell(buffer) - _model.nu20Offset;
@@ -112,18 +112,18 @@ function BactaTankMesh() constructor
 		}
 			
 		// Log
-		//var offset = meshOffset + self.nu20Offset;
-		//ConsoleLog($"Mesh {i}", CONSOLE_MODEL_LOADER_DEBUG, offset);
-		//ConsoleLog($"	Primitive Type: {meshType}", CONSOLE_MODEL_LOADER_DEBUG, offset);
-		//ConsoleLog($"	Triangle Count:       {meshTriangleCount}", CONSOLE_MODEL_LOADER_DEBUG, offset + 4);
-		//ConsoleLog($"	Vertex Stride:        {meshVertexStride}", CONSOLE_MODEL_LOADER_DEBUG, offset + 8);
-		//ConsoleLog($"	Bones:                [{meshBones[0]}, {meshBones[1]}, {meshBones[2]}, {meshBones[3]}, {meshBones[4]}, {meshBones[5]}, {meshBones[6]}, {meshBones[7]}]", CONSOLE_MODEL_LOADER_DEBUG, offset + 10);
-		//ConsoleLog($"	Vertex Offset:        {meshVertexOffset}", CONSOLE_MODEL_LOADER_DEBUG, offset + 20);
-		//ConsoleLog($"	Vertex Count:         {meshVertexCount}", CONSOLE_MODEL_LOADER_DEBUG, offset + 24);
-		//ConsoleLog($"	Index Offset:         {meshIndexOffset}", CONSOLE_MODEL_LOADER_DEBUG, offset + 28);
-		//ConsoleLog($"	Index Buffer ID:      {meshIndexBufferID}", CONSOLE_MODEL_LOADER_DEBUG, offset + 32);
-		//ConsoleLog($"	Vertex Buffer ID:     {meshVertexBufferID}", CONSOLE_MODEL_LOADER_DEBUG, offset + 36);
-		//ConsoleLog($"	Dynamic Buffer Count: {meshDynamicBufferCount}", CONSOLE_MODEL_LOADER_DEBUG, offset + 40);
+		var dOffset = offset + _model.nu20Offset;
+		ConsoleLog($"Mesh {_index}", CONSOLE_MODEL_LOADER_DEBUG, dOffset);
+		ConsoleLog($"    Primitive Type:       {type}", CONSOLE_MODEL_LOADER_DEBUG, dOffset);
+		ConsoleLog($"    Triangle Count:       {triangleCount}", CONSOLE_MODEL_LOADER_DEBUG, dOffset + 4);
+		ConsoleLog($"    Vertex Stride:        {vertexStride}", CONSOLE_MODEL_LOADER_DEBUG, dOffset + 8);
+		ConsoleLog($"    Bones:                [{bones[0]}, {bones[1]}, {bones[2]}, {bones[3]}, {bones[4]}, {bones[5]}, {bones[6]}, {bones[7]}]", CONSOLE_MODEL_LOADER_DEBUG, dOffset + 10);
+		ConsoleLog($"    Vertex Offset:        {vertexOffset}", CONSOLE_MODEL_LOADER_DEBUG, dOffset + 20);
+		ConsoleLog($"    Vertex Count:         {vertexCount}", CONSOLE_MODEL_LOADER_DEBUG, dOffset + 24);
+		ConsoleLog($"    Index Offset:         {indexOffset}", CONSOLE_MODEL_LOADER_DEBUG, dOffset + 28);
+		ConsoleLog($"    Index Buffer ID:      {indexBufferID}", CONSOLE_MODEL_LOADER_DEBUG, dOffset + 32);
+		ConsoleLog($"    Vertex Buffer ID:     {vertexBufferID}", CONSOLE_MODEL_LOADER_DEBUG, dOffset + 36);
+		ConsoleLog($"    Dynamic Buffer Count: {dynamicBufferCount}", CONSOLE_MODEL_LOADER_DEBUG, dOffset + 40);
 	}
 	
 	static inject = function(buffer)
@@ -315,63 +315,54 @@ function BactaTankMesh() constructor
 		
 		// Get Cached Mesh If Possible
 		//var name = sha1_string_utf8(buffer_sha1(vertexBuffer, 0, buffer_get_size(vertexBuffer)) + buffer_sha1(indexBuffer, 0, buffer_get_size(indexBuffer))) + ".mesh";
-		name = "a.mesh";
-		if (file_exists(TEMP_DIRECTORY + @"\_maeshes\" + name))
+		
+		// Create Vertex Buffer
+		currentVertexBuffer = vertex_create_buffer();
+		vertex_begin(currentVertexBuffer, BT_VERTEX_FORMAT);
+		
+		// Build VBO
+		for (var i = 0; i < triangleCount + 2; i++)
 		{
-			var cachedMesh = buffer_load(TEMP_DIRECTORY + @"\_meshes\" + name);
-			currentVertexBuffer = vertex_create_buffer_from_buffer(cachedMesh, BT_VERTEX_FORMAT);
-			buffer_delete(cachedMesh);
+			// Get Index
+			var index = triangles[i];
+			
+			var position = array_create(3, 0);
+			var normal = array_create(3, 0);
+			var tangent = [0, 0];
+			var uv = array_create(2, 0);
+			var colour = #ffffff;
+			
+			// Attributes
+			if (array_length(vertices[index].position) == 3) position = vertices[index].position;
+			if (array_length(vertices[index].normal) == 3) normal = vertices[index].normal;
+			if (array_length(vertices[index].tangent) == 4) tangent = [make_colour_rgb(vertices[index].tangent[0] / 2 + 1, vertices[index].tangent[1] / 2 + 1, vertices[index].tangent[2] / 2 + 1), vertices[index].tangent[3]];
+			if (_model.materials[material].surfaceUVMapIndex == 1)
+				if (array_length(vertices[index].uvSet1) == 2) uv = vertices[index].uvSet1;
+			else
+				if (array_length(vertices[index].uvSet2) == 2) uv = vertices[index].uvSet2;
+			if (array_length(vertices[index].colourSet1) == 4) colour = make_colour_rgb(vertices[index].colourSet1[0] * 255, vertices[index].colourSet1[1] * 255, vertices[index].colourSet1[2] * 255);
+			
+			// Add Vertex Positions
+			vertex_position_3d(currentVertexBuffer, position[0], position[1], position[2]);
+			vertex_normal(currentVertexBuffer, normal[0], normal[1], normal[2]);
+			vertex_texcoord(currentVertexBuffer, uv[0], uv[1]);
+			vertex_colour(currentVertexBuffer, colour, 1);
+			vertex_colour(currentVertexBuffer, tangent[0], tangent[1]);
+			vertex_texcoord(currentVertexBuffer, index, 0);
+			
+			// Update Average Position
+			averagePosition[0] += position[0];
+			averagePosition[1] += position[1];
+			averagePosition[2] += position[2];
 		}
-		else
-		{
-			// Create Vertex Buffer
-			currentVertexBuffer = vertex_create_buffer();
-			vertex_begin(currentVertexBuffer, BT_VERTEX_FORMAT);
-			
-			// Build VBO
-			for (var i = 0; i < triangleCount + 2; i++)
-			{
-				// Get Index
-				var index = triangles[i];
-				
-				var position = array_create(3, 0);
-				var normal = array_create(3, 0);
-				var tangent = [0, 0];
-				var uv = array_create(2, 0);
-				var colour = #ffffff;
-				
-				// Attributes
-				if (array_length(vertices[index].position) == 3) position = vertices[index].position;
-				if (array_length(vertices[index].normal) == 3) normal = vertices[index].normal;
-				if (array_length(vertices[index].tangent) == 4) tangent = [make_colour_rgb(vertices[index].tangent[0] / 2 + 1, vertices[index].tangent[1] / 2 + 1, vertices[index].tangent[2] / 2 + 1), vertices[index].tangent[3]];
-				if (_model.materials[material].surfaceUVMapIndex == 1)
-					if (array_length(vertices[index].uvSet1) == 2) uv = vertices[index].uvSet1;
-				else
-					if (array_length(vertices[index].uvSet2) == 2) uv = vertices[index].uvSet2;
-				if (array_length(vertices[index].colourSet1) == 4) colour = make_colour_rgb(vertices[index].colourSet1[0] * 255, vertices[index].colourSet1[1] * 255, vertices[index].colourSet1[2] * 255);
-				
-				// Add Vertex Positions
-				vertex_position_3d(currentVertexBuffer, position[0], position[1], position[2]);
-				vertex_normal(currentVertexBuffer, normal[0], normal[1], normal[2]);
-				vertex_texcoord(currentVertexBuffer, uv[0], uv[1]);
-				vertex_colour(currentVertexBuffer, colour, 1);
-				vertex_colour(currentVertexBuffer, tangent[0], tangent[1]);
-				vertex_texcoord(currentVertexBuffer, index, 0);
-				
-				// Update Average Position
-				averagePosition[0] += position[0];
-				averagePosition[1] += position[1];
-				averagePosition[2] += position[2];
-			}
-			
-			// Average Position
-			averagePosition[0] /= triangleCount+2;
-			averagePosition[1] /= triangleCount+2;
-			averagePosition[2] /= triangleCount+2;
-			
-			// End Vertex
-			vertex_end(currentVertexBuffer);
-		}
+		
+		// Average Position
+		averagePosition[0] /= triangleCount+2;
+		averagePosition[1] /= triangleCount+2;
+		averagePosition[2] /= triangleCount+2;
+		
+		// End Vertex
+		vertex_end(currentVertexBuffer);
 		
 		// Convert Strips to Lists
 		var listTriangles = stripsToTris(triangles);

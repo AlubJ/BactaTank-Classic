@@ -71,12 +71,6 @@ function BactaTankArmature() constructor
 			// Bone Struct
 			self.bones[i].matrix = self.bones[i].bindMatrix;
 			if (self.bones[i].parent != -1) self.bones[i].matrix = matrix_multiply(self.bones[i].bindMatrix, self.bones[self.bones[i].parent].matrix);
-			
-			// Log
-			//ConsoleLog($"Bone {i}", CONSOLE_MODEL_LOADER_DEBUG, offset);
-			//ConsoleLog($"	Name:   {self.bones[i].name}", CONSOLE_MODEL_LOADER_DEBUG, offset);
-			//ConsoleLog($"	Parent: {self.bones[i].parent}", CONSOLE_MODEL_LOADER_DEBUG, offset);
-			//ConsoleLog($"	Matrix: {boneMatrix}", CONSOLE_MODEL_LOADER_DEBUG, offset);
 		}
 		
 		// Inverse Bind Pose
@@ -91,16 +85,16 @@ function BactaTankArmature() constructor
 			repeat(16) array_push(self.bones[i].inverseBindMatrix, buffer_read(buffer, buffer_f32));
 			
 			// Log
-			//ConsoleLog($"Bone {i}", CONSOLE_MODEL_LOADER_DEBUG, offset);
-			//ConsoleLog($"	Name:   {self.bones[i].name}", CONSOLE_MODEL_LOADER_DEBUG, offset);
-			//ConsoleLog($"	Parent: {self.bones[i].parent}", CONSOLE_MODEL_LOADER_DEBUG, offset);
-			//ConsoleLog($"	Matrix: {boneMatrix}", CONSOLE_MODEL_LOADER_DEBUG, offset);
+			var offset = self.bones[i].offset + _model.nu20Offset;
+			ConsoleLog($"Bone {i}", CONSOLE_MODEL_LOADER_DEBUG, offset);
+			ConsoleLog($"    Identity Matrix:      {self.bones[i].identityMatrix}", CONSOLE_MODEL_LOADER_DEBUG, offset);
+			ConsoleLog($"    Name:                 \"{self.bones[i].name}\"", CONSOLE_MODEL_LOADER_DEBUG, offset + 0x4C);
+			ConsoleLog($"    Parent:               {self.bones[i].parent}", CONSOLE_MODEL_LOADER_DEBUG, offset + 0x50);
+			var offset = self.bones[i].bindOffset + _model.nu20Offset;
+			ConsoleLog($"    Bind Matrix:          {bone.bindMatrix}", CONSOLE_MODEL_LOADER_DEBUG, offset);
+			var offset = self.bones[i].inverseBindOffset + _model.nu20Offset;
+			ConsoleLog($"    Inverse Bind Matrix:  {bone.inverseBindMatrix}", CONSOLE_MODEL_LOADER_DEBUG, offset);
 		}
-		
-		//for (var i = 0; i < boneCount; i++)
-		//{
-		//	self.bones[i].matrix = self.bones[i].inverseBindMatrix;
-		//}
 	}
 	
 	static inject = function(buffer)

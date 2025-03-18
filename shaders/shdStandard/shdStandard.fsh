@@ -28,6 +28,7 @@ varying vec3 vPosition;
 varying vec3 vNormal;
 varying vec2 vTexcoord;
 varying vec4 vColour;
+varying float vRim;
 
 // World
 varying vec3 vWorldPosition;
@@ -267,14 +268,48 @@ vec3 getLighting(vec4 baseColour, vec3 normal)
     float f = clamp((dist - uFogStart) / (uFogEnd - uFogStart), 0., 1.);
     baseColour.rgb = mix(baseColour.rgb, uFogColour, f * uFogStrength);
 	
+	//baseColour.rgb += .1 * vec3(pow(1. + vRim, 2.));
+	
 	return baseColour.rgb;
+}
+
+#endregion
+
+#region Anisotropic Lighting
+
+float wardSpecular(
+	vec3 lightDirection,
+	vec3 viewDirection,
+	vec3 surfaceNormal,
+	vec3 fiberParallel,
+	vec3 fiberPerpendicular,
+	float shinyParallel,
+	float shinyPerpendicular) {
+
+	float NdotL = dot(surfaceNormal, lightDirection);
+	float NdotR = dot(surfaceNormal, viewDirection);
+
+	if(NdotL < 0.0 || NdotR < 0.0) {
+	return 0.0;
+	}
+
+	vec3 H = normalize(lightDirection + viewDirection);
+
+	float NdotH = dot(surfaceNormal, H);
+	float XdotH = dot(fiberParallel, H);
+	float YdotH = dot(fiberPerpendicular, H);
+
+	float coeff = sqrt(NdotL/NdotR) / (4.0 * PI * shinyParallel * shinyPerpendicular); 
+	float theta = (pow(XdotH/shinyParallel, 2.0) + pow(YdotH/shinyPerpendicular, 2.0)) / (1.0 + NdotH);
+
+	return coeff * exp(-2.0 * theta);
 }
 
 #endregion
 
 #region Specular Lighting
 
-vec3 getSpecular(vec3 normal, float specularStrength)
+vec3 getSpecular(vec3 normal, float specularStrength, vec2 uv, bool anisotropic)
 {
 	// Final Colour
     vec3 finalColour = vec3(0.);
@@ -314,7 +349,7 @@ vec3 getSpecular(vec3 normal, float specularStrength)
             NdotL = clamp(dot(normal, lightIncoming), 0.0, 1.0);
 			
             att = (rangeOuter - dist) / max(rangeOuter - rangeInner, 0.000001);
-			att = clamp(att, 0., 1.);
+			att = clamp(att, 0., .25);
         }
 		else if (type == LIGHT_SPOT)
 		{
@@ -331,8 +366,20 @@ vec3 getSpecular(vec3 normal, float specularStrength)
 		//vec3 tplane = cross(normal, vec3(0.0, 0.0, 1.0));
 		//viewDirection = normalize(viewDirection - dot(viewDirection, tplane) * tplane); // project eye to texture plane
 		
+		//.25 * pow(max(dot(normalize(reflect(v_eyeVec, v_vNormal)), normalize(vec3(1., 1., -1.))), 0.), 15.);
+		
 		// Specular Calulation
-		float specularAmount = pow(max(dot(viewDirection, reflectionDirection), 0.0), specularStrength) * att;
+		float specularAmount = 0.0;
+		if (!anisotropic)
+		{
+			specularAmount = pow(max(dot(viewDirection, reflectionDirection), 0.0), specularStrength) * att;
+		}
+		else
+		{
+			vec3 fiber = normalize(vec3(uv,0) - dot(vec3(uv,0), normal)*normal);
+			vec3 perp = normalize(cross(fiber, normal));
+			specularAmount = wardSpecular(lightPosition, viewDirection, normal, fiber, perp, 0.1, 0.8) * 0.5;
+		}
 		
 		// Final Colour
 		finalColour += specularAmount * NdotL * lightColour.rgb;
@@ -381,14 +428,9 @@ void main()
 	
 	// Specular / Metallic Calulations
 	vec3 specular;
-	if (uMetallic) specularStrength = clamp(48.0 * reflectionStrength, 0.0, 27.0);
-	if (uSpecularHighlighting || uMetallic) specular = getSpecular(normal, specularStrength);
+	if (uSpecularHighlighting) specular = getSpecular(normal, specularStrength, vTexcoord, false);
+	else if (uMetallic) specular = getSpecular(normal, specularStrength, vTexcoord, true);
 	else specular = vec3(0.0);
-	if (uMetallic)
-	{
-		specular *= diffuse;
-		reflectionStrength = 1.0;
-	}
 	
     // Cubemap
 	vec3 cubemap;
@@ -401,7 +443,7 @@ void main()
 	else shineMap = vec3(0.0);
 	
 	// Starting Fragment Colour
-	vec4 fragColour = vec4((diffuse + specular) + ((cubemap + shineMap) * reflectionStrength), baseColour.a);
+	vec4 fragColour = vec4((diffuse + specular) + (cubemap * baseColour.rgb * reflectionStrength), baseColour.a);
 	//fragColour = getCubeMapColor(normal);
 	
 	// Frag Colour (Move to frag data)

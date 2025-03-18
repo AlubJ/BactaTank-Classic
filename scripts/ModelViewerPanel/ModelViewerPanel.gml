@@ -106,6 +106,17 @@ function ModelViewerPanel() constructor
 			}
 			ImGui.ShowTooltip("Toggle Disabled Meshes");
 			
+			// Reset Camera
+			ImGui.SetCursorPos(windowSize[0] - 138, cursorPos[1] - 26);
+			if (ImGui.ImageButton("##hiddenResetCamera", graReload, 0, c_white, 1, c_white, 0))
+			{
+				CAMERA.reset();
+				CAMERA.lookAtPosition.x = PROJECT.currentModel.averagePosition[0];
+				CAMERA.lookAtPosition.y = PROJECT.currentModel.averagePosition[1];
+				CAMERA.lookAtPosition.z = PROJECT.currentModel.averagePosition[2];
+			}
+			ImGui.ShowTooltip("Reset Camera");
+			
 			// Reset Cursor Position
 			ImGui.SetCursorPos(cursorPos[0], cursorPos[1]);
 			

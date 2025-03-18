@@ -27,6 +27,7 @@ varying vec3 vPosition;
 varying vec3 vNormal;
 varying vec2 vTexcoord;
 varying vec4 vColour;
+varying float vRim;
 
 // World
 varying vec3 vWorldPosition;
@@ -71,6 +72,9 @@ void main()
 	// View
     vViewPosition = (gm_Matrices[MATRIX_WORLD_VIEW] * vec4(in_Position, 1.0)).xyz;
     vViewNormal = (gm_Matrices[MATRIX_WORLD_VIEW] * vec4(in_Normal, 0.0)).xyz;
+	
+	// Rim
+	vRim = normalize((gm_Matrices[MATRIX_WORLD_VIEW_PROJECTION] * vec4(vWorldNormal, 0.0)).xyz).z;
 	
 	// Screen
 	vScreenPosition = (gm_Matrices[MATRIX_WORLD_VIEW_PROJECTION] * vec4(in_Position, 1.0)).xyz;
