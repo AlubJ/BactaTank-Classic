@@ -69,10 +69,11 @@ function BactaTankTexture() constructor
 			// Texture Meta Data
 			width = buffer_read(buffer, buffer_s32);
 			height = buffer_read(buffer, buffer_s32);
-			compression = buffer_read(buffer, buffer_s32);
 			mipmapCount = buffer_read(buffer, buffer_s32);
 			var unknown = buffer_read(buffer, buffer_s32);
+			var unknown = buffer_read(buffer, buffer_s32);
 			size = buffer_read(buffer, buffer_u32);
+			compression = array_get_index(BT_DXT_COMPRESSION, buffer_peek(buffer, buffer_tell(buffer) + 0x54, buffer_string));
 			if (width < 0) width = -width;
 		}
 		
@@ -88,7 +89,9 @@ function BactaTankTexture() constructor
 		// Convert DDS to PNG
 		if (!file_exists(TEMP_DIRECTORY + @"\_textures\" + name + ".png"))
 		{
+			var timer = current_time;
 			sprite = ddsLoad(data);
+			ConsoleLog($"Texture took {(current_time - timer) / 1000}ms to decode");
 			sprite_save(sprite, 0, TEMP_DIRECTORY + @"\_textures\" + name + ".png");
 		}
 		else

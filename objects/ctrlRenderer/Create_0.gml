@@ -52,11 +52,12 @@ PRIMITIVES.sabre = loadBactaTankMesh("resources/sabre.mesh");
 PRIMITIVES.blaster = loadBactaTankMesh("resources/blaster.mesh");
 PRIMITIVES.pistol = loadBactaTankMesh("resources/pistol.mesh");
 PRIMITIVES.hat = loadBactaTankMesh("resources/hat.mesh");
+PRIMITIVES.uvGrid = buildUVGridVertexBuffer();
 
 // Create Grid Render Struct
 gridRenderStruct = {
 	vertexBuffer: PRIMITIVES.grid,
-	material: {colour: [0.3, 0.3, 0.3, 1.0]},
+	material: {colour: SETTINGS.viewerSettings.gridColour},
 	textures: {},
 	matrix: matrix_build_identity(),
 	shader: "WireframeShader",

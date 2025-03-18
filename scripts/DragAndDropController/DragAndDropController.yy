@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"DragAndDropController",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"DragAndDropController",
+  "parent":{
+    "name":"Environment",
+    "path":"folders/Environment.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

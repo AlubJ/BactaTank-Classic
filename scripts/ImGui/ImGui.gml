@@ -359,6 +359,84 @@ function ImGui() constructor {
 		return ret;
 	}
 	
+	/// @function ComboBox()
+	/// @context ImGui
+	/// @return {Undefined}
+	static ComboBox = function(selected, items, label = "##hidden", width = 100, sprite = -1, flags = ImGuiInputTextFlags.None)
+	{
+		// Set Width
+		ImGui.SetNextItemWidth(width);
+		
+		// Get Cursor Y
+		var pos = [ImGui.GetCursorPosX(), ImGui.GetCursorPosY()];
+		var ret = selected;
+		
+		// Input Text
+		if (ImGui.BeginCombo(label, selected != -1 ? items[selected] : "---", flags))
+		{
+			for (var i = 0; i < array_length(items); i++)
+			{
+				if (items[i] == "") continue;
+				if (ImGui.Selectable(items[i], selected == i)) ret = i;
+			}
+			ImGui.EndCombo();
+		}
+		
+		if (sprite != -1)
+		{
+			ImGui.SetCursorPos(pos[0] + width - 16, pos[1] + 4);
+			ImGui.Image(sprite, 0);
+		}
+		
+		// Return
+		return ret;
+	}
+	
+	/// @function ComboBoxMultiple()
+	/// @context ImGui
+	/// @return {Undefined}
+	static ComboBoxMultiple = function(title, selected, items, label = "##hidden", width = 100, sprite = -1, flags = ImGuiInputTextFlags.None)
+	{
+		// Set Width
+		ImGui.SetNextItemWidth(width);
+		
+		// Get Cursor Y
+		var pos = [ImGui.GetCursorPosX(), ImGui.GetCursorPosY()];
+		
+		// Input Text
+		if (ImGui.BeginCombo(label, title, flags))
+		{
+			for (var i = 0; i < array_length(items); i++)
+			{
+				if (items[i] == "") continue;
+				var cursorPos = [ImGui.GetCursorPosX(), ImGui.GetCursorPosY()];
+				if (ImGui.Selectable(items[i], false, ImGuiSelectableFlags.DontClosePopups)) selected[i] = !selected[i];
+				ImGui.SetCursorPos(cursorPos[0] + width - 20, cursorPos[1] + 2);
+				ImGui.Image(graCheck, !selected[i]);
+			}
+			ImGui.EndCombo();
+		}
+		
+		if (sprite != -1)
+		{
+			ImGui.SetCursorPos(pos[0] + width - 16, pos[1] + 4);
+			ImGui.Image(sprite, 0);
+		}
+	}
+	
+	/// @function DragInt2Custom()
+	/// @context ImGui
+	/// @return {Undefined}
+	static DragInt2Custom = function(val, vspd = 1, vmin = 0, vmax = 100, label = "##hidden", space = 100, def = NULL, flags = ImGuiInputTextFlags.None)
+	{
+		// Input Text
+		var ret = ImGui.DragInt2(label, val, vspd, vmin, vmax, "%d", flags);
+		//if (ret == "") ret = NULL;
+		
+		// Return
+		return ret;
+	}
+	
 	/// @function SliderFloatCustom()
 	/// @context ImGui
 	/// @return {Undefined}
@@ -393,6 +471,59 @@ function ImGui() constructor {
 		ImGui.SetCursorPos(xx, ImGui.GetCursorPosY() - 2);
 		ImGui.PushItemWidth(width - 8);
 		ImGui.InputText(title + "Dec", value, ImGuiInputTextFlags.ReadOnly);
+	}
+	
+	/// @function DragMatrixCustom()
+	/// @context ImGui
+	/// @return {Undefined}
+	static DragMatrixCustom = function(title, val, v_spd = 1, v_min = 0, v_max = 1, label = "##hidden", space = 100, def = NULL, flags = ImGuiInputTextFlags.None)
+	{
+		// Split Vals
+		//var splitVals = [  ];
+		//for (var i = 0; i < 16; i += 4)
+		//{
+		//	array_push(splitVals, [val[i], val[i + 1], val[i + 2], val[i + 3]]);
+		//}
+		
+		// Get Cursor Y
+		var ypos = ImGui.GetCursorPosY();
+		var newYPos = 0;
+		
+		for (var i = 0; i < 16; i += 4)
+		{
+			// Draw First Text
+			ImGui.Text("");
+		
+			// Same Line
+			ImGui.SameLine(space);
+		
+			// Push Item Width
+			ImGui.PushItemWidth(-2);
+		
+			// Input Text
+			var ret = ImGui.DragFloat4(label + string(i), [val[i], val[i + 1], val[i + 2], val[i + 3]], v_spd, v_min, v_max, "%.3f", flags);
+			//if (ret == "") ret = NULL;
+			
+			newYPos = ImGui.GetCursorPosY();
+		}
+		
+		// Set Cursor Y
+		ImGui.SetCursorPosY(ypos + 2);
+		
+		// Draw Final Text
+		ImGui.Text(title);
+		
+		// Reset
+		if (ImGui.IsItemClicked() && def != NO_DEFAULT) ret = def;
+		
+		// Set Cursor Y
+		ImGui.SetCursorPosY(newYPos);
+		
+		// Spacing
+		ImGui.Spacing();
+		
+		// Return
+		return ret;
 	}
 	
 	#endregion

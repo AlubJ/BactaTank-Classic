@@ -17,8 +17,16 @@
 if (!window_is_minimised()) ENVIRONMENT.render();
 
 // Quit Check
-if (window_command_check(window_command_close)) {
-	ENVIRONMENT.openConfirmModal("Unsaved Changes", "Are you sure you want to quit?", function() {
+if (window_command_check(window_command_close))
+{
+	if (CONTEXT != BTContext.None)
+	{
+		ENVIRONMENT.openConfirmModal("Unsaved Changes", "Are you sure you want to quit?", function() {
+			window_command_run(window_command_close);
+		});
+	}
+	else
+	{
 		window_command_run(window_command_close);
-	});
+	}
 }

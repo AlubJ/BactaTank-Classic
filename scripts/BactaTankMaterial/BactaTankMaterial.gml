@@ -134,23 +134,36 @@ function BactaTankMaterial() constructor
 	
 	static inject = function(buffer, _model)
 	{
-		// Edit Material Data
+		// Inject Alpha Blend
 		buffer_poke(buffer, offset + 0x40,    buffer_u32, alphaBlend);
+		
+		// Inject Colour
 		buffer_poke(buffer, offset + 0x54,    buffer_f32, colour[0]);
 		buffer_poke(buffer, offset + 0x58,    buffer_f32, colour[1]);
 		buffer_poke(buffer, offset + 0x5c,    buffer_f32, colour[2]);
 		buffer_poke(buffer, offset + 0x60,    buffer_f32, colour[3]);
+		
+		// Inject Texture IDs
 		buffer_poke(buffer, offset + 0x74,    buffer_s16, textureID);
 		buffer_poke(buffer, offset + 0xb4 + 0x04,    buffer_s32, textureID);
 		buffer_poke(buffer, offset + 0xb4 + 0x4c,    buffer_s32, normalID);
 		buffer_poke(buffer, offset + 0xb4 + 0x54,    buffer_s32, shineID);
+		
+		// Inject Ambient Tint
 		buffer_poke(buffer, offset + 0xB4 + 0x6C,    buffer_u8,  floor(ambientTint[0] * 255));
 		buffer_poke(buffer, offset + 0xB4 + 0x6D,    buffer_u8,  floor(ambientTint[1] * 255));
 		buffer_poke(buffer, offset + 0xB4 + 0x6E,    buffer_u8,  floor(ambientTint[2] * 255));
 		buffer_poke(buffer, offset + 0xB4 + 0x6F,    buffer_u8,  floor(ambientTint[3] * 255));
+		
+		// Inject UV Sets
+		buffer_poke(buffer, offset + 0xB4 + 0xA9, surfaceUVMapIndex, buffer_u8);
+		buffer_poke(buffer, offset + 0xB4 + 0xAA, specularUVMapIndex, buffer_u8);
+		buffer_poke(buffer, offset + 0xB4 + 0xAB, normalUVMapIndex, buffer_u8);
+		
+		// Inject Shader Flags
 		buffer_poke(buffer, offset + 0xb4 + 0x1b8,   buffer_u32, shaderFlags);
 		
-		// NU20 First Material Colours
+		// Inject LB1 and LIJ1 Colours
 		if (_model.version == BTModelVersion.pcghgNU20First)
 		{
 			buffer_poke(buffer, offset + 0xc8,    buffer_u8, floor(colour[0] * 255));
@@ -164,24 +177,10 @@ function BactaTankMaterial() constructor
 	
 	#region Serialize / Deserialize
 	
-	
-	
-	#endregion
-	
-	#region Export / Replace Material
-	
-	/// @func export()
-	/// @desc Export BactaTankMaterial
-	static export = function( filepath)
+	/// @func serialize(buffer)
+	/// @desc Serialize
+	static serialize = function(buffer)
 	{
-		// Create Export Buffer
-		var buffer = buffer_create(1, buffer_grow, 1);
-		
-		// Write Header
-		buffer_write(buffer, buffer_string, "BactaTankMaterial");
-		buffer_write(buffer, buffer_string, "PCGHG");
-		buffer_write(buffer, buffer_f32, 0.1);
-		
 		// Write Blend Colour
 		buffer_write(buffer, buffer_f32, colour[0]);
 		buffer_write(buffer, buffer_f32, colour[1]);
@@ -202,6 +201,26 @@ function BactaTankMaterial() constructor
 		buffer_write(buffer, buffer_u32, 0x00); //vertexFormat);
 		buffer_write(buffer, buffer_u32, alphaBlend);
 		buffer_write(buffer, buffer_u32, shaderFlags);
+	}
+	
+	#endregion
+	
+	#region Export / Replace Material
+	
+	/// @func export()
+	/// @desc Export BactaTankMaterial
+	static export = function(filepath)
+	{
+		// Create Export Buffer
+		var buffer = buffer_create(1, buffer_grow, 1);
+		
+		// Write Header
+		buffer_write(buffer, buffer_string, "BactaTankMaterial");
+		buffer_write(buffer, buffer_string, "PCGHG");
+		buffer_write(buffer, buffer_f32, 0.1);
+		
+		// Serialize
+		serialize(buffer);
 		
 		// Buffer Save
 		buffer_save(buffer, filepath);

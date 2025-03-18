@@ -131,11 +131,11 @@ function GlobalEnvironment() constructor
 		infoModal.close = true;
 	}
 	
-	static anyModalOpen = function()
+	static anyModalOpen = function(exclude = noone)
 	{
 		for (var i = 0; i < array_length(modals); i++)
 		{
-			if (modals[i].modalOpen) return true;
+			if (modals[i].modalOpen && modals[i].name != exclude) return true;
 		}
 		if (infoModal.modalOpen) return true;
 		if (confirmModal.modalOpen) return true;
@@ -221,5 +221,9 @@ function GlobalEnvironment() constructor
 		// Render Other Modals
 		confirmModal.render();
 		infoModal.render();
+		
+		// Shortcut Controller
+		if (!anyModalOpen()) ShortcutController();
+		if (!anyModalOpen("Welcome")) DragAndDropController();
 	}
 }

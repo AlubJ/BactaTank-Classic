@@ -1,7 +1,7 @@
 BactaTank Classic v0.3.0 | Renderer v1.0.0 | Backend v0.3.0
 Created by Alub
 
-BactaTank Classic is a character creator and viewer for LEGO Star Wars: The Complete Saga, LEGO Indiana Jones: The Original Adventures and LEGO Batman: The Videogame. This program is designed to preview the models as accurately as possible to the games.
+BactaTank Classic is a character creator and viewer for LEGO Star Wars: The Complete Saga, LEGO Indiana Jones: The Original Adventures and LEGO Batman: The Videogame. This program is designed to preview the models as accurately as possible to the games. If you like this tool, and are able to support me financially, I would greatly appreciate it if you could throw me a few bucks (Help >> Support Me). Thank you for using this tool.
 
 With development help from:
  - Javster101
@@ -9,21 +9,31 @@ With development help from:
  - Slucier
  - Aaron
  - Skulluse
- - Bario The Weird
+ - BarioTheWeird
  - Suso
 
 And with testing from:
- - Suso
- - Cheatster9000x
- - Jacko
- - JustNathan
- - INGWAR
- - Terminus
+ - Alex (Venomander)
  - Austin
+ - Bagusman
+ - Cheatster9000x
+ - Cosine_Rave
+ - DevsGuy
  - GavinWK
+ - INGWAR
+ - Jacko
+ - JTman620
+ - JustNathan
+ - NickV
+ - PollyThePancake
+ - Quba
+ - Shadow.Shifter
+ - SomethinBuggin2
+ - Savvy
+ - Suso
+ - Treefortress2
+ - Tobias
  - thereallintman
  - Vader18
- - Tobias
- - Cosine_Rave
 
 This software is not affiliated, associated, authorized, endorsed by, or in any way officially connected with the LEGO Group, TT Games Studios, Lucasfilm ltd., WarnerMedia, or any of its subsidiaries or its affiliates.

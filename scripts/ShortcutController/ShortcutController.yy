@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"ShortcutController",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"ShortcutController",
+  "parent":{
+    "name":"Environment",
+    "path":"folders/Environment.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

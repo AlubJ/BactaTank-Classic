@@ -16,7 +16,6 @@ function BactaTankArmature() constructor
 {
 	// Bones
 	bones = [  ];
-	bonesLocal = [  ];
 	
 	// Other
 	offset = 0;
@@ -25,7 +24,7 @@ function BactaTankArmature() constructor
 	
 	static parse = function(buffer, _model, boneCount)
 	{
-		// Bone Names
+		// Bone Names and Identity Matrix
 		for (var i = 0; i < boneCount; i++)
 		{
 			// Bone
@@ -35,8 +34,8 @@ function BactaTankArmature() constructor
 			bone.offset = buffer_tell(buffer) - _model.nu20Offset;
 			
 			// Bone Matrix
-			bone.matrixLocal = [];
-			repeat(16) array_push(bone.matrixLocal, buffer_read(buffer, buffer_f32));
+			bone.identityMatrix = [];
+			repeat(16) array_push(bone.identityMatrix, buffer_read(buffer, buffer_f32));
 			
 			// Bone Name
 			buffer_seek(buffer, buffer_seek_relative, 0x0C);
@@ -52,19 +51,26 @@ function BactaTankArmature() constructor
 		
 		//show_debug_message(buffer_tell(buffer));
 		
-		// Bone Matrices
+		// Bind Pose
 		for (var i = 0; i < boneCount; i++)
 		{
 			// Offset
 			var offset = buffer_tell(buffer);
+			self.bones[i].bindOffset = buffer_tell(buffer) - _model.nu20Offset;
 			
 			// Bone Matrix
-			self.bones[i].matrixLocal = [];
-			repeat(16) array_push(self.bones[i].matrixLocal, buffer_read(buffer, buffer_f32));
+			self.bones[i].bindMatrix = [];
+			repeat(16) array_push(self.bones[i].bindMatrix, buffer_read(buffer, buffer_f32));
+			
+			//if (i == 0) self.bones[i].bindMatrix[13] += -0.05359427279;
+			//if (i == 1) self.bones[i].bindMatrix[13] += 0.02972133196;
+			//if (i == 3) self.bones[i].bindMatrix[13] += 0.02013380552;
+			//if (i == 7) self.bones[i].bindMatrix[13] += 0.02013380552;
+			//if (i == 10) self.bones[i].bindMatrix[13] += -0.02972133196;
 			
 			// Bone Struct
-			self.bones[i].matrix = self.bones[i].matrixLocal;
-			if (self.bones[i].parent != -1) self.bones[i].matrix = matrix_multiply(self.bones[i].matrixLocal, self.bones[self.bones[i].parent].matrix);
+			self.bones[i].matrix = self.bones[i].bindMatrix;
+			if (self.bones[i].parent != -1) self.bones[i].matrix = matrix_multiply(self.bones[i].bindMatrix, self.bones[self.bones[i].parent].matrix);
 			
 			// Log
 			//ConsoleLog($"Bone {i}", CONSOLE_MODEL_LOADER_DEBUG, offset);
@@ -72,28 +78,61 @@ function BactaTankArmature() constructor
 			//ConsoleLog($"	Parent: {self.bones[i].parent}", CONSOLE_MODEL_LOADER_DEBUG, offset);
 			//ConsoleLog($"	Matrix: {boneMatrix}", CONSOLE_MODEL_LOADER_DEBUG, offset);
 		}
+		
+		// Inverse Bind Pose
+		for (var i = 0; i < boneCount; i++)
+		{
+			// Offset
+			var offset = buffer_tell(buffer);
+			self.bones[i].inverseBindOffset = buffer_tell(buffer) - _model.nu20Offset;
+			
+			// Bone Matrix
+			self.bones[i].inverseBindMatrix = [];
+			repeat(16) array_push(self.bones[i].inverseBindMatrix, buffer_read(buffer, buffer_f32));
+			
+			// Log
+			//ConsoleLog($"Bone {i}", CONSOLE_MODEL_LOADER_DEBUG, offset);
+			//ConsoleLog($"	Name:   {self.bones[i].name}", CONSOLE_MODEL_LOADER_DEBUG, offset);
+			//ConsoleLog($"	Parent: {self.bones[i].parent}", CONSOLE_MODEL_LOADER_DEBUG, offset);
+			//ConsoleLog($"	Matrix: {boneMatrix}", CONSOLE_MODEL_LOADER_DEBUG, offset);
+		}
+		
+		//for (var i = 0; i < boneCount; i++)
+		//{
+		//	self.bones[i].matrix = self.bones[i].inverseBindMatrix;
+		//}
+	}
+	
+	static inject = function(buffer)
+	{
+		for (var i = 0; i < array_length(bones); i++)
+		{
+			var offset = bones[i].bindOffset;
+			for (var j = 0; j < 16; j++)
+			{
+				buffer_poke(buffer, offset, buffer_f32, bones[i].bindMatrix[j]);
+				offset += 4;
+			}
+		}
+		
+		for (var i = 0; i < array_length(bones); i++)
+		{
+			var offset = bones[i].inverseBindOffset;
+			var inverse = matrix_inverse(bones[i].matrix);
+			for (var j = 0; j < 16; j++)
+			{
+				buffer_poke(buffer, offset, buffer_f32, inverse[j]);
+				offset += 4;
+			}
+		}
 	}
 	
 	#endregion
 	
 	#region Serialize / Deserialize
 	
-	
-	
-	#endregion
-	
-	#region Export
-	
-	static export = function(filepath)
+	static serialize = function(buffer)
 	{
-		// Create buffer
-		var buffer = buffer_create(1, buffer_grow, 1);
-		
-		// Header
-		buffer_write(buffer, buffer_string, "BactaTankArmature");
-		buffer_write(buffer, buffer_string, "PCGHG");
-		buffer_write(buffer, buffer_f32, 0.4);
-		
 		// Write Bones
 		buffer_write(buffer, buffer_string, "Bones");
 		
@@ -112,6 +151,24 @@ function BactaTankArmature() constructor
 			// Write Bone Matrix
 			for (var m = 0; m < 16; m++) buffer_write(buffer, buffer_f32, bones[i].matrix[m]);
 		}
+	}
+	
+	#endregion
+	
+	#region Export
+	
+	static export = function(filepath)
+	{
+		// Create buffer
+		var buffer = buffer_create(1, buffer_grow, 1);
+		
+		// Header
+		buffer_write(buffer, buffer_string, "BactaTankArmature");
+		buffer_write(buffer, buffer_string, "PCGHG");
+		buffer_write(buffer, buffer_f32, 0.4);
+		
+		// Serialize
+		serialize(buffer);
 		
 		// Save Buffer
 		buffer_save(buffer, filepath);
@@ -125,9 +182,21 @@ function BactaTankArmature() constructor
 
 function BactaTankBone() constructor
 {
+	// Meta
 	name = "Bone";
 	parent = -1;
+	
+	// From Model
+	identityMatrix = matrix_build_identity();
+	bindMatrix = matrix_build_identity();
+	inverseBindMatrix = matrix_build_identity();
+	
+	// Other
 	matrix = matrix_build_identity();
 	matrixLocal = matrix_build_identity();
+	
+	// Offsets
 	offset = 0;
+	bindOffset = 0;
+	inverseBindOffset = 0;
 }

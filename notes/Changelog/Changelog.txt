@@ -1,0 +1,8 @@
+Changes since 1.2.0
+
+ - GM_is_sandboxed check when you run the extension
+
+Changes since 1.1.10
+
+ - Removed the 32-bit version of the DLL
+ - file_dropper_get_files can now take an array of file extensions that it filters for

@@ -23,6 +23,8 @@ function StartupModal() : Modal() constructor
 	projectDirectory = SETTINGS.lastProjectPath;
 	projectType = 0;
 	
+	closeButton = undefined;
+	
 	static render = function()
 	{
 		// Set Modal Position and Size
@@ -30,63 +32,91 @@ function StartupModal() : Modal() constructor
 		ImGui.SetNextWindowSize(width, height, ImGuiCond.Once);
 		
 		// Begin Modal
-		if (ImGui.BeginPopupModal(name, undefined, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize))
+		if (ImGui.BeginPopupModal(name, closeButton, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize))
 		{
 			// Set Modal Open
 			modalOpen = true;
 			
-			// Create New Project Header
-			ImGui.Text("New Project");
+			// Templates Text
+			ImGui.Text("Open Template");
 			ImGui.Separator();
 			
-			// Project Name / Dir
-			projectName = ImGui.InputTextCustom("Project Name", projectName, "##HiddenProjectName", 120, "New Project");
-			projectDirectory = ImGui.InputFileCustom("Project Directory", projectDirectory, "##HiddenProjectDirectory", 120, SETTINGS.defaultProjectPath, FILTERS.newProj, $"{projectName}.bproj", SETTINGS.lastProjectPath);
+			// Get Cursor Pos
+			var cursorPos = [ImGui.GetCursorPosX(), ImGui.GetCursorPosY()];
 			
-			// Project Type
-			projectType = ImGui.ComboBoxCustom("Project Type", projectType, ["The Complete Saga", "Indiana Jones", "Batman"], "##HiddenProjectType", 120);
-			
-			// Create Project Button
-			ImGui.SetCursorPosX((width / 2) - 84);
-			if (ImGui.Button("Create Project", 96))
+			// Reload Templates Button
+			ImGui.SetCursorPos(width - 28, cursorPos[1] - 26);
+			if (ImGui.ImageButton("##hiddenReloadTemplates", graReload, 0, c_white, 1, c_white, 0))
 			{
-				if (PROJECT != noone) PROJECT.destroy();
-				PROJECT = new BactaTankProject(projectName, projectType, $"{projectDirectory}{projectName}.bproj");
-				PROJECT.save();
-				ImGui.CloseCurrentPopup();
+				loadTemplates();
 			}
+			ImGui.ShowTooltip("Reload Templates");
 			
-			// Or Text
-			ImGui.SameLine();
-			ImGui.Text("or");
-			
-			// Open Project or Model
-			ImGui.SameLine();
-			if (ImGui.Button("Open Project or Model", 140))
+			// Open Templates Directory Button
+			ImGui.SetCursorPos(width - 50, cursorPos[1] - 26);
+			if (ImGui.ImageButton("##hiddenOpenTemplatesDirectory", graFolder, 0, c_white, 1, c_white, 0))
 			{
-				ImGui.CloseCurrentPopup();
-				if (!openProjectOrModelDialog()) ENVIRONMENT.openModal(name);
+				OpenDirectory(TEMPLATES_DIRECTORY);
 			}
+			ImGui.ShowTooltip("Open Templates Directory");
 			
 			// Spacing
 			ImGui.Spacing();
 			
-			// Open Project Button
-			ImGui.SetCursorPosX((560 / 2) - 70);
-			
-			// Spacing
-			ImGui.Spacing();
-			
-			// Open Recent Header
-			ImGui.Text("Open Recent Project");
-			ImGui.Separator();
-			
-			// Open Recent Child
-			if (ImGui.BeginChild("OpenRecentProjects"))
+			// Open Templates Child
+			if (ImGui.BeginChild("OpenTemplatesChild", 0, height - 120))
 			{
+				// Spacing
+				ImGui.Spacing();
+				
+				// Templates List
+				for (var i = 0; i < array_length(TEMPLATES); i++)
+				{
+					if (ImGui.Selectable($"##hidden{filename_name(TEMPLATES[i])}"))
+					{
+						if (file_exists(TEMPLATES[i]))
+						{
+							openProjectOrModel(TEMPLATES[i]);
+							ImGui.CloseCurrentPopup();
+						}
+						else loadTemplates();
+					}
+					ImGui.SameLine(8);
+					ImGui.Text(filename_name(TEMPLATES[i]));
+				}
+				
+				// No Templates Thing
+				if (array_length(TEMPLATES) == 0)
+				{
+					ImGui.Selectable($"##hiddenNoTemplate")
+					ImGui.SameLine(8);
+					ImGui.Text("No Templates Found");
+				}
+			
+				// Spacing
+				ImGui.Spacing();
 				
 				// End Child
 				ImGui.EndChild();
+			}
+			
+			// Open Model
+			ImGui.Text("Or Open Model Instead");
+			ImGui.Separator();
+			
+			// Spacing
+			ImGui.Spacing();
+			
+			// Get Cursor Position
+			var cursorPos = [ImGui.GetCursorPosX(), ImGui.GetCursorPosY()];
+			
+			// Center Button
+			ImGui.SetCursorPos(cursorPos[0] + width / 2 - 70, cursorPos[1] + 2);
+			
+			// Open Project or Model
+			if (ImGui.Button("Open Model", 140))
+			{
+				if (openProjectOrModelDialog()) ImGui.CloseCurrentPopup();
 			}
 			
 			// End Popup
@@ -95,6 +125,7 @@ function StartupModal() : Modal() constructor
 		else
 		{
 			modalOpen = false;
+			closeButton = true;
 		}
 	}
 }

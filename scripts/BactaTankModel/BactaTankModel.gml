@@ -354,7 +354,6 @@ function BactaTankModel(model = -1) constructor
 		// Mesh Block 1 Loop
 		for (var i = 0; i < meshCount; i++)
 		{
-			ConsoleLog(i);
 			// Seek to mesh entry
 			var tempOffset = buffer_tell(buffer) + 4;
 			buffer_seek(buffer, buffer_seek_relative, buffer_read(buffer, buffer_u32) - 4);
@@ -372,7 +371,6 @@ function BactaTankModel(model = -1) constructor
 		// Mesh Block 2 Loop
 		for (var i = meshCount; i < meshCount + meshBlock2Count; i++)
 		{
-			ConsoleLog(i);
 			// Seek to mesh entry
 			var tempOffset = buffer_tell(buffer) + 4;
 			buffer_seek(buffer, buffer_seek_relative, buffer_read(buffer, buffer_u32) - 4);
@@ -793,6 +791,8 @@ function BactaTankModel(model = -1) constructor
 				// Inject Layer
 				self.layers[l].inject(self.data);
 			}
+			
+			//self.armature.inject(self.data);
 		}
 		else
 		{
@@ -1348,6 +1348,7 @@ function BactaTankModel(model = -1) constructor
 			if (buffer_exists(self.meshes[i].vertexBuffer)) buffer_delete(self.meshes[i].vertexBuffer);
 			if (buffer_exists(self.meshes[i].indexBuffer)) buffer_delete(self.meshes[i].indexBuffer);
 			if (self.meshes[i].vertexBufferObject != -1) vertex_delete_buffer(self.meshes[i].vertexBufferObject);
+			if (self.meshes[i].uvSet1 != -1) vertex_delete_buffer(self.meshes[i].uvSet1);
 		}
 	}
 	
@@ -1572,6 +1573,68 @@ function BactaTankModel(model = -1) constructor
 					if (model.meshes[m].mesh == mesh) model.meshes[m].material = index;
 				}
 			}
+		}
+	}
+	
+	#endregion
+
+	#region Export Model
+	
+	static export = function(filepath, _layers = [])
+	{
+		// Create Buffer
+		var buffer = buffer_create(1, buffer_grow, 1);
+		
+		// Write Header
+		buffer_write(buffer, buffer_string, "BactaTankModel");
+		buffer_write(buffer, buffer_string, "PCGHG");
+		buffer_write(buffer, buffer_f32, 0.4);
+		
+		// Write Armature
+		buffer_write(buffer, buffer_string, "BactaTankArmature");
+		self.armature.serialize(buffer);
+		
+		// Write Materials
+		buffer_write(buffer, buffer_string, "BactaTankMaterials");
+		buffer_write(buffer, buffer_s32, array_length(self.materials));
+		for (var i = 0; i < array_length(self.materials); i++)
+		{
+			buffer_write(buffer, buffer_string, $"Material{i}");
+			self.materials[i].serialize(buffer);
+			buffer_write(buffer, buffer_string, self.materials[i].textureID != -1 ? $"tex{self.materials[i].textureID}.dds" : "None");
+			buffer_write(buffer, buffer_string, self.materials[i].normalID != -1 ? $"tex{self.materials[i].normalID}.dds" : "None");
+		}
+		
+		// Write Meshes
+		buffer_write(buffer, buffer_string, "BactaTankMeshes");
+		var tempOffset = buffer_tell(buffer);
+		buffer_write(buffer, buffer_s32, array_length(self.meshes));
+		var meshCount = 0;
+		for (var l = 0; l < array_length(self.layers); l++)
+		{
+			if (array_length(_layers) == array_length(self.layers) && !_layers[l]) continue;
+			var lay = self.layers[l];
+			for (var i = 0; i < array_length(lay.meshes); i++)
+			{
+				if (self.meshes[lay.meshes[i].mesh].vertexCount == 0) continue;
+				buffer_write(buffer, buffer_string, $"Mesh{lay.meshes[i].mesh}");
+				buffer_write(buffer, buffer_s32, lay.meshes[i].material);
+				buffer_write(buffer, buffer_s32, lay.meshes[i].bone);
+				self.meshes[lay.meshes[i].mesh].serialize(buffer, self);
+				meshCount++;
+			}
+		}
+		buffer_poke(buffer, tempOffset, buffer_s32, meshCount);
+		
+		// Save Buffer
+		buffer_save(buffer, filepath);
+		buffer_delete(buffer);
+		
+		// Save Textures
+		for (var i = 0; i < array_length(self.textures); i++)
+		{
+			if (!is_struct(self.textures[i])) continue;
+			buffer_save(self.textures[i].data, filename_path(filepath) + $"tex{i}.dds");
 		}
 	}
 	

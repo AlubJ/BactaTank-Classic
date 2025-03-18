@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"UVViewerPanel",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"UVViewerPanel",
+  "parent":{
+    "name":"UVViewer",
+    "path":"folders/Environment/Environments/UVViewer.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

@@ -192,7 +192,7 @@ BT_SURFACE_TYPE = ["Smooth", "NormalMap", "ParallaxMap", "TangentMap"];
 
 // EnvMap Bits
 #macro BT_ENVMAP_BITS 0x03
-#macro BT_ENVMAP_SHIFT 0x06
+#macro BT_ENVMAP_SHIFT 0x05
 
 // EnvMap Type
 enum BTEnvMapType {

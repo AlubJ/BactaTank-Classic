@@ -44,7 +44,7 @@ varying vec3 vScreenPosition;
 varying mat3 mTBN;
 
 // Dynamic Buffers
-uniform vec3 uDynamicBuffer[4000];
+uniform vec3 uDynamicBuffer[1000];
 uniform bool uUseDynamicBuffer;
 
 void main()
@@ -53,7 +53,7 @@ void main()
     vPosition = in_Position;
 	
 	// Dynamic Buffer
-	if (uUseDynamicBuffer) vPosition += uDynamicBuffer[int(in_TextureCoord1.x)];
+	//if (uUseDynamicBuffer) vPosition += uDynamicBuffer[int(in_TextureCoord1.x)];
 	
 	// Set Vertex Position
     gl_Position = gm_Matrices[MATRIX_WORLD_VIEW_PROJECTION] * vec4(in_Position, 1.0);

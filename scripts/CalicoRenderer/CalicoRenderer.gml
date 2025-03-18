@@ -110,6 +110,10 @@ function CalicoRenderer() constructor
 				// Set Matrix
 				matrix_set(matrix_world, renderItem.matrix);
 				
+				// Dynamic Buffers
+				//if (variable_struct_exists(renderItem, "dynamicBuffers")) var dynamicBuffers = renderItem.dynamicBuffers;
+				//else var dynamicBuffers = [];
+				
 				// Submit Mesh Here
 				submitMesh(renderItem.vertexBuffer, renderItem.primitive, renderItem.material, renderItem.textures, renderItem.shader);
 			}
@@ -298,8 +302,10 @@ function CalicoRenderer() constructor
 				//{
 				//	if (dynamicBuffers[ENVIRONMENT.dynamicBufferIndex] != -1)
 				//	{
+				//		var dynamicBuffer = variable_clone(dynamicBuffers[ENVIRONMENT.dynamicBufferIndex]);
+				//		array_resize(dynamicBuffer, 1000 * 3);
 				//		shader_set_uniform_i(shader_get_uniform(shader, "uUseDynamicBuffer"), ENVIRONMENT.dynamicBufferIndex != -1);
-				//		shader_set_uniform_f_array(shader_get_uniform(shader, "uDynamicBuffer"), dynamicBuffers[ENVIRONMENT.dynamicBufferIndex]);
+				//		shader_set_uniform_f_array(shader_get_uniform(shader, "uDynamicBuffer"), dynamicBuffer);
 				//	}
 				//}
 				

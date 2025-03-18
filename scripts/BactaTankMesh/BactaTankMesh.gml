@@ -43,6 +43,9 @@ function BactaTankMesh() constructor
 	// Dynamic Buffers
 	dynamicBuffers = [  ];
 	
+	// UV Map
+	uvSet1 = -1;
+	
 	// Renderer
 	vertexBufferObject = noone;
 	dynamicBufferObjects = noone;
@@ -51,6 +54,7 @@ function BactaTankMesh() constructor
 	// Other
 	offset = 0;
 	averagePosition = [0, 0, 0, 0];
+	uvSet1AveragePosition = [0, 0];
 	
 	#region Parse / Inject
 	
@@ -144,27 +148,27 @@ function BactaTankMesh() constructor
 		buffer_poke(buffer, offset+40, buffer_s32, array_length(dynamicBuffers));
 		
 		// Some Offsets
-		var dynamicBufferOffset = offset + 56;
-		var dynamicBufferStartOffset = dynamicBufferOffset + array_length(dynamicBuffers) * 4;
-		var dynamicBufferStartPointer = array_length(dynamicBuffers) * 4;
-		ConsoleLog(dynamicBufferStartPointer)
+		//var dynamicBufferOffset = offset + 56;
+		//var dynamicBufferStartOffset = dynamicBufferOffset + array_length(dynamicBuffers) * 4;
+		//var dynamicBufferStartPointer = array_length(dynamicBuffers) * 4;
+		//ConsoleLog(dynamicBufferStartPointer)
 		
-		// Calculate Offsets
-		for (var i = 0; i < array_length(dynamicBuffers); i++)
-		{
-			if (array_length(dynamicBuffers[i]) > 0) buffer_poke(buffer, dynamicBufferOffset + i * 4, buffer_s32, i == 0 ? dynamicBufferStartPointer : dynamicBufferStartPointer + ((vertexCount * 12) * i) - (i * 4));
-			else buffer_poke(buffer, dynamicBufferOffset + i * 4, buffer_s32, 0);
-		}
+		//// Calculate Offsets
+		//for (var i = 0; i < array_length(dynamicBuffers); i++)
+		//{
+		//	if (array_length(dynamicBuffers[i]) > 0) buffer_poke(buffer, dynamicBufferOffset + i * 4, buffer_s32, i == 0 ? dynamicBufferStartPointer : dynamicBufferStartPointer + ((vertexCount * 12) * i) - (i * 4));
+		//	else buffer_poke(buffer, dynamicBufferOffset + i * 4, buffer_s32, 0);
+		//}
 		
-		// Write Dynamic Buffers
-		for (var i = 0; i < array_length(dynamicBuffers); i++)
-		{
-			for (var j = 0; j < array_length(dynamicBuffers[i]); j++)
-			{
-				buffer_poke(buffer, dynamicBufferStartOffset, buffer_f32, dynamicBuffers[i][j]);
-				dynamicBufferStartOffset += 4;
-			}
-		}
+		//// Write Dynamic Buffers
+		//for (var i = 0; i < array_length(dynamicBuffers); i++)
+		//{
+		//	for (var j = 0; j < array_length(dynamicBuffers[i]); j++)
+		//	{
+		//		buffer_poke(buffer, dynamicBufferStartOffset, buffer_f32, dynamicBuffers[i][j]);
+		//		dynamicBufferStartOffset += 4;
+		//	}
+		//}
 	}
 	
 	static link = function(buffer, vbOffsets, ibOffsets, _model)
@@ -359,7 +363,7 @@ function BactaTankMesh() constructor
 				averagePosition[1] += position[1];
 				averagePosition[2] += position[2];
 			}
-				
+			
 			// Average Position
 			averagePosition[0] /= triangleCount+2;
 			averagePosition[1] /= triangleCount+2;
@@ -369,7 +373,35 @@ function BactaTankMesh() constructor
 			vertex_end(currentVertexBuffer);
 		}
 		
+		// Convert Strips to Lists
+		var listTriangles = stripsToTris(triangles);
+		uvSet1 = vertex_create_buffer();
+		vertex_begin(uvSet1, BT_WIREFRAME_VERTEX_FORMAT);
+		
+		for (var i = 0; i < array_length(listTriangles); i++)
+		{
+			var vert1 = vertices[listTriangles[i][0]].uvSet1;
+			var vert2 = vertices[listTriangles[i][1]].uvSet1;
+			var vert3 = vertices[listTriangles[i][2]].uvSet1;
+			vertex_position_3d(uvSet1, vert1[0], vert1[1], 0);
+			vertex_position_3d(uvSet1, vert2[0], vert2[1], 0);
+			vertex_position_3d(uvSet1, vert2[0], vert2[1], 0);
+			vertex_position_3d(uvSet1, vert3[0], vert3[1], 0);
+			vertex_position_3d(uvSet1, vert3[0], vert3[1], 0);
+			vertex_position_3d(uvSet1, vert1[0], vert1[1], 0);
+			
+			uvSet1AveragePosition[0] += vert1[0] + vert2[0] + vert3[0];
+			uvSet1AveragePosition[1] += vert1[1] + vert2[1] + vert3[1];
+		}
+		
+		vertex_end(uvSet1);
+		
+		// Average Position
+		uvSet1AveragePosition[0] /= array_length(listTriangles) * 6;
+		uvSet1AveragePosition[1] /= array_length(listTriangles) * 6;
+		
 		// Freeze VBO For Better Performance
+		vertex_freeze(uvSet1);
 		vertex_freeze(currentVertexBuffer);
 		vertexBufferObject = currentVertexBuffer;
 	}
@@ -549,7 +581,12 @@ function BactaTankMesh() constructor
 	
 	#region Serialize / Deserialize
 	
-	
+	static serialize = function(buffer, _model)
+	{
+		var bmesh = new BactaTankBMesh();
+		bmesh.fromMesh(self, _model);
+		bmesh.serialize(buffer, _model);
+	}
 	
 	#endregion
 	
@@ -588,6 +625,8 @@ function BactaTankMesh() constructor
 		// Destroy Vertex Buffer
 		if (vertexBufferObject != -1) vertex_delete_buffer(vertexBufferObject);
 		vertexBufferObject = -1;
+		if (uvSet1 != -1) vertex_delete_buffer(uvSet1);
+		uvSet1 = -1;
 		
 		// Destroy Buffers
 		indexBuffer = -1;

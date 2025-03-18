@@ -24,6 +24,7 @@ ENVIRONMENT.addModal(new NewProjectModal());
 ENVIRONMENT.addModal(new AddModelModal());
 ENVIRONMENT.addModal(new AboutModal());
 ENVIRONMENT.addModal(new PreferencesModal());
+ENVIRONMENT.addModal(new ReplaceMeshModal());
 
 // Asset Pack Modals
 ENVIRONMENT.addModal(new AssetPacksModal());

@@ -23,6 +23,7 @@ function BactaTankBMesh() constructor
 	triangleCount = 0;
 	material = 0;
 	vertexFormat = [  ];
+	attributes = [  ];
 	
 	#region Some Functions
 	
@@ -45,14 +46,15 @@ function BactaTankBMesh() constructor
 		mesh.vertices = vertices;
 		mesh.triangles = triangles;
 		mesh.bones = bones;
-		mesh.dynamicBuffers = dynamicBuffers;
+		//mesh.dynamicBuffers = dynamicBuffers;
 		mesh.vertexCount = vertexCount;
 		mesh.triangleCount = triangleCount;
+		mesh.type = 6;
 	}
 	
 	static evaluateVertexAttributes = function()
 	{
-		var attributes = [  ];
+		attributes = [  ];
 		for (var i = 0; i < array_length(vertexFormat); i++)
 		{
 			switch(vertexFormat[i].attribute)
@@ -83,13 +85,22 @@ function BactaTankBMesh() constructor
 					break;
 			}
 		}
-		
-		return attributes;
+	}
+	
+	static destroy = function()
+	{
+		// Destroy Things Here!
 	}
 	
 	#endregion
 	
 	#region Export BMesh
+	
+	static serialize = function(buffer, _model)
+	{	
+		// Write Mesh
+		writeMesh(buffer, _model);
+	}
 	
 	static export = function(filepath, _model = noone)
 	{
@@ -102,8 +113,8 @@ function BactaTankBMesh() constructor
 		// Write Bones
 		writeBones(buffer, _model);
 		
-		// Write Mesh
-		writeMesh(buffer, _model);
+		// Serialize
+		serialize(buffer, _model);
 		
 		// Buffer Save
 		buffer_save(buffer, filepath);
@@ -173,7 +184,7 @@ function BactaTankBMesh() constructor
 	static writeMesh = function(buffer, _model = noone)
 	{
 		// Evaluate Vertex Attributes
-		var attributes = evaluateVertexAttributes();
+		evaluateVertexAttributes();
 		
 		// Mesh Data
 		buffer_write(buffer, buffer_string, "Mesh");
@@ -404,7 +415,6 @@ function BactaTankBMesh() constructor
 		triangles = [];
 		
 		// Mesh Attributes
-		var attributes = [  ];
 		buffer_read(buffer, buffer_string);	// Mesh Attributes
 		var attributeCount = buffer_read(buffer, buffer_s32);
 		repeat (attributeCount) array_push(attributes, buffer_read(buffer, buffer_string)); // Position, Normal, Colour, UV

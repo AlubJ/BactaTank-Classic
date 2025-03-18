@@ -194,6 +194,13 @@ function setContext(context = CONTEXT)
 		var modelEditPanel = new ModelEditPanel();
 		modelEditorEnvironment.add(modelEditPanel);
 		ENVIRONMENT.add(modelEditorEnvironment);
+		
+		// Create UV Viewer Environment
+		var uvViewerEnvironment = new Environment();
+		uvViewerEnvironment.name = "UV Viewer";
+		var uvViewerPanel = new UVViewerPanel();
+		uvViewerEnvironment.add(uvViewerPanel);
+		ENVIRONMENT.add(uvViewerEnvironment);
 	}
 	
 	// Set Scene Editor Context
@@ -448,4 +455,168 @@ function exportArmature(model, file)
 {
 	ConsoleLog("Exporting Armature");
 	model.armature.export(file);
+}
+
+function uiExportUVLayout(surface)
+{
+	// Get Save File Name For Mesh Replacement
+	var file = get_save_filename_ext(FILTERS.uvLayout, $"UVLayout", SETTINGS.lastUVPath, "Save UV Layout");
+	if (file != "" && ord(file) != 0)
+	{
+		// User Feedback
+		ENVIRONMENT.openInfoModal("Please wait", "Exporting UV Layout");
+		window_set_cursor(cr_hourglass);
+		
+		// Save UV Layout
+		surface_save(surface, file);
+		
+		// Set Last UV Path
+		SETTINGS.lastUVPath = filename_path(file);
+		
+		// User Feedback
+		ENVIRONMENT.closeInfoModal();
+		window_set_cursor(cr_default);
+	}
+}
+
+function uiExportModel(model)
+{
+	// Get Save File Name For Mesh Replacement
+	var file = get_save_filename_ext(FILTERS.exportModel, $"Model", SETTINGS.lastModelPath, "Save Model");
+	if (file != "" && ord(file) != 0)
+	{
+		// User Feedback
+		ENVIRONMENT.openInfoModal("Please wait", "Exporting Model");
+		window_set_cursor(cr_hourglass);
+		
+		// Define Function
+		var func = function(model, file)
+		{
+			// Export Model
+			model.export(file);
+			
+			// Set Last UV Path
+			SETTINGS.lastModelPath = filename_path(file);
+			
+			// User Feedback
+			ENVIRONMENT.closeInfoModal();
+			window_set_cursor(cr_default);
+		}
+						
+		// Timesource
+		time_source_start(time_source_create(time_source_game, 3, time_source_units_frames, func, [model, file]));
+	}
+}
+
+function uiExportModelFromPreview(model, layers)
+{
+	// Get Save File Name For Mesh Replacement
+	var file = get_save_filename_ext(FILTERS.exportModel, $"Model", SETTINGS.lastModelPath, "Save Model");
+	if (file != "" && ord(file) != 0)
+	{
+		// User Feedback
+		ENVIRONMENT.openInfoModal("Please wait", "Exporting Model");
+		window_set_cursor(cr_hourglass);
+		
+		// Define Function
+		var func = function(model, file, layers)
+		{
+			// Export Model
+			model.export(file, layers);
+			
+			// Set Last UV Path
+			SETTINGS.lastModelPath = filename_path(file);
+			
+			// User Feedback
+			ENVIRONMENT.closeInfoModal();
+			window_set_cursor(cr_default);
+		}
+						
+		// Timesource
+		time_source_start(time_source_create(time_source_game, 3, time_source_units_frames, func, [model, file, layers]));
+	}
+}
+
+function loadTemplates()
+{
+	// Templates (Are here temporarily)
+	TEMPLATES = [  ];
+	
+	// Load All Templates
+	var file = file_find_first(TEMPLATES_DIRECTORY + "*.ghg", fa_none);
+	
+	while (file != "")
+	{
+		array_push(TEMPLATES, TEMPLATES_DIRECTORY + file);
+	    file = file_find_next();
+	}
+	
+	file_find_close();
+}
+
+function newSettings()
+{
+	return {
+		// Version
+		version: VERSION,
+		
+		// Window Settings
+		window: {
+			maximised: false,
+			size: [1366, 768],
+			position: [0, 0],
+		},
+		
+		// Default Project Settings
+		defaultProjectSettings: {
+		
+		},
+		
+		// Recent Projects
+		recentProjects: [  ],
+		
+		// Filepath Settings
+		lastProjectPath: "",
+		lastCharacterPath: "",
+		lastModelPath: "",
+		
+		// Attribute Specific Paths
+		lastMeshPath: "",
+		lastTexturePath: "",
+		lastMaterialPath: "",
+		lastLocatorPath: "",
+		lastArmaturePath: "",
+		lastUVPath: "",
+		
+		// Default Paths
+		defaultProjectPath: environment_get_variable("USERPROFILE") + @"\Documents\BactaTank Projects",
+		
+		// Game Path Settings
+		tcsPath: "",
+		
+		// Viewer Settings
+		viewerSettings: {
+			gridColour: [0.3, 0.3, 0.3, 1.0],
+			colliderColour: [0.8, 0.3, 0.3, 1.0],
+			locatorColour: [0.3, 0.3, 0.8, 1.0],
+			locatorSelectedColour: [0.8, 0.5, 0.1, 1.0],
+			boneColour: [1.0, 0.0, 0.0, 1.0],
+			selectedBoneColour: [0.0, 1.0, 0.0, 1.0],
+			uvMapColour: [1.0, 0.0, 0.0, 1.0],
+			randomiseUVMapColours: true,
+		},
+		
+		// General Settings
+		showTooltips: true,
+		displayHex: false,
+		enableScripting: false,
+		
+		// Material Viewer
+		showVertexFormat: true,
+		showAssignedMeshes: true,
+		
+		// Console
+		consoleEnabled: true,
+		verboseOutput: false,
+	}
 }

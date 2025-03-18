@@ -98,10 +98,24 @@ function CalicoCamera() constructor
 	static moveThird = function(bounds = [0, 0, WINDOW_SIZE[0], WINDOW_SIZE[1]]) {
 		if (CURSOR_POSITION[0] > bounds[0] && CURSOR_POSITION[0] < bounds[2] && CURSOR_POSITION[1] > bounds[1] && CURSOR_POSITION[1] < bounds[3])
 		{
-			if ((device_mouse_check_button_pressed(0, mb_left) || device_mouse_check_button_pressed(0, mb_right)) && !active)
+			if ((device_mouse_check_button_pressed(0, mb_left) || device_mouse_check_button_pressed(0, mb_right)) || device_mouse_check_button(0, mb_middle) && !active)
 			{
 				renderer.activate();
 				active = true;
+			}
+			
+			if (mouse_wheel_up())
+			{
+				lookDistance -= (lookDistance / 4);
+				renderer.activate();
+				renderer.deactivate(1);
+			}
+			
+			if (mouse_wheel_down())
+			{
+				lookDistance += (lookDistance / 3);
+				renderer.activate();
+				renderer.deactivate(1);
 			}
 		}
 		
@@ -113,33 +127,32 @@ function CalicoCamera() constructor
 		}
 		if (device_mouse_check_button(0, mb_right) && !renderer.idle && active)
 		{
+			vectorH = [
+				dcos(lookDirectionSmooth - 90),
+				dsin(lookPitchSmooth + 90),
+				dsin(lookDirectionSmooth - 90)];
 			//var matrix = matrix_build(0, 0, 0, lookPitch, lookDirection, 0, 1, 1, 1);
 			//lookAtPosition.x += matrix[4] * window_mouse_get_delta_x() * 0.001 + matrix[8] * window_mouse_get_delta_y() * 0.001;
 			//lookAtPosition.z += matrix[5] * window_mouse_get_delta_x() * 0.001 + matrix[9] * window_mouse_get_delta_y() * 0.001;
 			//lookAtPosition.y += matrix[6] * window_mouse_get_delta_x() * 0.001 + matrix[10] * window_mouse_get_delta_y() * 0.001;
-			lookAtPosition.x += dsin(lookDirection) * window_mouse_get_delta_x() * 0.001;
-			lookAtPosition.z += dcos(lookDirection) * window_mouse_get_delta_x() * 0.001;
-			lookAtPosition.y += dcos(lookPitch) * window_mouse_get_delta_y() * 0.001;
+			
+			lookAtPosition.x += vectorH[0] * window_mouse_get_delta_x() * 0.001;
+			lookAtPosition.z -= vectorH[2] * window_mouse_get_delta_x() * 0.001;
+			lookAtPosition.y += vectorH[1] * window_mouse_get_delta_y() * 0.001;
+			
+			//lookAtPosition.x += dsin(lookDirection) * window_mouse_get_delta_x() * 0.001;
+			//lookAtPosition.z += dcos(lookDirection) * window_mouse_get_delta_x() * 0.001;
+			//lookAtPosition.y += dcos(lookPitch) * window_mouse_get_delta_y() * 0.001;
+		}
+		if (device_mouse_check_button(0, mb_middle) && !renderer.idle && active)
+		{
+			lookDistance += window_mouse_get_delta_y() * 0.005;
 		}
 		
-		if ((device_mouse_check_button_released(0, mb_left) || device_mouse_check_button_released(0, mb_right)) && active)
+		if ((device_mouse_check_button_released(0, mb_left) || device_mouse_check_button_released(0, mb_right)) || device_mouse_check_button_released(0, mb_middle) && active)
 		{
 			renderer.deactivate(1);
 			active = false;
-		}
-		
-		if (mouse_wheel_up() && (CURSOR_POSITION[0] > bounds[0] && CURSOR_POSITION[0] < bounds[2] && CURSOR_POSITION[1] > bounds[1] && CURSOR_POSITION[1] < bounds[3]))
-		{
-			lookDistance -= (lookDistance / 4);
-			renderer.activate();
-			renderer.deactivate(1);
-		}
-		
-		if (mouse_wheel_down() && (CURSOR_POSITION[0] > bounds[0] && CURSOR_POSITION[0] < bounds[2] && CURSOR_POSITION[1] > bounds[1] && CURSOR_POSITION[1] < bounds[3]))
-		{
-			lookDistance += (lookDistance / 3);
-			renderer.activate();
-			renderer.deactivate(1);
 		}
 		
 		lookAtPosition.x = clamp(lookAtPosition.x, -20, 20);

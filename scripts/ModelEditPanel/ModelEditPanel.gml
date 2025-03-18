@@ -88,6 +88,10 @@ function ModelEditPanel() constructor
 				{
 					renderLocatorEditor();
 				}
+				else if (string_pos("BONE", ENVIRONMENT.attributeSelected))
+				{
+					renderBoneEditor();
+				}
 				
 				ImGui.EndChild();
 			}
@@ -351,6 +355,29 @@ function ModelEditPanel() constructor
 			var flags = ImGui.ComboBoxCustom("Cullmode", (material.alphaBlend >> BT_CULLMODE_SHIFT & BT_CULLMODE_BITS), BT_CULLMODE, "##hiddenMaterialCullmode", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly);
 			material.alphaBlend = (material.alphaBlend & ~(BT_CULLMODE_BITS << BT_CULLMODE_SHIFT)) | flags << BT_CULLMODE_SHIFT;
 			
+			// Generate UV Map Layers
+			var uvSets = [];
+			for (var i = 0; i < array_length(material.vertexFormat); i++)
+			{
+				if (material.vertexFormat[i].attribute == BTVertexAttributes.uvSet1) array_push(uvSets, "UVSet1");
+				else if (material.vertexFormat[i].attribute == BTVertexAttributes.uvSet2) array_push(uvSets, "UVSet2");
+			}
+			
+			// UVSet Text
+			ImGui.Spacing();
+			ImGui.Text("UV Sets");
+			
+			// Separator
+			ImGui.Separator();
+			
+			// Surface UV Set
+			var uvIndex = ImGui.ComboBoxCustom("Surface UV Set", material.surfaceUVMapIndex - 1, uvSets, "##hiddenMaterialSurfaceUVSet", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly) + 1;
+			material.surfaceUVMapIndex = uvIndex;
+			
+			// Normal UV Set
+			var uvIndex = ImGui.ComboBoxCustom("Normal UV Set", material.normalUVMapIndex - 1, uvSets, "##hiddenMaterialNormalUVSet", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly) + 1;
+			material.normalUVMapIndex = uvIndex;
+			
 			// Show Vertex Format
 			if (SETTINGS.showVertexFormat)
 			{
@@ -400,7 +427,7 @@ function ModelEditPanel() constructor
 					var cursorPos = [ImGui.GetCursorPosX(), ImGui.GetCursorPosY()];
 				
 					// Get Material Index
-					var meshMaterial = model.getMaterial(i);
+					var meshMaterial = model.meshes[i].material;
 				
 					// Skip if Material Doesn't Match
 					if (meshMaterial != index)
@@ -528,7 +555,7 @@ function ModelEditPanel() constructor
 				array_push(dynamicBuffers, $"Basis ({i})");
 				continue;
 			}
-			array_push(dynamicBuffers, $"Dynamic Buffer {i}");
+			array_push(dynamicBuffers, $"Pose {i}");
 		}
 		
 		// Renderer
@@ -546,6 +573,7 @@ function ModelEditPanel() constructor
 			matrix: matrix_build_identity(),
 			shader: "StandardShader",
 			primitive: pr_trianglestrip,
+			dynamicBuffers: mesh.dynamicBuffers,
 		});
 		
 		// Render Material Preview
@@ -601,6 +629,25 @@ function ModelEditPanel() constructor
 				mesh.bones[i] = bone - 1;
 			}
 			
+			//// Dynamic Buffers
+			//ImGui.Spacing();
+			//ImGui.Text("Dynamic Buffers");
+			
+			//// Separator
+			//ImGui.Separator();
+			
+			//// Dynamic Buffers List
+			//if (ImGui.BeginChild("DynamicBufferList", 0, 100))
+			//{
+			//	for (var i = 0; i < array_length(dynamicBuffers); i++)
+			//	{
+			//		if (ImGui.Selectable($"##hidden{dynamicBuffers[i]}", ENVIRONMENT.dynamicBufferIndex + 1 == i)) ENVIRONMENT.dynamicBufferIndex = i - 1;
+			//		ImGui.SameLine(16);
+			//		ImGui.Text(dynamicBuffers[i]);
+			//	}
+			//	ImGui.EndChild();
+			//}
+			
 			// Other Information Text
 			ImGui.Spacing();
 			ImGui.Text("Other Information");
@@ -624,17 +671,6 @@ function ModelEditPanel() constructor
 			// Spacing
 			ImGui.Spacing();
 			
-			// Dynamic Buffer List
-			//if (ImGui.BeginChild("MeshDynamicBufferList", 0, 128))
-			//{
-			//	for (var i = 0; i < array_length(dynamicBuffers); i++)
-			//	{
-			//		if (ImGui.Selectable($"##hidden{dynamicBuffers[i]}", ENVIRONMENT.dynamicBufferIndex + 1 == i)) ENVIRONMENT.dynamicBufferIndex = i - 1;
-			//		ImGui.SameLine(16);
-			//		ImGui.Text(dynamicBuffers[i]);
-			//	}
-			//	ImGui.EndChild();
-			//}
 			ImGui.EndChild();
 		}
 	}
@@ -654,7 +690,11 @@ function ModelEditPanel() constructor
 			
 			// Menu Items
 			if (ImGui.MenuItem("Export Mesh")) uiExportMesh(model, index);
-			if (ImGui.MenuItem("Replace Mesh")) uiReplaceMesh(model, index);
+			if (ImGui.MenuItem("Replace Mesh##hiddenButton"))
+			{
+				uiReplaceMesh(model, index);
+				//ENVIRONMENT.openModal("Replace Mesh");
+			}
 			ImGui.Separator();
 			if (ImGui.MenuItem("Dereference Mesh"))
 			{
@@ -672,6 +712,13 @@ function ModelEditPanel() constructor
 					// Enable Renderer
 					RENDERER.activate();
 					RENDERER.deactivate(2);
+				}, [model, index]);
+			}
+			if (ImGui.MenuItem("Remove Dynamic Buffers"))
+			{
+				ENVIRONMENT.openConfirmModal("Remove Dynamic Buffers", "Removing dynamic buffers will remove all poses associated with this mesh. Are you sure you want to continue? This cannot be undone.", function(model, index) {
+					// Remove Dynamic Buffers
+					model.meshes[index].dynamicBuffers = [  ];
 				}, [model, index]);
 			}
 			
@@ -838,7 +885,7 @@ function ModelEditPanel() constructor
 		ImGui.Separator();
 		
 		// Locator Offset
-		ImGui.InputTextCustom("Locator Offset", "0x" + string_hex(locator.offset), "##LocatorLayerOffset", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly);
+		ImGui.InputTextCustom("Locator Offset", "0x" + string_hex(model.nu20Offset + locator.offset), "##LocatorLayerOffset", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly);
 	}
 	
 	static renderLocatorPopup = function()
@@ -861,5 +908,73 @@ function ModelEditPanel() constructor
 			// End Popup
 			ImGui.EndPopup();
 		}
+	}
+	
+	static renderBoneEditor = function()
+	{
+		// Model
+		var model = PROJECT.currentModel;
+		var space = 120;
+		var width = windowSize[0] - 16;
+		
+		// Get Bone
+		var index = string_digits(ENVIRONMENT.attributeSelected);
+		var bone = model.armature.bones[index];
+		
+		// Get Parent Bone
+		if (bone.parent != -1) var parent = model.armature.bones[bone.parent].name;
+		else var parent = "None";
+		
+		// Bone Information Text
+		ImGui.Spacing();
+		ImGui.Text("Bone Information");
+		
+		// Separator
+		ImGui.Separator();
+		
+		// Bone Name
+		ImGui.InputTextCustom("Bone Name", bone.name, "##hiddenBoneName", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly);
+		
+		// Bone Parent
+		ImGui.InputTextCustom("Bone Parent", $"{bone.parent} | {parent}", "##hiddenBoneParent", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly);
+		
+		// Bone Information Text
+		ImGui.Spacing();
+		ImGui.Text("Identity Pose");
+		
+		// Separator
+		ImGui.Separator();
+		
+		// Bone Identity Matrix
+		ImGui.DragMatrixCustom("Matrix", matrix_build_identity(), 0, 0, 9999, "##hiddenBoneIdentityMatrix", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly);
+		
+		// Bone Identity Offset
+		ImGui.InputTextCustom("Offset", "0x" + string_hex(model.nu20Offset + bone.offset), "##hiddenBoneIdentityMatrixOffset", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly);
+		
+		// Bone Information Text
+		ImGui.Spacing();
+		ImGui.Text("Bind Pose");
+		
+		// Separator
+		ImGui.Separator();
+		
+		// Bone Identity Matrix
+		ImGui.DragMatrixCustom("Matrix", bone.bindMatrix, 0, 0, 9999, "##hiddenBoneBindMatrix", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly);
+		
+		// Bone Identity Offset
+		ImGui.InputTextCustom("Offset", "0x" + string_hex(model.nu20Offset + bone.bindOffset), "##hiddenBoneBindMatrixOffset", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly);
+		
+		// Bone Information Text
+		ImGui.Spacing();
+		ImGui.Text("Inverse Bind Pose");
+		
+		// Separator
+		ImGui.Separator();
+		
+		// Bone Identity Matrix
+		ImGui.DragMatrixCustom("Matrix", bone.inverseBindMatrix, 0, 0, 9999, "##hiddenBoneInverseBindMatrix", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly);
+		
+		// Bone Identity Offset
+		ImGui.InputTextCustom("Offset", "0x" + string_hex(model.nu20Offset + bone.inverseBindOffset), "##hiddenBoneInverseBindMatrixOffset", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly);
 	}
 }

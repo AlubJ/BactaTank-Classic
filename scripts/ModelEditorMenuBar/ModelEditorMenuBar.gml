@@ -19,31 +19,37 @@ function ModelEditorMenuBar() constructor
 		// File Menu
 		if (ImGui.BeginMenu("File"))
 		{
-			if (ImGui.MenuItem("New Project", "Ctrl+N")) 
-			{
-				newProject();
-			}
-			ImGui.MenuItem("Open Project", "Ctrl+O");
-			if (ImGui.BeginMenu("Recent Projects", array_length(SETTINGS.recentProjects) > 0))
-			{
-				for (var i = 0; i < array_length(SETTINGS.recentProjects); i++)
-				{
-					ImGui.MenuItem(filename_name(SETTINGS.recentProjects[i]));
-				}
+			//if (ImGui.MenuItem("New Project", "Ctrl+N")) 
+			//{
+			//	newProject();
+			//}
+			//ImGui.MenuItem("Open Project", "Ctrl+O");
+			//if (ImGui.BeginMenu("Recent Projects", array_length(SETTINGS.recentProjects) > 0))
+			//{
+			//	for (var i = 0; i < array_length(SETTINGS.recentProjects); i++)
+			//	{
+			//		ImGui.MenuItem(filename_name(SETTINGS.recentProjects[i]));
+			//	}
 				
-				// End Menu
-				ImGui.EndMenu();
+			//	// End Menu
+			//	ImGui.EndMenu();
+			//}
+			
+			//ImGui.Separator();
+			
+			if (ImGui.MenuItem("New Model", "Ctrl+N", undefined))
+			{
+				ENVIRONMENT.openConfirmModal("Unsaved Changes", "Are you sure you want to continue?", function() {
+					ENVIRONMENT.openModal("Welcome");
+				});
 			}
-			
-			ImGui.Separator();
-			
-			if (ImGui.MenuItem("Open Model", "Ctrl+Shift+O", undefined))
+			if (ImGui.MenuItem("Open Model", "Ctrl+O", undefined))
 			{
 				ENVIRONMENT.openConfirmModal("Unsaved Changes", "Are you sure you want to continue?", function() {
 					openProjectOrModelDialog();
 				});
 			}
-			if (ImGui.MenuItem("Save Model", "Ctrl+Shift+S", undefined))
+			if (ImGui.MenuItem("Save Model", "Ctrl+S", undefined))
 			{
 				saveModelDialog();
 			}
@@ -74,6 +80,12 @@ function ModelEditorMenuBar() constructor
 			// Export Armature Tool
 			if (ImGui.MenuItem("Export Armature")) uiExportArmature(PROJECT.currentModel);
 			
+			// Export Model
+			if (ImGui.MenuItem("Export Model")) uiExportModel(PROJECT.currentModel);
+			
+			// Export Model From Preview
+			if (ImGui.MenuItem("Export Model From Preview")) uiExportModelFromPreview(PROJECT.currentModel, ENVIRONMENT.displayLayers);
+			
 			// Tools Menu
 			if (ImGui.BeginMenu("Tools"))
 			{
@@ -87,6 +99,16 @@ function ModelEditorMenuBar() constructor
 				
 				// End Menu
 				ImGui.EndMenu();
+			}
+			
+			// Export Render
+			if (ImGui.MenuItem("Export Render", "F12"))
+			{
+				var file = get_save_filename_ext("Portable Network Graphics (*.png)|*.png", "Render.png", "", "Export Render");
+				if (file != "" && ord(file) != 0)
+				{
+					surface_save(RENDERER.surface, file);
+				}
 			}
 			
 			// End Menu

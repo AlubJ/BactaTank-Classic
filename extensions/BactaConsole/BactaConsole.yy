@@ -22,6 +22,9 @@
         {"$GMExtensionFunction":"","%Name":"ConsolePrint","argCount":0,"args":[1,],"documentation":"","externalName":"Print","help":"","hidden":false,"kind":1,"name":"ConsolePrint","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":2,},
         {"$GMExtensionFunction":"","%Name":"ConsoleSetTitle","argCount":0,"args":[1,],"documentation":"","externalName":"SetTitle","help":"","hidden":false,"kind":1,"name":"ConsoleSetTitle","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":2,},
         {"$GMExtensionFunction":"","%Name":"DecodeDDS","argCount":0,"args":[1,2,],"documentation":"","externalName":"DecodeDDS","help":"","hidden":false,"kind":1,"name":"DecodeDDS","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":2,},
+        {"$GMExtensionFunction":"","%Name":"OpenDirectory","argCount":0,"args":[1,],"documentation":"","externalName":"OpenDirectory","help":"","hidden":false,"kind":1,"name":"OpenDirectory","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":2,},
+        {"$GMExtensionFunction":"","%Name":"IsWindowMaximised","argCount":0,"args":[1,],"documentation":"","externalName":"IsWindowMaximised","help":"","hidden":false,"kind":1,"name":"IsWindowMaximised","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":2,},
+        {"$GMExtensionFunction":"","%Name":"SetWindowMaximised","argCount":0,"args":[1,],"documentation":"","externalName":"SetWindowMaximised","help":"","hidden":false,"kind":1,"name":"SetWindowMaximised","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":2,},
       ],"init":"","kind":1,"name":"","order":[],"origname":"","ProxyFiles":[
         {"$GMProxyFile":"","%Name":"BactaTankUtils.dll","name":"BactaTankUtils.dll","resourceType":"GMProxyFile","resourceVersion":"2.0","TargetMask":6,},
       ],"resourceType":"GMExtensionFile","resourceVersion":"2.0","uncompress":false,"usesRunnerInterface":false,},

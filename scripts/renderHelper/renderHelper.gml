@@ -40,6 +40,34 @@ function buildGridVertexBuffer()
 	return grid;
 }
 
+function buildUVGridVertexBuffer()
+{
+	var grid = vertex_create_buffer();
+	
+	vertex_begin(grid, BT_WIREFRAME_VERTEX_FORMAT);
+	
+	vertex_position_3d(grid, 1, 0, 0);
+	vertex_position_3d(grid, 1, 1, 0);
+	vertex_position_3d(grid, 0, 1, 0);
+	vertex_position_3d(grid, 1, 1, 0);
+	
+	for (var i = 0; i < 20; i++)
+	{
+		vertex_position_3d(grid, i/20, 0, 0);
+		vertex_position_3d(grid, i/20, 1, 0);
+	}
+	
+	for (var i = 0; i < 20; i++)
+	{
+		vertex_position_3d(grid, 0, i/20, 0);
+		vertex_position_3d(grid, 1, i/20, 0);
+	}
+	
+	vertex_end(grid);
+	
+	return grid;
+}
+
 function buildCapsuleBottomVertexBuffer(radius)
 {	
 	// Create Vertex Buffer
@@ -231,4 +259,108 @@ function world_to_screen(xx, yy, zz, view_mat, proj_mat, sizex = WINDOW_SIZE[0],
 	}
 
 	return [(0.5 + 0.5 * cx) * sizex, (0.5 + 0.5 * cy) * sizey];	
+}
+
+function stripsToTris(strip)
+{
+	// Create Triangle Array
+	var triangles = [  ];
+	
+	// Winding Order Stuff
+    var flip = false;
+	
+	// Get Next Indices
+	var t0 = -1;
+    var t1 = strip[0];
+    var t2 = strip[1];
+    for (var k = 2; k < array_length(strip); k++)
+	{
+        flip = !flip;
+        t0 = t1;
+		t1 = t2;
+		t2 = strip[k];
+        if (t0 == t1 || t1 == t2 || t2 == t0) continue;
+        array_push(triangles, flip ? [t0, t1, t2] : [t0, t2, t1]);
+	}
+	
+	return triangles;
+}
+
+function strip_to_triangles(triangle_strip)
+{
+    var triangle_list = [];
+    var strip_length = array_length(triangle_strip);
+    if (strip_length < 3) return triangle_list;
+    
+    for (var i = 0; i < strip_length - 2; i++)
+	{
+        if (i % 2 == 0)
+		{
+            array_push(triangle_list, triangle_strip[i], triangle_strip[i+1], triangle_strip[i+2]);
+        }
+		else
+		{
+            array_push(triangle_list, triangle_strip[i], triangle_strip[i+2], triangle_strip[i+1]);
+        }
+    }
+    
+    return triangle_list;
+}
+
+function triangles_to_strip(indices)
+{
+    var strip = []; // Output triangle strip
+    var index_count = array_length(indices);
+    if (index_count < 3) return strip; // Need at least one triangle
+    
+    var last_triangle = [indices[0], indices[1], indices[2]];
+    array_push(strip, last_triangle[0], last_triangle[1], last_triangle[2]);
+    
+    for (var i = 3; i < index_count; i += 3)
+	{
+        var next_triangle = [indices[i], indices[i+1], indices[i+2]];
+        
+        // Check if we need to insert a degenerate triangle
+        if (last_triangle[2] != next_triangle[0])
+		{
+            array_push(strip, last_triangle[2]); // Duplicate last vertex
+            array_push(strip, next_triangle[0]); // Duplicate next triangle's first vertex
+        }
+        
+        // Add the next triangle's vertices
+        array_push(strip, next_triangle[0], next_triangle[1], next_triangle[2]);
+        last_triangle = next_triangle;
+    }
+    
+    return strip;
+}
+
+function strip_to_lines(triangle_strip)
+{
+    var line_strip = [];
+    var strip_length = array_length(triangle_strip);
+    if (strip_length < 2) return line_strip;
+    
+    for (var i = 0; i < strip_length - 1; i++)
+	{
+        array_push(line_strip, triangle_strip[i], triangle_strip[i+1]);
+    }
+    
+    return line_strip;
+}
+
+function triangles_to_lines(triangle_list)
+{
+    var line_list = [];
+    var triangle_count = array_length(triangle_list);
+    if (triangle_count < 3) return line_list;
+    
+    for (var i = 0; i < triangle_count; i += 3)
+	{
+        array_push(line_list, triangle_list[i], triangle_list[i+1]); // Edge 1
+        array_push(line_list, triangle_list[i+1], triangle_list[i+2]); // Edge 2
+        array_push(line_list, triangle_list[i+2], triangle_list[i]); // Edge 3
+    }
+    
+    return line_list;
 }

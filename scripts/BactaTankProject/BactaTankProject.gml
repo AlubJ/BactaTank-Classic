@@ -33,7 +33,7 @@ function BactaTankProject(projectName = "BTProj", projectType = BTProjectType.TC
 	
 	// Working Directory
 	workingDirectory = TEMP_DIRECTORY + $"{string_hex(uniqueID)}\\";
-	directory_create(workingDirectory);
+	//directory_create(workingDirectory);
 	
 	// Settings
 	settings = {

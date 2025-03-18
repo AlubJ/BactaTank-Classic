@@ -34,67 +34,16 @@ display_reset(8, true);
 
 randomize();
 
+//array = [11, 12, 13, 21, 22, 23];
+//show_message(transformTo2DArray(array, 3))
+
+//anim = new BactaTankAnimation();
+//anim.parse("BLOCK1.AN3");
+
 #region BactaTank Settings
 
 // Default Settings For First Time Launch
-SETTINGS = {
-	// Version
-	version: VERSION,
-	
-	// Window Settings
-	window: {
-		maximised: false,
-		size: [1366, 768],
-		position: [0, 0],
-	},
-	
-	// Default Project Settings
-	defaultProjectSettings: {
-		
-	},
-	
-	// Recent Projects
-	recentProjects: [  ],
-	
-	// Filepath Settings
-	lastProjectPath: "",
-	lastCharacterPath: "",
-	lastModelPath: "",
-	
-	// Attribute Specific Paths
-	lastMeshPath: "",
-	lastTexturePath: "",
-	lastMaterialPath: "",
-	lastLocatorPath: "",
-	lastArmaturePath: "",
-	
-	// Default Paths
-	defaultProjectPath: environment_get_variable("USERPROFILE") + @"\Documents\BactaTank Projects",
-	
-	// Game Path Settings
-	tcsPath: "",
-	
-	// Viewer Settings
-	viewerSettings: {
-		gridColour: [0.3, 0.3, 0.3, 1.0],
-		colliderColour: [0.8, 0.3, 0.3, 1.0],
-		locatorColour: [0.3, 0.3, 0.8, 1.0],
-		locatorSelectedColour: [0.8, 0.5, 0.1, 1.0],
-		boneColour: [1.0, 0.0, 0.0, 1.0],
-	},
-	
-	// General Settings
-	showTooltips: true,
-	displayHex: true,
-	
-	// Material Viewer
-	showVertexFormat: true,
-	showAssignedMeshes: true,
-	
-	// Console
-	consoleEnabled: true,
-	verboseOutput: false,
-}
+SETTINGS = newSettings();
 
 // Load Settings or Save Default Settings
 if (file_exists(CONFIG_DIRECTORY + "settings.bin"))
@@ -115,7 +64,7 @@ if (!directory_exists(SETTINGS.defaultProjectPath)) directory_create(SETTINGS.de
 if (SETTINGS.lastProjectPath == "") SETTINGS.lastProjectPath = SETTINGS.defaultProjectPath;
 
 // Initialize Console
-ConsoleInitialize();
+if (SETTINGS.consoleEnabled) ConsoleInitialize();
 ConsoleLog("Settings Loaded");
 
 //var buffer = buffer_load("Untitled.dds");
@@ -136,7 +85,7 @@ VERSIONS = {
 	main: "v0.3.0",
 	renderer: "v1.0.0",
 	backend: "v0.2.0",
-	revision: "16",
+	revision: "21",
 }
 
 // Set Console Title
@@ -147,7 +96,7 @@ CONTEXT = BTContext.None;
 
 #endregion
 
-#region BactaTank Asset Packs
+#region BactaTank Asset Packs and Templates
 
 // Asset Packs Will Be Empty By Default (Potentially Autodetect Asset Packs?)
 ASSET_PACKS = [  ];
@@ -165,6 +114,12 @@ while (file != "")
 }
 
 file_find_close();
+
+// Create Templates Directory
+if (!directory_exists(TEMPLATES_DIRECTORY)) directory_create(TEMPLATES_DIRECTORY);
+
+// Load Templates
+loadTemplates();
 
 #endregion
 
@@ -215,7 +170,7 @@ surface_resize(application_surface, WINDOW_SIZE[0], WINDOW_SIZE[1]);
 display_set_gui_size(WINDOW_SIZE[0], WINDOW_SIZE[1]);
 
 // Window Maximise
-if (SETTINGS.window.maximised) time_source_start(time_source_create(time_source_game, 2, time_source_units_frames, function() { window_set_state(WINDOW_STATE_MAXIMIZE); }));
+if (SETTINGS.window.maximised) time_source_start(time_source_create(time_source_game, 2, time_source_units_frames, function() { SetWindowMaximised(window_handle()); }));
 
 // Command Hook
 window_command_hook(window_command_close);
