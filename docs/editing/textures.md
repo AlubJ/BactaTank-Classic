@@ -35,7 +35,7 @@ To save as a DirectDraw Surface (`*.DDS`) in Photoshop, `File >> Save As...` and
 You can replace a texture by clicking ![Triple Dot Button](https://i.imgur.com/xhwAmwR.png) and then clicking `Replace Texture` and select the texture you want to use. You can also use `Ctrl+R` or drop the texture file onto the program.
 
 ## Normal Maps
-Normal maps are used in-game to add extra detail to the meshes. The games swizzle the texture information around so typical DirectX normal maps won't work properly. You will need to swizzle the channels around to get the in-game corrected normal maps. To do this you can use GIMP or Photoshop to swap the original DirectX normal map `RGBA` to the in-game one `AGBR`. OpenGL maps have the green channel flipped.
+Normal maps are used in-game to add extra detail to the meshes. The games swizzle the texture information around so typical DirectX normal maps won't work properly. You will need to swizzle the channels around to get the in-game corrected normal maps. To do this you can use GIMP or Photoshop to swap the original DirectX normal map `RGBA` to the in-game one `AGBR`. OpenGL maps have the green channel flipped. You can also use [this tool](https://cdn.discordapp.com/attachments/540477596123660288/1333300302442532986/GLtoTCSNM.zip?ex=67fe906b&is=67fd3eeb&hm=f313c02e5b3ac8f22cad908042f947fc807e38ad11b608388c5028c7b1a85457&) to swizzle and un-swizzle the maps as well.
 
 Why did TtGames do this? The answer to this is completely beyond me, but other games they have made do make use of regular DirectX normal maps.
 
@@ -45,7 +45,11 @@ BactaTank Classic will detect if a normal map is DirectX or swizzled, so if you 
 ### Texture Sizes
 Textures must be a power of two, this is due to a limitation in render technology. A valid texture size would be `512x256` and an invalid texture size would be `135x423`. BactaTank Classic or the game may crash when not using a power of two textures.
 
-The games also have a limit on how big a texture can be. `4096x4096` is the hard limit in both BactaTank Classic and the games. It is recommended you don't use a texture this large unless you need to, since this will impact loading times.
+The games also have a limit on how big a texture can be. `4096x4096` is the hard limit in both BactaTank Classic and the games. It is recommended you don't use a texture this large unless you need to, since this will impact loading times. You will realistically only need a texture as big as `1024x1024`.
 
 ### Cubemap Textures
 Cubemaps are a special case in the `*_PC.GHG` model files. A single cubemap counts as 6 individual textures, as each face of a cubemap count as their own texture. At the moment, you cannot replace a none-cubemap texture with a cubemap. You can replace a cubemap texture with a new one though.
+
+## Example Textures
+Here are some examples of textures. Normal maps should always be exported with `DXT5`/`BC3` because the red and alpha channel are swapped around.
+![Triple Dot Button](https://i.imgur.com/cBbqqsj.png)<br>
