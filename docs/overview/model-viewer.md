@@ -12,7 +12,7 @@ Bones are displayed in the model viewer, these are the white nodes connected by 
 Locators are what the games use to place objects, such as weapons, shadows and accessories. The locators are displayed as blue crosshairs. You can click ![Locator Button](https://i.imgur.com/Hn3gUZC.png) to toggle the viewing between in-front, inside, or off. You can also right click ![Locator Button](https://i.imgur.com/Hn3gUZC.png) to show more options including a locator helper, which we will get into later. You can also use `L` to toggle locator viewing and `Ctrl+L` to toggle locator name viewing.
 
 ## Layers
-Layers are what the games use to decide what meshes to render when. These mainly control things like Level of Detail meshes, but can be used in other ways. You can select which layers are viewed in the viewer by clicking ![Layers Button](https://i.imgur.com/9mDy1WI.png) and toggling the layers. You can also use `Ctrl+[1-9]` to toggle layers 0-8 and `Ctrl+Shift+[1-9]` to toggle layers 8-17. You can also hold `Alt` to solo that layer.
+Layers are what the games use to decide what meshes to render when. These mainly control things like Level of Detail meshes, but can be used in other ways. You can select which layers are viewed in the viewer by clicking ![Layers Button](https://i.imgur.com/9mDy1WI.png) and toggling the layers. You can also use `Ctrl+[1-9]` to toggle layers 0-8 and `Ctrl+Shift+[1-9]` to toggle layers 8-17. You can also hold `Alt` with those other hotkeys to solo that layer.
 
 ## Other Options
 - ![Reload Button](https://i.imgur.com/pIoKp7B.png) - This button will reset the camera back to the default position. You can also use `R`.

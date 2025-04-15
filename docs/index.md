@@ -49,6 +49,9 @@ Installing the Blender Add-on is required if you want to edit meshes within a mo
 | `CLAYFACE_PC.GHG`            |
 
 > [!NOTE]
+> `CLAYFACE_PC.GHG` loads just fine in BactaTank Classic but does not look right. Saving the model will cause it to break in-game.
+
+> [!NOTE]
 > The `*_LR_PC.GHG` equivalent have been left out of the table, however they are not loadable/editable either.
 
 ### Next

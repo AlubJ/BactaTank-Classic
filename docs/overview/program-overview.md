@@ -9,7 +9,7 @@ BactaTank Classic provides a familiar but new UI, updating on the previous versi
 Upon opening BactaTank Classic, you will see the welcome screen, which can let you create a new character from a [template](#templates) or by opening an existing `*_PC.GHG` file. Alternatively, you can drag and drop a `*_PC.GHG` file onto the window. After opening a model file you will be greeted by the main UI.
 
 ## Environments
-BactaTank Classic separates things by "Environments". At the moment there are only two environments, one for the main model editing and one for UV map viewing. More environments are planned to be added in relations to other file format editing.
+BactaTank Classic separates things by "Environments". At the moment there are only two environments, one for the main model editing and one for UV map viewing. More environments are planned to be added in relation to other file format editing.
 
 ### Model Editor Environment
 ![Model Editor Environment](https://i.imgur.com/RQcDjAO.png)<br>
