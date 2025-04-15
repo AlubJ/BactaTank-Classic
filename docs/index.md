@@ -11,7 +11,8 @@ TtGames archive the game files into a proprietary format that uses a propreitary
 
 To unpack the game files, run QuickBMS, select the BMS script, then select all of the `*.DAT` files using multiselect, then extract to a unique location. Once extracted copy original contents of the game (without the `*.DAT` files) to the extracted contents of the game. Using [Steamless](https://github.com/atom0s/Steamless) you can get the original games to run outside of needing Steam. More info about extracting the games can be found [here](https://www.pcgamingwiki.com/wiki/Engine:Nu2#Extracting_game_files).
 
-`NOTE:` Only the PC versions of LEGO Star Wars The Complete Saga, LEGO Indiana Jones The Original Adventures and LEGO Batman The Videogame is supported by BactaTank Classic. It will not work on any other TtGames LEGO Game or console version.
+> [!NOTE]
+> Only the PC versions of LEGO Star Wars The Complete Saga, LEGO Indiana Jones The Original Adventures and LEGO Batman The Videogame is supported by BactaTank Classic. It will not work on any other TtGames LEGO Game or console version.
 
 ### Recommended Tools
 - [Paint.NET](https://getpaint.net/) - an image editor capable of exporting DirectDraw Surface (`*.dds`) textures. (Alternatives are [GIMP](https://www.gimp.org/) and Photoshop with the [nVidia Texture Tools plugin](https://developer.nvidia.com/texture-tools-exporter)).
@@ -21,8 +22,11 @@ To unpack the game files, run QuickBMS, select the BMS script, then select all o
 Installing the Blender Add-on is required if you want to edit meshes within a model. To install, in Blender go to `Edit >> Preferences >> Add-ons`, hit the `Install` button and select `bactatank-blender-addon-v[version].zip`. After installing you can enable the plugin and the BactaTank features will now be present.
 
 ### Additional Notes
-`NOTE:` BactaTank Classic only supports loading `*_PC.GHG` files.<br>
-`NOTE:` The supported games will be referred to as their abbreviated forms (TCS, LIJ1 and LB1 respectively).
+> [!NOTE]
+> BactaTank Classic only supports loading `*_PC.GHG` files.
+
+> [!NOTE]
+> The supported games will be referred to as their abbreviated forms (TCS, LIJ1 and LB1 respectively).
 
 ### Known Un-Loadable and Un-Editable Model Files
 | Known TCS Un-Loadable Models | Known LB1 Un-Loadable Models |
@@ -44,7 +48,8 @@ Installing the Blender Add-on is required if you want to edit meshes within a mo
 | ---------------------------- |
 | `CLAYFACE_PC.GHG`            |
 
-`NOTE:` The `*_LR_PC.GHG` equivalent have been left out of the table, however they are not loadable/editable either.
+> [!NOTE]
+> The `*_LR_PC.GHG` equivalent have been left out of the table, however they are not loadable/editable either.
 
 ### Next
 - UI Overview
