@@ -45,7 +45,7 @@ The menu bar contains some useful functions to use when using BactaTank, here is
   - `About` - This will open an about window.
 
 ## Templates
-Templates are models that you can reuse to make new characters. Many people in the modding community have provided resources and template characters. BactaTank does not come with templates by default, but you can add your own whilst on the welcome screen by hitting the folder icon, dropping files into that directory and hitting the reload button.
+Templates are models that you can reuse to make new characters. Many people in the modding community have provided resources and template characters. BactaTank does not come with templates by default, but you can add your own whilst on the welcome screen by hitting ![Directory Button](https://i.imgur.com/ETQntZM.png), dropping files into that directory and hitting ![Reload Button](https://i.imgur.com/pIoKp7B.png).
 
 > [!NOTE]
 > Only `*_PC.GHG` files will be recognized when detecting template files.
