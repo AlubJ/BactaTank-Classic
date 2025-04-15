@@ -1,5 +1,5 @@
 # BactaTank Classic
-![BactaTank Classic Backdrop](https://i.imgur.com/b2tTQOf.png)
+![BactaTank Classic Backdrop](https://i.imgur.com/b2tTQOf.png)<br>
 BactaTank Classic is a character creator and viewer for LEGO Star Wars: The Complete Saga, LEGO Indiana Jones: The Original Adventures and LEGO Batman: The Videogame. This program is designed to preview the models as accurately as possible to the games. If you like this tool, and are able to support me financially, I would greatly appreciate it if you could throw me a few bucks [here](https://ko-fi.com/Y8Y219SKRX).
 
 ## Getting Started
@@ -16,6 +16,9 @@ To unpack the game files, run QuickBMS, select the BMS script, then select all o
 ### Recommended Tools
 - [Paint.NET](https://getpaint.net/) - an image editor capable of exporting DirectDraw Surface (`*.dds`) textures. (Alternatives are [GIMP](https://www.gimp.org/) and Photoshop with the [nVidia Texture Tools plugin](https://developer.nvidia.com/texture-tools-exporter)).
 - [Blender](https://www.blender.org/) - a free and open-source model editor. Blender is required when editing meshes since BactaTank Classic has a bespoke plugin made for it.
+
+### Installing The Blender Add-on
+Installing the Blender Add-on is required if you want to edit meshes within a model. To install, in Blender go to `Edit >> Preferences >> Add-ons`, hit the `Install` button and select `bactatank-blender-addon-v[version].zip`. After installing you can enable the plugin and the BactaTank features will now be present.
 
 ### Additional Notes
 `NOTE:` BactaTank Classic only supports loading `*_PC.GHG` files.<br>
@@ -41,7 +44,7 @@ To unpack the game files, run QuickBMS, select the BMS script, then select all o
 | ---------------------------- |
 | `CLAYFACE_PC.GHG`            |
 
-`NOTE:` The `*LR_PC.GHG` equivalent have been left out of the table, however they are not loadable/editable either.
+`NOTE:` The `*_LR_PC.GHG` equivalent have been left out of the table, however they are not loadable/editable either.
 
 ### Next
 - UI Overview
