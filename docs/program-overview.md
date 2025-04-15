@@ -1,7 +1,8 @@
 # Program Overview
 BactaTank Classic provides a familiar but new UI, updating on the previous version. Let's go over the new UI.
 
-`NOTE:` This is a general overview of BactaTank Classic and further details will be present on other pages, these will be linked where relevant.
+> [!NOTE]
+> This is a general overview of BactaTank Classic and further details will be present on other pages, these will be linked where relevant.
 
 ## Welcome Screen
 ![Welcome Screen](https://i.imgur.com/EivCiv6.png)<br>
