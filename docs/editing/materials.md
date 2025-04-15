@@ -90,7 +90,7 @@ Shows which meshes have this material assigned to them. Useful in certain scenar
 You can export and replace a material to and from a `*.bmat` file to transfer material properties. To do this click ![Triple Dot Button](https://i.imgur.com/xhwAmwR.png) and then click the relevant option. `Ctrl+E` will export and `Ctrl+R` will replace. You can also drop a `*.bmat` file onto the program to replace it.
 
 > [!NOTE]
-> Texture Indices are not transferred over and will need to be set manually.
+> Texture indices are not transferred over and will need to be set manually.
 
 > [!NOTE]
 > If you want a vertex format to be carried over, you will need to enable `Replace Vertex Format` in the properties.
