@@ -59,11 +59,38 @@ We will go over the basic editing of the material and all the options.
   - `CullCounterClockwise` - Backface Culling.
   - `CullClockwise` - Frontface Culling.
 
+### Texture Scrolling
+- `Scroll Type` - The scroll type of the texture scrolling.
+  - `None` - No texture scrolling.
+  - `Linear` - Linear texture scrolling.
+  - `Sine` - A sine wave texture scrolling (oscillating).
+  - `Cosine` - A cosine wave texture scrolling (oscillating).
+- `Scroll Speed` - The speed of the scrolling.
+- `Trig Scale` - A multiplier applied to the sine and cosine waves.
+
+> [!NOTE]
+> Texture scrolling is only visible on materials that already have texture scrolling enabled.
+
 ### Vertex Format
 The vertex format shows you which attributes are included in the vertices of the mesh. Knowing this information may be useful in certain scenarios like needing to know what meshes have Blend Indices and Weights.
+
+- `Position` - The position of the vertex in 3D space.
+- `Normal` - The normal vector of the vertex.
+- `Tangent` - The tangent vector, used for normal mapping.
+- `BiTangent` - The bitangent vector, used for normal mapping.
+- `ColourSetx` - The colour of a vertex.
+- `UVSetx` - The UVs/Texture Coordinates of a vertex.
+- `BlendIndices` - The index of the node in the armature, used for skinning.
+- `BlendWeights` - The weight/influence of the node for deformation, used for skinning.
 
 ### Assigned Meshes
 Shows which meshes have this material assigned to them. Useful in certain scenarios.
 
 ## Exporting & Replacing Materials
 You can export and replace a material to and from a `*.bmat` file to transfer material properties. To do this click ![Triple Dot Button](https://i.imgur.com/xhwAmwR.png) and then click the relevant option. `Ctrl+E` will export and `Ctrl+R` will replace. You can also drop a `*.bmat` file onto the program to replace it.
+
+> [!NOTE]
+> Texture Indices are not transferred over and will need to be set manually.
+
+> [!NOTE]
+> If you want a vertex format to be carried over, you will need to enable `Replace Vertex Format` in the properties.
