@@ -18,3 +18,7 @@ Layers are what the games use to decide what meshes to render when. These mainly
 - ![Reload Button](https://i.imgur.com/pIoKp7B.png) - This button will reset the camera back to the default position. You can also use `R`.
 - ![View Disabled Meshes Button](https://i.imgur.com/xuv5vyi.png) - This button will toggle viewing disabled meshes (meshes that have their primitive type set to `None`).
 - ![Grid Button](https://i.imgur.com/zd2WKVX.png) - This button will toggle viewing the grid.
+
+## Locator Helper
+![Locator Helper](https://i.imgur.com/ehqHluS.png)<br>
+The locator helper is a new addition, allowing you to have a test mesh applied to the locator that you are currently editing. This is useful for lining up locators properly. You can also pin locator helpers to locators for comparing and matching.
