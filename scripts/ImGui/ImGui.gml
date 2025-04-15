@@ -103,6 +103,39 @@ function ImGui() constructor {
 		return ret;
 	}
 	
+	/// @function CheckboxCustom2()
+	/// @context ImGui
+	/// @return {Undefined}
+	static CheckboxCustom2 = function(title, val, label = "##hidden", space = 100)
+	{
+		// Get Cursor Y
+		var ypos = ImGui.GetCursorPosY();
+		var xpos = ImGui.GetCursorPosX();
+		
+		// Draw First Text
+		ImGui.SetCursorPos(xpos, ypos);
+		ImGui.Text("");
+		
+		// Push Item Width
+		ImGui.PushItemWidth(-2);
+		ImGui.SetCursorPos(xpos + space, ypos);
+		
+		// Input Text
+		var ret = ImGui.Checkbox(label, val);
+		
+		// Set Cursor Y
+		ImGui.SetCursorPos(xpos, ypos + 2);
+		
+		// Draw Final Text
+		ImGui.Text(title);
+		
+		// Spacing
+		ImGui.Spacing();
+		
+		// Return
+		return ret;
+	}
+	
 	/// @function ColourEditCustom()
 	/// @context ImGui
 	/// @return {Undefined}
@@ -252,6 +285,43 @@ function ImGui() constructor {
 		return ret;
 	}
 	
+	/// @function DragFloat2Custom()
+	/// @context ImGui
+	/// @return {Undefined}
+	static DragFloat2Custom = function(title, val, v_spd = 1, v_min = 0, v_max = 1, label = "##hidden", space = 100, def = NULL, flags = ImGuiInputTextFlags.None)
+	{
+		// Get Cursor Y
+		var ypos = ImGui.GetCursorPosY();
+		
+		// Draw First Text
+		ImGui.Text("");
+		
+		// Same Line
+		ImGui.SameLine(space);
+		
+		// Push Item Width
+		ImGui.PushItemWidth(-2);
+		
+		// Input Text
+		var ret = ImGui.DragFloat2(label, val, v_spd, v_min, v_max, "%.3f", flags);
+		//if (ret == "") ret = NULL;
+		
+		// Set Cursor Y
+		ImGui.SetCursorPosY(ypos + 2);
+		
+		// Draw Final Text
+		ImGui.Text(title);
+		
+		// Reset
+		if (ImGui.IsItemClicked() && def != NO_DEFAULT) ret = def;
+		
+		// Spacing
+		ImGui.Spacing();
+		
+		// Return
+		return ret;
+	}
+	
 	/// @function InputFileCustom()
 	/// @context ImGui
 	/// @return {Undefined}
@@ -313,6 +383,65 @@ function ImGui() constructor {
 		
 		// Return
 		return ret;
+	}
+	
+	/// @function InputKeybindCustom()
+	/// @context ImGui
+	/// @return {Undefined}
+	static InputKeybindCustom = function(title, keybind, inKeybindMode = false, label = "##hidden", space = 100, def = NULL)
+	{
+		// Get Cursor Y
+		var ypos = ImGui.GetCursorPosY();
+		
+		// Draw First Text
+		ImGui.Text("");
+		
+		// Same Line
+		ImGui.SameLine(space);
+		
+		// Push Item Width
+		ImGui.PushItemWidth(-26);
+		
+		// Check Keybind Mode
+		var newBindMode = inKeybindMode;
+		var newBind = keybind;
+		if (inKeybindMode) newBind = SHORTCUTS.getBind();
+		if (newBind == -1)
+		{
+			newBind = keybind;
+		}
+		else
+		{
+			newBindMode = false;
+		}
+		
+		// Input Text
+		var ret = ImGui.InputText(label, (newBindMode) ? "Press a key" : newBind, ImGuiInputTextFlags.ReadOnly);
+		if (ret == "") ret = NULL;
+		
+		// Same Line
+		ImGui.SameLine();
+		var xpos = ImGui.GetCursorPosX();
+		ImGui.SetCursorPosX(xpos - 2);
+		if (ImGui.ImageButton("Edit Bind", graEditBind, 0, c_white, 1, c_black, 0))
+		{
+			newBindMode = !newBindMode;
+		}
+		
+		// Set Cursor Y
+		ImGui.SetCursorPosY(ypos + 2);
+		
+		// Draw Final Text
+		ImGui.Text(title);
+		
+		// Reset
+		if (ImGui.IsItemClicked() && def != NO_DEFAULT) ret = def;
+		
+		// Spacing
+		ImGui.Spacing();
+		
+		// Return
+		return [ret, newBindMode];
 	}
 	
 	/// @function ComboBoxCustom()
@@ -446,12 +575,13 @@ function ImGui() constructor {
 		ImGui.Text("");
 		ImGui.SameLine(space);
 		ImGui.PushItemWidth(-2);
-		var ret = ImGui.SliderFloat(label, (val != NULL) ? val : NaN, v_min, v_max, format, flags);
+		var ret = ImGui.DragFloat(label, (val != NULL) ? val : NaN, v_speed, v_min, v_max, format, flags);
 		if (ret == NaN) ret = NULL;
 		ImGui.SetCursorPosY(ypos + 2);
 		ImGui.Text(title);
 		if (ImGui.IsItemClicked() && def != NO_DEFAULT) ret = def;
 		ImGui.Spacing();
+		ret = clamp(ret, v_min, v_max);
 		return ret;
 	}
 	

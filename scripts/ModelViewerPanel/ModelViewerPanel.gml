@@ -14,17 +14,17 @@
 
 function ModelViewerPanel() constructor
 {
-	displayLocators = 1; // 0 = None, 1 = On Top, 2 = Regular
-	displayLocatorNames = false;
-	displayBones = true;
-	displayBoneNames = false;
-	displayGrid = true;
+	ENVIRONMENT.displayLocators = 1;		 // 0 = None, 1 = On Top, 2 = Regular (L)
+	ENVIRONMENT.displayLocatorNames = false; // (Ctrl+L)
+	ENVIRONMENT.displayBones = true;		 // (B)
+	ENVIRONMENT.displayBoneNames = false;	 // (Ctrl+B)
+	ENVIRONMENT.displayGrid = true;			 // (G)
 	displayLocatorHelper = 1;
 	locatorHelper = [-1, PRIMITIVES.sabre, PRIMITIVES.blaster, PRIMITIVES.pistol, PRIMITIVES.hat];
 	locatorHelperNames = ["None", "Sabre", "Blaster", "Pistol", "Hat"];
-	locatorHelperPin = array_create(array_length(PROJECT.currentModel.locators), false);
-	ENVIRONMENT.hideDisabledMeshes = true;
-	ENVIRONMENT.displayLayers = array_create(array_length(PROJECT.currentModel.layers), true);
+	locatorHelperPin = PROJECT.currentModel.type == BTModelType.model ? array_create(array_length(PROJECT.currentModel.locators), false) : [  ];
+	ENVIRONMENT.hideDisabledMeshes = true; 	 // (M)
+	ENVIRONMENT.displayLayers = PROJECT.currentModel.type == BTModelType.model ? array_create(array_length(PROJECT.currentModel.layers), true) : [];
 	displayLayersPopup = false;
 	displayBonesPopup = false;
 	displayLocatorsPopup = false;
@@ -77,23 +77,23 @@ function ModelViewerPanel() constructor
 			
 			// View Bones Button
 			ImGui.SetCursorPos(windowSize[0] - 50, cursorPos[1] - 26);
-			if (ImGui.ImageButton("##hiddenDisplayBones", graBone, !displayBones, c_white, 1, c_white, 0)) displayBones = !displayBones;
+			if (ImGui.ImageButton("##hiddenDisplayBones", graBone, !ENVIRONMENT.displayBones, c_white, 1, c_white, 0)) ENVIRONMENT.displayBones = !ENVIRONMENT.displayBones;
 			if (ImGui.IsItemHovered() && device_mouse_check_button(0, mb_right)) displayBonesPopup = true;
 			ImGui.ShowTooltip("Toggle Bones");
 			
 			// View Locators Button
 			ImGui.SetCursorPos(windowSize[0] - 72, cursorPos[1] - 26);
-			if (ImGui.ImageButton("##hiddenDisplayLocators", graLocator, displayLocators, c_white, 1, c_white, 0))
+			if (ImGui.ImageButton("##hiddenDisplayLocators", graLocator, ENVIRONMENT.displayLocators, c_white, 1, c_white, 0))
 			{
-				displayLocators++;
-				if (displayLocators > 2) displayLocators = 0;
+				ENVIRONMENT.displayLocators++;
+				if (ENVIRONMENT.displayLocators > 2) ENVIRONMENT.displayLocators = 0;
 			}
 			if (ImGui.IsItemHovered() && device_mouse_check_button(0, mb_right)) displayLocatorsPopup = true;
 			ImGui.ShowTooltip("Toggle Locators");
 			
 			// View Bones Button
 			ImGui.SetCursorPos(windowSize[0] - 94, cursorPos[1] - 26);
-			if (ImGui.ImageButton("##hiddenDisplayGrid", graGrid, !displayGrid, c_white, 1, c_white, 0)) displayGrid = !displayGrid;
+			if (ImGui.ImageButton("##hiddenDisplayGrid", graGrid, !ENVIRONMENT.displayGrid, c_white, 1, c_white, 0)) ENVIRONMENT.displayGrid = !ENVIRONMENT.displayGrid;
 			ImGui.ShowTooltip("Toggle Grid");
 			
 			// Hide Disabled Meshes Button
@@ -128,7 +128,7 @@ function ModelViewerPanel() constructor
 				if (window_updated() || RENDERER.width != windowSize[0] - 16 || RENDERER.height != windowSize[1] - 40) RENDERER.resize(windowSize[0] - 16, windowSize[1] - 40);
 				
 				// Render Locators
-				if (displayLocators > 0)
+				if (ENVIRONMENT.displayLocators > 0 && PROJECT.currentModel.type == BTModelType.model)
 				{
 					for (var i = 0; i < array_length(PROJECT.currentModel.locators); i++)
 					{
@@ -146,7 +146,7 @@ function ModelViewerPanel() constructor
 						// Push To Debug Render Queue
 						array_push(RENDERER.debugRenderQueue, {
 							vertexBuffer: PRIMITIVES.locator,
-							material: {colour: locatorSelected == i ? SETTINGS.viewerSettings.locatorSelectedColour : SETTINGS.viewerSettings.locatorColour, disableZWrite: displayLocators == 1, disableZTest: displayLocators == 1},
+							material: {colour: locatorSelected == i ? SETTINGS.viewerSettings.locatorSelectedColour : SETTINGS.viewerSettings.locatorColour, disableZWrite: ENVIRONMENT.displayLocators == 1, disableZTest: ENVIRONMENT.displayLocators == 1},
 							textures: {},
 							matrix: matrix,
 							shader: "WireframeShader",
@@ -158,25 +158,7 @@ function ModelViewerPanel() constructor
 						{
 							array_push(RENDERER.debugRenderQueue, {
 								vertexBuffer: locatorHelper[displayLocatorHelper],
-								material: {
-									colour:						[0.75, 0.75, 0.75, 1.0],
-									ambientTint:				[0, 0, 0, 1],
-									textureID:					-1,
-									specularID:					-1,
-									normalID:					-1,
-									cubemapID:					-1,
-									shineID:					-1,
-									reflectionPower:			.5,
-									specularExponent:			25,
-									fresnelMuliplier:			0,
-									fresnelCoeff:				0,
-									vertexFormat:				0,
-									textureFlags:				0,
-									shaderFlags:				0x08,
-									inputFlags:					0,
-									alphaBlend:					0,
-									offset:						0,
-								},
+								material: DEFAULT_MATERIAL,
 								textures: {},
 								matrix: matrix,
 								shader: "StandardShader",
@@ -187,37 +169,19 @@ function ModelViewerPanel() constructor
 				}
 				
 				// Render Grid
-				if (displayGrid) array_push(RENDERER.debugRenderQueue, ctrlRenderer.gridRenderStruct);
+				if (ENVIRONMENT.displayGrid) array_push(RENDERER.debugRenderQueue, ctrlRenderer.gridRenderStruct);
 				
 				// Locator Selected
 				var locatorSelected = -1;
 				if (string_pos("LOC", ENVIRONMENT.attributeSelected)) locatorSelected = string_digits(ENVIRONMENT.attributeSelected);
-				if (displayLocatorHelper && locatorSelected != -1)
+				if (displayLocatorHelper && locatorSelected != -1 && PROJECT.currentModel.type == BTModelType.model)
 				{
 					// Locator Matrix
 					if (PROJECT.currentModel.locators[locatorSelected].parent != -1 && PROJECT.currentModel.locators[locatorSelected].parent < array_length(PROJECT.currentModel.bones)) var matrix = matrix_multiply(PROJECT.currentModel.locators[locatorSelected].matrix, PROJECT.currentModel.bones[PROJECT.currentModel.locators[locatorSelected].parent].matrix);
 					else var matrix = PROJECT.currentModel.locators[locatorSelected].matrix;
 					array_push(RENDERER.debugRenderQueue, {
 						vertexBuffer: locatorHelper[displayLocatorHelper],
-						material: {
-							colour:						[0.75, 0.75, 0.75, 1.0],
-							ambientTint:				[0, 0, 0, 1],
-							textureID:					-1,
-							specularID:					-1,
-							normalID:					-1,
-							cubemapID:					-1,
-							shineID:					-1,
-							reflectionPower:			.5,
-							specularExponent:			25,
-							fresnelMuliplier:			0,
-							fresnelCoeff:				0,
-							vertexFormat:				0,
-							textureFlags:				0,
-							shaderFlags:				0x08,
-							inputFlags:					0,
-							alphaBlend:					0,
-							offset:						0,
-						},
+						material: DEFAULT_MATERIAL,
 						textures: {},
 						matrix: matrix,
 						shader: "StandardShader",
@@ -229,19 +193,25 @@ function ModelViewerPanel() constructor
 				if (window_updated() || CANVAS.width != windowSize[0] - 16 || CANVAS.height != windowSize[1] - 40) CANVAS.resize(windowSize[0] - 16, windowSize[1] - 40);
 				
 				// Render Bones
-				if (displayBones)
+				if (ENVIRONMENT.displayBones && PROJECT.currentModel.type == BTModelType.model)
 				{
 					// Add Armature
 					var selectedBone = -1;
 					if (string_pos("BONE", ENVIRONMENT.attributeSelected)) selectedBone = string_digits(ENVIRONMENT.attributeSelected);
-					CANVAS.add(new CalicoArmature(PROJECT.currentModel.bones, RENDERER.camera.viewMatrix, RENDERER.camera.projMatrix, displayBoneNames, selectedBone));
+					CANVAS.add(new CalicoArmature(PROJECT.currentModel.bones, RENDERER.camera.viewMatrix, RENDERER.camera.projMatrix, ENVIRONMENT.displayBoneNames, selectedBone));
 				}
 				
 				// Render Locator Names
-				if (displayLocators != 0 && displayLocatorNames)
+				if (ENVIRONMENT.displayLocators != 0 && ENVIRONMENT.displayLocatorNames && PROJECT.currentModel.type == BTModelType.model)
 				{
 					// Locator Names
 					CANVAS.add(new CalicoLocatorNames(PROJECT.currentModel.locators, PROJECT.currentModel.bones, RENDERER.camera.viewMatrix, RENDERER.camera.projMatrix));
+				}
+				
+				// Render Debug
+				if (SETTINGS.displayViewerDebugInfo)
+				{
+					CANVAS.add(new CalicoDebugInformation());
 				}
 				
 				CANVAS.draw();
@@ -250,7 +220,7 @@ function ModelViewerPanel() constructor
 				var cursorPos = [ImGui.GetCursorPosX(), ImGui.GetCursorPosY()];
 				
 				// Render The Character Viewer
-				if (surface_exists(RENDERER.surface)) ImGui.Surface(RENDERER.surface);
+				if (surface_exists(RENDERER.surface)) ImGui.Surface(RENDERER.surface, c_white, 1, RENDERER.width, RENDERER.height);
 				
 				// Set Cursor Position
 				ImGui.SetCursorPos(cursorPos[0], cursorPos[1]);
@@ -281,9 +251,19 @@ function ModelViewerPanel() constructor
 				// Selectable
 				if (ImGui.Selectable(PROJECT.currentModel.layers[i].name, false, ImGuiSelectableFlags.DontClosePopups))
 				{
-					ENVIRONMENT.displayLayers[i] = !ENVIRONMENT.displayLayers[i];
-					RENDERER.flush();
-					PROJECT.currentModel.pushToRenderQueue(ENVIRONMENT.displayLayers, RENDERER, ENVIRONMENT.hideDisabledMeshes);
+					if (keyboard_check(vk_lcontrol))
+					{
+						ENVIRONMENT.displayLayers = array_create(array_length(PROJECT.currentModel.layers), false);
+						ENVIRONMENT.displayLayers[i] = true;
+						RENDERER.flush();
+						PROJECT.currentModel.pushToRenderQueue(ENVIRONMENT.displayLayers, RENDERER, ENVIRONMENT.hideDisabledMeshes);
+					}
+					else
+					{
+						ENVIRONMENT.displayLayers[i] = !ENVIRONMENT.displayLayers[i];
+						RENDERER.flush();
+						PROJECT.currentModel.pushToRenderQueue(ENVIRONMENT.displayLayers, RENDERER, ENVIRONMENT.hideDisabledMeshes);
+					}
 				}
 				
 				// Checkmark
@@ -306,17 +286,17 @@ function ModelViewerPanel() constructor
 			var cursorPos = [ImGui.GetCursorPosX(), ImGui.GetCursorPosY()];
 			
 			// View Bones Checkbox
-			if (ImGui.Selectable("View Bones##hiddenViewBones", false, ImGuiSelectableFlags.DontClosePopups)) displayBones = !displayBones;
+			if (ImGui.Selectable("View Bones##hiddenViewBones", false, ImGuiSelectableFlags.DontClosePopups)) ENVIRONMENT.displayBones = !ENVIRONMENT.displayBones;
 			ImGui.SetCursorPos(cursorPos[0] + 200, cursorPos[1] + 2);
-			ImGui.Image(graCheck, !displayBones);
+			ImGui.Image(graCheck, !ENVIRONMENT.displayBones);
 			
 			// Get Cursor Position
 			var cursorPos = [ImGui.GetCursorPosX(), ImGui.GetCursorPosY()];
 			
 			// View Bones Checkbox
-			if (ImGui.Selectable("View Bone Names##hiddenViewBoneNames", false, ImGuiSelectableFlags.DontClosePopups)) displayBoneNames = !displayBoneNames;
+			if (ImGui.Selectable("View Bone Names##hiddenViewBoneNames", false, ImGuiSelectableFlags.DontClosePopups)) ENVIRONMENT.displayBoneNames = !ENVIRONMENT.displayBoneNames;
 			ImGui.SetCursorPos(cursorPos[0] + 200, cursorPos[1] + 2);
-			ImGui.Image(graCheck, !displayBoneNames);
+			ImGui.Image(graCheck, !ENVIRONMENT.displayBoneNames);
 			
 			// End Popup
 			ImGui.EndPopup();
@@ -335,11 +315,11 @@ function ModelViewerPanel() constructor
 			// View Locators Checkbox
 			if (ImGui.Selectable("View Locators##hiddenViewLocators", false, ImGuiSelectableFlags.DontClosePopups))
 			{
-				if (displayLocators != 0) displayLocators = 0;
-				else displayLocators = 2;
+				if (ENVIRONMENT.displayLocators != 0) ENVIRONMENT.displayLocators = 0;
+				else ENVIRONMENT.displayLocators = 2;
 			}
 			ImGui.SetCursorPos(cursorPos[0] + 200, cursorPos[1] + 2);
-			ImGui.Image(graCheck, displayLocators > 0 ? 0 : 1);
+			ImGui.Image(graCheck, ENVIRONMENT.displayLocators > 0 ? 0 : 1);
 			
 			// Get Cursor Position
 			var cursorPos = [ImGui.GetCursorPosX(), ImGui.GetCursorPosY()];
@@ -347,19 +327,19 @@ function ModelViewerPanel() constructor
 			// View Locators On Top Checkbox
 			if (ImGui.Selectable("Display On Top##hiddenViewLocatorsOnTop", false, ImGuiSelectableFlags.DontClosePopups))
 			{
-				if (displayLocators != 1) displayLocators = 1;
-				else displayLocators = 2;
+				if (ENVIRONMENT.displayLocators != 1) ENVIRONMENT.displayLocators = 1;
+				else ENVIRONMENT.displayLocators = 2;
 			}
 			ImGui.SetCursorPos(cursorPos[0] + 200, cursorPos[1] + 2);
-			ImGui.Image(graCheck, displayLocators == 1 ? 0 : 1);
+			ImGui.Image(graCheck, ENVIRONMENT.displayLocators == 1 ? 0 : 1);
 			
 			// Get Cursor Position
 			var cursorPos = [ImGui.GetCursorPosX(), ImGui.GetCursorPosY()];
 			
 			// View Locators Names
-			if (ImGui.Selectable("View Locator Names##hiddenViewLocatorsNames", false, ImGuiSelectableFlags.DontClosePopups)) displayLocatorNames = !displayLocatorNames;
+			if (ImGui.Selectable("View Locator Names##hiddenViewLocatorsNames", false, ImGuiSelectableFlags.DontClosePopups)) ENVIRONMENT.displayLocatorNames = !ENVIRONMENT.displayLocatorNames;
 			ImGui.SetCursorPos(cursorPos[0] + 200, cursorPos[1] + 2);
-			ImGui.Image(graCheck, !displayLocatorNames);
+			ImGui.Image(graCheck, !ENVIRONMENT.displayLocatorNames);
 			
 			// View Locator Helpers
 			ImGui.Spacing();
@@ -388,6 +368,9 @@ function ModelViewerPanel() constructor
 			// Menu Items
 			for (var i = 0; i < array_length(PROJECT.currentModel.locators); i++)
 			{
+				// If locator doesn't exist, skip past it brotha!
+				if (PROJECT.currentModel.locators[i] == -1) continue;
+				
 				// Get Cursor Position
 				var cursorPos = [ImGui.GetCursorPosX(), ImGui.GetCursorPosY()];
 				

@@ -48,7 +48,7 @@ function BactaTankTexture() constructor
 		ConsoleLog($"    Height:       {height}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) - 4);
 			
 		// NU20 Last MetaData
-		if (_model.version == BTModelVersion.pcghgNU20First)
+		if (_model.nu20Offset == 0)
 		{
 			// Seek to cubemap
 			buffer_seek(buffer, buffer_seek_relative, 0x2c);
@@ -56,11 +56,11 @@ function BactaTankTexture() constructor
 			ConsoleLog($"    Is Cubemap:    {cubemap > 0 ? "True" : "False"}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) - 4);
 			
 			// Read DXT Compression
-			compression = buffer_read(buffer, buffer_u32);
-			ConsoleLog($"    Compression:   {BT_DXT_COMPRESSION[compression]}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) - 4);
+			//compression = buffer_read(buffer, buffer_u32);
+			//ConsoleLog($"    Compression:   {BT_DXT_COMPRESSION[compression]}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) - 4);
 				
 			// Seek to size
-			buffer_seek(buffer, buffer_seek_relative, 0x08);
+			buffer_seek(buffer, buffer_seek_relative, 0x0c);
 			size = buffer_read(buffer, buffer_u32);
 			ConsoleLog($"    Size:          {size}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) - 4);
 		}
@@ -69,7 +69,7 @@ function BactaTankTexture() constructor
 	static parse = function(buffer, _index, _model)
 	{
 		// PCGHG Last
-		if (_model.version == BTModelVersion.pcghgNU20Last)
+		if (_model.nu20Offset != 0)
 		{
 			// Texture Meta Data
 			width = buffer_read(buffer, buffer_s32);
@@ -80,10 +80,12 @@ function BactaTankTexture() constructor
 			var unknown = buffer_read(buffer, buffer_s32);
 			size = buffer_read(buffer, buffer_u32);
 			ConsoleLog($"    Size:          {size}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) - 4);
-			compression = array_get_index(BT_DXT_COMPRESSION, buffer_peek(buffer, buffer_tell(buffer) + 0x54, buffer_string));
-			ConsoleLog($"    Compression:   {BT_DXT_COMPRESSION[compression]}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0x54);
 			if (width < 0) width = -width;
 		}
+		
+		// Compression
+		//compression = array_get_index(BT_DXT_COMPRESSION, buffer_peek(buffer, buffer_tell(buffer) + 0x54, buffer_string));
+		//ConsoleLog($"    Compression:   {BT_DXT_COMPRESSION[compression]}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0x54);
 		
 		// Texture Buffer
 		data = buffer_create(size, buffer_fixed, 1);
@@ -95,15 +97,16 @@ function BactaTankTexture() constructor
 		file = TEMP_DIRECTORY + name;
 		
 		// Convert DDS to PNG
-		if (!file_exists(TEMP_DIRECTORY + @"\_textures\" + name + ".png"))
+		if (file_exists(TEMP_DIRECTORY + @"_textures\" + name + ".png") && SETTINGS.cacheTextures)
 		{
-			ConsoleLog($"    Decoding DDS Texture", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) - 4);
-			sprite = ddsLoad(data);
-			sprite_save(sprite, 0, TEMP_DIRECTORY + @"\_textures\" + name + ".png");
+			ConsoleLog($"    Loading Cached Texture \"{TEMP_DIRECTORY + @"_textures\" + name + ".png"}\"", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer));
+			sprite = sprite_add(TEMP_DIRECTORY + @"_textures\" + name + ".png", 1, false, false, 0, 0);
 		}
 		else
 		{
-			sprite = sprite_add(TEMP_DIRECTORY + @"\_textures\" + name + ".png", 1, false, false, 0, 0);
+			ConsoleLog($"    Decoding DDS Texture", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer));
+			sprite = ddsLoad(data);
+			if (SETTINGS.cacheTextures) sprite_save(sprite, 0, TEMP_DIRECTORY + @"_textures\" + name + ".png");
 		}
 		
 		// Set Texture
@@ -117,7 +120,7 @@ function BactaTankTexture() constructor
 	{
 		buffer_poke(buffer, offset, buffer_u32, width);
 		buffer_poke(buffer, offset + 0x04, buffer_u32, height);
-		if (_model.version == BTModelVersion.pcghgNU20First)
+		if (_model.version == BTModelVersion.Version4)
 		{
 			buffer_poke(buffer, offset + 0x38, buffer_u32, compression);
 			buffer_poke(buffer, offset + 0x44, buffer_u32, size);

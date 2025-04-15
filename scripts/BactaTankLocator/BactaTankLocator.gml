@@ -40,7 +40,8 @@ function BactaTankLocator() constructor
 		
 		// Locator Bone Parent
 		buffer_seek(buffer, buffer_seek_relative, 0x02);
-		parent = buffer_read(buffer, buffer_s32);
+		parent = buffer_read(buffer, buffer_s8);
+		buffer_seek(buffer, buffer_seek_relative, 0x03);
 		
 		// Locator Matrix Decomposed
 		decomposedMatrix = matrix_decompose(matrix);

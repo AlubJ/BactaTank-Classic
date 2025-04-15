@@ -31,53 +31,47 @@ ENVIRONMENT.addModal(new AssetPacksModal());
 ENVIRONMENT.addModal(new CreateAssetPackModal());
 
 // Get Command Line Args
-//var args = get_args();
+var args = get_args();
 //args[0] = "batman_new.GHG"
-//if (array_length(args) > 0 && string_lower(filename_ext(args[0])) == ".ghg" || string_lower(filename_ext(args[0])) == ".bcanister" && file_exists(args[0]))
-//{
-//	ENVIRONMENT.openInfoModal("Please wait", "Converting GHG model to BactaTankModel");
-//	window_set_cursor(cr_hourglass);
-	
-//	// Define Function
-//	var func = function(file, name)
-//	{
-//		// Log
-//		ConsoleLog("Beginning Model Conversion");
-		
-//		// Load Model
-//		var model = new BactaTankModel(file);
-		
-//		// Save Canister Model
-//		model.saveCanister(PROJECT.workingDirectory + name + ".bcanister");
-		
-//		// Set Current Model
-//		PROJECT.currentModel = model;
-//		model.pushToRenderQueue(array_create(array_length(model.layers), true));
-		
-//		// Reset Camera
-//		RENDERER.camera.lookDistance = 0.6;
-//		RENDERER.camera.lookPitch = -20;
-//		RENDERER.camera.lookDirection = -45;
-//		RENDERER.camera.lookAtPosition.x = model.averagePosition[0];
-//		RENDERER.camera.lookAtPosition.y = model.averagePosition[1];
-//		RENDERER.camera.lookAtPosition.z = model.averagePosition[2];
-		
-//		// Activate Renderer
-//		RENDERER.activate();
-		
-//		// Push To Project Models
-//		array_push(MODELS, name);
-		
-//		// User Feedback
-//		ENVIRONMENT.closeInfoModal();
-//		window_set_cursor(cr_default);
+if (array_length(args) > 0 && string_lower(filename_ext(args[0])) == ".ghg")
+{
+	openProjectOrModel(args[0]);
+}
 
-//		setContext(BTContext.Model);
-//	}
-						
-//	// Timesource
-//	time_source_start(time_source_create(time_source_game, 5, time_source_units_frames, func, [args[0], string_split(filename_name(args[0]), ".")[0]]));
-	
-//	// Activate Renderer
-//	RENDERER.activate();
+alarm[0] = 60;
+DBGMEM = debug_event("DumpMemory", true);
+
+// STRESS TESTING
+//var tcs = "\"FILE\",\"ERROR\"\n";
+
+//var file = file_find_first(@"D:/Lego Modding/AllChars/LIJ1pt2/*.ghg", fa_none);
+//var files = [];
+
+//while (file != "")
+//{
+//	show_debug_message(file);
+//	array_push(files, @"D:/Lego Modding/AllChars/LIJ1pt2/" + file);
+//	file = file_find_next();
 //}
+//file_find_close();
+
+//for (var i = 0; i < array_length(files); i++)
+//{
+//	show_debug_message(filename_name(files[i]));
+//	try
+//	{
+//		var model = new BactaTankModel(files[i]);
+//		model.destroy();
+	
+//	}
+//	catch (e)
+//	{
+//		tcs += $"\"{filename_name(files[i])}\",\"{e.message}\"\n";
+//	}
+//}
+
+
+//var buffer = buffer_create(1, buffer_grow, 1);
+//buffer_write(buffer, buffer_text, tcs);
+//buffer_save(buffer, "LIJ1pt2.csv")
+//buffer_delete(buffer);

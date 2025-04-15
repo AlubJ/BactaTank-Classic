@@ -82,7 +82,11 @@ function UVViewerPanel() constructor
 			else if (viewType == 1)
 			{
 				var textureList = [  ];
-				for (var i = 0; i < array_length(PROJECT.currentModel.textures); i++) array_push(textureList, $"Texture {i}");
+				for (var i = 0; i < array_length(PROJECT.currentModel.textures); i++)
+				{
+					if (PROJECT.currentModel.textures[i] == 0) array_push(textureList, $"");
+					array_push(textureList, $"Texture {i}");
+				}
 				var newTex = ImGui.ComboBox(textureSelected, textureList, "##hiddenTextures", 256, graImage, ImGuiComboFlags.NoArrowButton);
 				ImGui.ShowTooltip("UV Texture");
 				if (textureSelected != newTex)
@@ -168,6 +172,14 @@ function UVViewerPanel() constructor
 			ImGui.SetCursorPos(windowSize[0] - 928, 6);
 			ImGui.Text("|");
 			
+			// Set UV Set
+			var uvSet = array_create(array_length(PROJECT.currentModel.meshes), -1);
+			for (var i = 0; i < array_length(PROJECT.currentModel.meshes); i++)
+			{
+				if (PROJECT.currentModel.meshes[i].uvSet1 != -1 && viewLayer == 0) uvSet[i] = PROJECT.currentModel.meshes[i].uvSet1;
+				else if (PROJECT.currentModel.meshes[i].uvSet2 != -1 && viewLayer == 1) uvSet[i] = PROJECT.currentModel.meshes[i].uvSet2;
+			}
+			
 			// Save
 			ImGui.SetCursorPos(windowSize[0] - 955, 4);
 			if (ImGui.ImageButton("##hiddenSaveMap", graSave, 0, c_white, 1, c_white, 0, 14, 16))
@@ -183,7 +195,7 @@ function UVViewerPanel() constructor
 				{
 					for (var i = 0; i < array_length(meshesSelected); i++)
 					{
-						if (meshesSelected[i] && PROJECT.currentModel.meshes[i].uvSet1 != -1) CANVAS.add(new CalicoUVMap(PROJECT.currentModel.meshes[i].uvSet1, viewUVOffset));
+						if (meshesSelected[i] && uvSet[i] != -1) CANVAS.add(new CalicoUVMap(uvSet[i], viewUVOffset));
 					}
 				}
 				else if (viewType == 1)
@@ -192,7 +204,7 @@ function UVViewerPanel() constructor
 					{
 						var mesh = PROJECT.currentModel.meshes[i];
 						var material = PROJECT.currentModel.materials[mesh.material];
-						if (textureSelected == material.textureID && mesh.uvSet1 != -1) CANVAS.add(new CalicoUVMap(mesh.uvSet1, viewUVOffset));
+						if (textureSelected == material.textureID && uvSet[i] != -1) CANVAS.add(new CalicoUVMap(uvSet[i], viewUVOffset));
 					}
 				}
 				else if (viewType == 2)
@@ -201,7 +213,7 @@ function UVViewerPanel() constructor
 					{
 						var mesh = PROJECT.currentModel.meshes[i];
 						var material = PROJECT.currentModel.materials[mesh.material];
-						if (materialSelected == mesh.material && mesh.uvSet1 != -1) CANVAS.add(new CalicoUVMap(mesh.uvSet1, viewUVOffset));
+						if (materialSelected == mesh.material && uvSet[i] != -1) CANVAS.add(new CalicoUVMap(uvSet[i], viewUVOffset));
 					}
 				}
 				else if (viewType == 3)
@@ -213,8 +225,7 @@ function UVViewerPanel() constructor
 						
 						for (var j = 0; j < array_length(lay.meshes); j++)
 						{
-							var mesh = PROJECT.currentModel.meshes[lay.meshes[j].mesh];
-							if (mesh.uvSet1 != -1) CANVAS.add(new CalicoUVMap(mesh.uvSet1, viewUVOffset));
+							if (uvSet[lay.meshes[j].mesh] != -1) CANVAS.add(new CalicoUVMap(uvSet[lay.meshes[j].mesh], viewUVOffset));
 						}
 					}
 				}
@@ -254,7 +265,7 @@ function UVViewerPanel() constructor
 				{
 					for (var i = 0; i < array_length(meshesSelected); i++)
 					{
-						if (meshesSelected[i] && PROJECT.currentModel.meshes[i].uvSet1 != -1) CANVAS.add(new CalicoUVMap(PROJECT.currentModel.meshes[i].uvSet1, viewUVOffset));
+						if (meshesSelected[i] && uvSet[i] != -1) CANVAS.add(new CalicoUVMap(uvSet[i], viewUVOffset));
 					}
 				}
 				else if (viewType == 1)
@@ -263,7 +274,7 @@ function UVViewerPanel() constructor
 					{
 						var mesh = PROJECT.currentModel.meshes[i];
 						var material = PROJECT.currentModel.materials[mesh.material];
-						if (textureSelected == material.textureID && mesh.uvSet1 != -1) CANVAS.add(new CalicoUVMap(mesh.uvSet1, viewUVOffset));
+						if (textureSelected == material.textureID && uvSet[i] != -1) CANVAS.add(new CalicoUVMap(uvSet[i], viewUVOffset));
 					}
 				}
 				else if (viewType == 2)
@@ -272,7 +283,7 @@ function UVViewerPanel() constructor
 					{
 						var mesh = PROJECT.currentModel.meshes[i];
 						var material = PROJECT.currentModel.materials[mesh.material];
-						if (materialSelected == mesh.material && mesh.uvSet1 != -1) CANVAS.add(new CalicoUVMap(mesh.uvSet1, viewUVOffset));
+						if (materialSelected == mesh.material && uvSet[i] != -1) CANVAS.add(new CalicoUVMap(uvSet[i], viewUVOffset));
 					}
 				}
 				else if (viewType == 3)
@@ -284,8 +295,7 @@ function UVViewerPanel() constructor
 						
 						for (var j = 0; j < array_length(lay.meshes); j++)
 						{
-							var mesh = PROJECT.currentModel.meshes[lay.meshes[j].mesh];
-							if (mesh.uvSet1 != -1) CANVAS.add(new CalicoUVMap(mesh.uvSet1, viewUVOffset));
+							if (uvSet[lay.meshes[j].mesh] != -1) CANVAS.add(new CalicoUVMap(uvSet[lay.meshes[j].mesh], viewUVOffset));
 						}
 					}
 				}

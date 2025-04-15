@@ -13,11 +13,22 @@
 	 - Write Vertex Format Encoder
 */
 
+enum BTUVAnimType
+{
+	NONE,
+	LINEAR = 2,
+	SINE = 3,
+	COSINE = 4,
+}
+#macro BT_UV_ANIM_TYPE global.__btUVAnimType__
+BT_UV_ANIM_TYPE = [ "None", "", "Linear", "Sine", "Cosine" ];
+
 function BactaTankMaterial() constructor
 {
 	// Colour
 	colour				= [1, 1, 1, 1];
 	ambientTint			= [0, 0, 0, 0];
+	specularTint		= [0, 0, 0, 0];
 	
 	// Textures
 	textureID			= -1;
@@ -39,6 +50,15 @@ function BactaTankMaterial() constructor
 	inputFlags			= 0;
 	alphaBlend			= 0;
 	uvSetCoords			= 0;
+	
+	// Texture Scrolling
+	textureScrolls = [  ];
+	repeat(4) array_push(textureScrolls, {
+		enabled: false,
+		type: [0, 0],
+		trigScale: [0, 0],
+		speed: [0, 0],
+	});
 	
 	// UV Sets
 	surfaceUVMapIndex	= 0;
@@ -91,12 +111,23 @@ function BactaTankMaterial() constructor
 		shineID				= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0x54, buffer_s32);
 		ConsoleLog($"    Shine Index:           {shineID}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0xB4 + 0x54);
 		
+		// 0xB4 + 0x68 - Some weird value that turns the mesh fire orange (ginger edition) 
+		
 		// Ambient Tint
 		ambientTint[0]		= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0x6C, buffer_u8) / 255;
 		ambientTint[1]		= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0x6D, buffer_u8) / 255;
 		ambientTint[2]		= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0x6E, buffer_u8) / 255;
 		ambientTint[3]		= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0x6F, buffer_u8) / 255;
 		ConsoleLog($"    Ambient Tint:          {ambientTint}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0xB4 + 0x6C);
+		
+		// 0xB4 + 0x70 - Another mystery tint value
+		
+		// Specular Tint
+		specularTint[0]		= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0x74, buffer_u8) / 255;
+		specularTint[1]		= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0x75, buffer_u8) / 255;
+		specularTint[2]		= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0x76, buffer_u8) / 255;
+		specularTint[3]		= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0x77, buffer_u8) / 255;
+		ConsoleLog($"    Specular Tint:         {specularTint}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0xB4 + 0x6C);
 		
 		// Reflection / Specular
 		reflectionPower		= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0x78, buffer_f32);
@@ -128,12 +159,8 @@ function BactaTankMaterial() constructor
 		uvSetCoords			= buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0x1BC, buffer_u32);
 		ConsoleLog($"    UV Set Coords:         {uvSetCoords}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0xB4 + 0x1BC);
 		
-		// Generate Vertex Format
-		vertexFormat = decodeVertexFormat(vertexFormatFlags);
-		ConsoleLog($"    Decoded Vertex Format: {vertexFormat}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0xB4 + 0x13C);
-		
 		// NU20 Last Colour Values
-		if (_model.version == BTModelVersion.pcghgNU20First)
+		if (_model.nu20Offset == 0)
 		{
 			colour[0]		= buffer_peek(buffer, buffer_tell(buffer) + 0xC8, buffer_u8) / 255;
 			colour[1]		= buffer_peek(buffer, buffer_tell(buffer) + 0xC9, buffer_u8) / 255;
@@ -141,6 +168,46 @@ function BactaTankMaterial() constructor
 			colour[3]		= buffer_peek(buffer, buffer_tell(buffer) + 0xCB, buffer_u8) / 255;
 			ConsoleLog($"    Alternate Colour:       {colour}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0xB4 + 0xC8);
 		}
+		
+		// Texture Scrolling
+		textureScrolls = [  ];
+		for (var i = 0; i < 4; i++)
+		{
+			// Add To Texture Scrolls
+			array_push(textureScrolls, {
+                    enabled: false,
+                    type: [0, 0],
+                    speed: [0, 0],
+                    trigScale: [0, 0],
+			});
+			
+			// Get Texture Scroll Enabled
+			textureScrolls[i].enabled = buffer_peek(buffer, buffer_tell(buffer) + 0xB4 + 0x10C + (0x04 * i), buffer_s32) + 1;
+			ConsoleLog($"    Texture Scroll {i}:     {textureScrolls[i].enabled ? "Enabled" : "Disabled"}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0xB4 + 0x10C + (0x04 * i));
+			
+			// Get Scroll Offset
+			var scrollOffset = buffer_tell(buffer) + 0xB4 + 0x144 + (i * 20);
+			
+			// Get Scroll Types
+			textureScrolls[i].type[0] = buffer_peek(buffer, scrollOffset, buffer_s8);
+			ConsoleLog($"        X-Type:             {BT_UV_ANIM_TYPE[textureScrolls[i].type[0]]}", CONSOLE_MODEL_LOADER_DEBUG, scrollOffset);
+			textureScrolls[i].type[1] = buffer_peek(buffer, scrollOffset + 1, buffer_s8);
+			ConsoleLog($"        Y-Type:             {BT_UV_ANIM_TYPE[textureScrolls[i].type[0]]}", CONSOLE_MODEL_LOADER_DEBUG, scrollOffset + 1);
+			
+			// Get Scroll Things
+			textureScrolls[i].trigScale[0] = buffer_peek(buffer, scrollOffset + 4, buffer_f32);
+			ConsoleLog($"        X-Trig Scale:       {textureScrolls[i].trigScale[0]}", CONSOLE_MODEL_LOADER_DEBUG, scrollOffset + 4);
+			textureScrolls[i].trigScale[1] = buffer_peek(buffer, scrollOffset + 8, buffer_f32);
+			ConsoleLog($"        Y-Trig Scale:       {textureScrolls[i].trigScale[1]}", CONSOLE_MODEL_LOADER_DEBUG, scrollOffset + 8);
+			textureScrolls[i].speed[0] = buffer_peek(buffer, scrollOffset + 12, buffer_f32);
+			ConsoleLog($"        X-Speed:            {textureScrolls[i].speed[0]}", CONSOLE_MODEL_LOADER_DEBUG, scrollOffset + 12);
+			textureScrolls[i].speed[1] = buffer_peek(buffer, scrollOffset + 16, buffer_f32);
+			ConsoleLog($"        Y-Speed:            {textureScrolls[i].speed[1]}", CONSOLE_MODEL_LOADER_DEBUG, scrollOffset + 16);
+		}
+		
+		// Generate Vertex Format
+		vertexFormat = decodeVertexFormat(vertexFormatFlags);
+		ConsoleLog($"    Decoded Vertex Format: {vertexFormat}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0xB4 + 0x13C);
 	}
 	
 	static inject = function(buffer, _model)
@@ -157,7 +224,9 @@ function BactaTankMaterial() constructor
 		// Inject Texture IDs
 		buffer_poke(buffer, offset + 0x74,    buffer_s16, textureID);
 		buffer_poke(buffer, offset + 0xb4 + 0x04,    buffer_s32, textureID);
+		buffer_poke(buffer, offset + 0xb4 + 0x48,    buffer_s32, specularID);
 		buffer_poke(buffer, offset + 0xb4 + 0x4c,    buffer_s32, normalID);
+		buffer_poke(buffer, offset + 0xb4 + 0x50,    buffer_s32, cubemapID);
 		buffer_poke(buffer, offset + 0xb4 + 0x54,    buffer_s32, shineID);
 		
 		// Inject Ambient Tint
@@ -166,21 +235,52 @@ function BactaTankMaterial() constructor
 		buffer_poke(buffer, offset + 0xB4 + 0x6E,    buffer_u8,  floor(ambientTint[2] * 255));
 		buffer_poke(buffer, offset + 0xB4 + 0x6F,    buffer_u8,  floor(ambientTint[3] * 255));
 		
+		// Inject Specular Tint
+		buffer_poke(buffer, offset + 0xB4 + 0x74,    buffer_u8,  floor(specularTint[0] * 255));
+		buffer_poke(buffer, offset + 0xB4 + 0x75,    buffer_u8,  floor(specularTint[1] * 255));
+		buffer_poke(buffer, offset + 0xB4 + 0x76,    buffer_u8,  floor(specularTint[2] * 255));
+		buffer_poke(buffer, offset + 0xB4 + 0x77,    buffer_u8,  floor(specularTint[3] * 255));
+		
+		// Reflection / Specular
+		buffer_poke(buffer, offset + 0xB4 + 0x78,    buffer_f32,  reflectionPower);
+		buffer_poke(buffer, offset + 0xB4 + 0x7C,    buffer_f32,  specularExponent);
+		
 		// Inject UV Sets
-		buffer_poke(buffer, offset + 0xB4 + 0xA9, surfaceUVMapIndex, buffer_u8);
-		buffer_poke(buffer, offset + 0xB4 + 0xAA, specularUVMapIndex, buffer_u8);
-		buffer_poke(buffer, offset + 0xB4 + 0xAB, normalUVMapIndex, buffer_u8);
+		buffer_poke(buffer, offset + 0xB4 + 0xA9, buffer_u8, surfaceUVMapIndex);
+		buffer_poke(buffer, offset + 0xB4 + 0xAA, buffer_u8, specularUVMapIndex);
+		buffer_poke(buffer, offset + 0xB4 + 0xAB, buffer_u8, normalUVMapIndex);
 		
 		// Inject Shader Flags
+		buffer_poke(buffer, offset + 0xB4 + 0x13C,	 buffer_u32, vertexFormatFlags);
 		buffer_poke(buffer, offset + 0xb4 + 0x1b8,   buffer_u32, shaderFlags);
 		
 		// Inject LB1 and LIJ1 Colours
-		if (_model.version == BTModelVersion.pcghgNU20First)
+		if (_model.nu20Offset == 0)
 		{
 			buffer_poke(buffer, offset + 0xc8,    buffer_u8, floor(colour[0] * 255));
 			buffer_poke(buffer, offset + 0xc9,    buffer_u8, floor(colour[1] * 255));
 			buffer_poke(buffer, offset + 0xca,    buffer_u8, floor(colour[2] * 255));
 			buffer_poke(buffer, offset + 0xcb,    buffer_u8, floor(colour[3] * 255));
+		}
+		
+		// Inject Texture Scrolling
+		for (var i = 0; i < 4; i++)
+		{
+			// Inject Enabled
+			buffer_poke(buffer, offset + 0xB4 + 0x10C + (0x04 * i), buffer_s32, textureScrolls[i].enabled - 1);
+			
+			// Get Scroll Offset
+			var scrollOffset = offset + 0xB4 + 0x144 + (i * 20);
+			
+			// Get Scroll Types
+			buffer_poke(buffer, scrollOffset, buffer_s8, textureScrolls[i].type[0]);
+			buffer_poke(buffer, scrollOffset + 1, buffer_s8, textureScrolls[i].type[1]);
+			
+			// Get Scroll Things
+			buffer_poke(buffer, scrollOffset + 4, buffer_f32, textureScrolls[i].trigScale[0]);
+			buffer_poke(buffer, scrollOffset + 8, buffer_f32, textureScrolls[i].trigScale[1]);
+			buffer_poke(buffer, scrollOffset + 12, buffer_f32, textureScrolls[i].speed[0]);
+			buffer_poke(buffer, scrollOffset + 16, buffer_f32, textureScrolls[i].speed[1]);
 		}
 	}
 	
@@ -204,12 +304,18 @@ function BactaTankMaterial() constructor
 		buffer_write(buffer, buffer_f32, ambientTint[2]);
 		buffer_write(buffer, buffer_f32, ambientTint[3]);
 		
+		// Write Specular Tint
+		buffer_write(buffer, buffer_f32, specularTint[0]);
+		buffer_write(buffer, buffer_f32, specularTint[1]);
+		buffer_write(buffer, buffer_f32, specularTint[2]);
+		buffer_write(buffer, buffer_f32, specularTint[3]);
+		
 		// Write Specular Exponent and Reflection Power
 		buffer_write(buffer, buffer_f32, specularExponent);
 		buffer_write(buffer, buffer_f32, reflectionPower);
 		
 		// Write Other Attributes
-		buffer_write(buffer, buffer_u32, 0x00); //vertexFormat);
+		buffer_write(buffer, buffer_u32, vertexFormatFlags);
 		buffer_write(buffer, buffer_u32, alphaBlend);
 		buffer_write(buffer, buffer_u32, shaderFlags);
 	}
@@ -265,12 +371,22 @@ function BactaTankMaterial() constructor
 		ambientTint[2] = buffer_read(buffer, buffer_f32);
 		ambientTint[3] = buffer_read(buffer, buffer_f32);
 		
+		// Read Specular Tint
+		specularTint[0] = buffer_read(buffer, buffer_f32);
+		specularTint[1] = buffer_read(buffer, buffer_f32);
+		specularTint[2] = buffer_read(buffer, buffer_f32);
+		specularTint[3] = buffer_read(buffer, buffer_f32);
+		
 		// Read Specular Exponent and Reflection Power
 		specularExponent = buffer_read(buffer, buffer_f32);
 		reflectionPower = buffer_read(buffer, buffer_f32);
 		
 		// Read Other Attributes
-		if (replaceVertexFormat) vertexFormat = buffer_read(buffer, buffer_u32);
+		if (SETTINGS.replaceVertexFormat)
+		{
+			vertexFormatFlags = buffer_read(buffer, buffer_u32);
+			vertexFormat = decodeVertexFormat(vertexFormatFlags);
+		}
 		else buffer_read(buffer, buffer_u32);
 		alphaBlend = buffer_read(buffer, buffer_u32);
 		shaderFlags = buffer_read(buffer, buffer_u32);
@@ -287,6 +403,14 @@ function BactaTankMaterial() constructor
 	/// @desc Decode Vertex Format
 	static decodeVertexFormat = function(_vertexFormat)
 	{
+		//if (textureID != -1)
+		//{
+		//	if ((_vertexFormat & 0x3800) == 0)
+		//	{
+		//		_vertexFormat = _vertexFormat & 0xffffcfff | 0x800;
+		//	}
+		//}
+		
 		var normalType;
 		var uvSetCount;
 		var bitangentType;
@@ -294,6 +418,7 @@ function BactaTankMaterial() constructor
 		var blendIndicesType;
 		var blendWeightsType;
 		var halfFloatUVType;
+		var transparencyType;
 		var colourSet1;
 		var colourSet2;
 		var local_c;
@@ -344,6 +469,13 @@ function BactaTankMaterial() constructor
 		    uvSetCount = 0;
 		    halfFloatUVType = _vertexFormat >> 0xb & 7;
 		}
+		
+		// Get Transparency Type
+		if ((_vertexFormat & 0x8000) == 0) {
+            transparencyType = _vertexFormat >> 0xe & 1;
+        } else {
+            transparencyType = 2;
+        }
 		
 		// Get Blend Indices Type
 		if ((_vertexFormat & 0x8000) == 0)
@@ -443,6 +575,18 @@ function BactaTankMaterial() constructor
 		    }
 		}
 		
+		// Transparency
+		//if (transparencyType == 1)
+		//{
+		//	array_push(arrayFormat, {attribute: BTVertexAttributes.transparency, type: BTVertexAttributeTypes.float2, position: offset});
+		//	offset += 0x08;
+        //}
+		//else if (transparencyType == 2)
+		//{
+		//	array_push(arrayFormat, {attribute: BTVertexAttributes.transparency, type: BTVertexAttributeTypes.byte4, position: offset});
+		//	offset += 0x04;
+        //}
+		
 		// Blend Indices
 		if (blendIndicesType == 1)
 		{
@@ -478,7 +622,7 @@ function BactaTankMaterial() constructor
 		return arrayFormat;
 	}
 	
-	/// @func decodeVertexFormat()
+	/// @func encodeVertexFormat()
 	/// @desc Decode Vertex Format
 	static encodeVertexFormat = function()
 	{
@@ -692,6 +836,18 @@ function BactaTankMaterial() constructor
 		}
 		
 		return arrayFormat;
+	}
+	
+	static setVertexFormatUV = function()
+	{
+		// Remove UVs
+		vertexFormatFlags &= ~(7 << 0x0b);
+		
+		// Add 2 UV Sets
+		vertexFormatFlags |= 2 << 0x0b;
+		
+		// Redecode Vertex Format
+		vertexFormat = decodeVertexFormat(vertexFormatFlags);
 	}
 	
 	#endregion

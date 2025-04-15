@@ -28,10 +28,12 @@ function BactaTankModel(model = -1) constructor
 		{
 			if (filename_ext(string_lower(model)) == ".ghg" || filename_ext(string_lower(model)) == ".gsc") loadGHG(model);
 			else if (filename_ext(string_lower(model)) == ".bcanister") loadCanister(model);
+			return true;
 		}
 		catch (exception)
 		{
 			throwException(exception);
+			return false;
 		}
 	}
 	
@@ -41,17 +43,26 @@ function BactaTankModel(model = -1) constructor
 	/// @desc Load Model from GHG file
 	static loadGHG = function(model)
 	{
+		// GSC check
+		if (!SETTINGS.allowGSC && filename_ext(string_lower(model)) == ".gsc") throw ("GSC Scene loading is not supported, if you want to attempt to load the model, enable it in the preferences");
+		
 		// Load Model File Into Buffer
 		var buffer = buffer_load(model);
 		
 		// Get And Check Model Version
 		var modelVersion = getVersion(buffer);
-		if (modelVersion == BTModelVersion.none) return -1;
+		if (modelVersion == BTModelVersion.None) return -1;
 		self.version = modelVersion;
 		self.offsets = {};
 		
 		// Log
 		ConsoleLog($"Version: {BT_MODEL_VERSION[modelVersion]}", CONSOLE_MODEL_LOADER);
+		if (self.version == 1 && !SETTINGS.allowVersion1)
+		{
+			buffer_delete(buffer);
+			buffer_delete(self.data);
+			throw ("Model file version 1 is not supported, if you want to load this version of the model, enable it in the preferences");
+		}
 		
 		// NU20 Offset
 		var nu20Offset = buffer_tell(buffer);
@@ -79,6 +90,7 @@ function BactaTankModel(model = -1) constructor
 		// Model Type
 		if (buffer_peek(buffer, gsnhOffset + 0x18c, buffer_s32) != 0) self.type = BTModelType.model;
 		else self.type = BTModelType.scene;
+		if (string_pos("icon", string_lower(buffer_peek(buffer, nu20Offset + 0x2C, buffer_string)))) self.type = BTModelType.icon;
 		ConsoleLog($"Type: {BT_MODEL_TYPE[self.type]}", CONSOLE_MODEL_LOADER);
 		
 		// Texture Metadata
@@ -90,7 +102,7 @@ function BactaTankModel(model = -1) constructor
 		
 		// Read Meshes
 		buffer_seek(buffer, buffer_seek_start, gsnhOffset + 0x1cc);
-		buffer_seek(buffer, buffer_seek_relative, buffer_read(buffer, buffer_u32) + 0x10);
+		buffer_seek(buffer, buffer_seek_relative, buffer_read(buffer, buffer_s32) + 0xC);
 		readMeshes(buffer);
 		
 		// Model Specific Attributes
@@ -143,7 +155,7 @@ function BactaTankModel(model = -1) constructor
 		}
 		
 		// Seek either to the end of the NU20 or the start of the file depending on version
-		if (modelVersion == BTModelVersion.pcghgNU20First) buffer_seek(buffer, buffer_seek_start, nu20Size + 4);
+		if (nu20Offset == 0) buffer_seek(buffer, buffer_seek_start, nu20Size + 4);
 		else buffer_seek(buffer, buffer_seek_start, 6);
 		
 		// Read Textures
@@ -173,6 +185,21 @@ function BactaTankModel(model = -1) constructor
 		// Log
 		ConsoleLog($"Attempting To Save \"{filepath}\"", CONSOLE_MODEL_SAVER);
 		
+		// Set Model Version If User Changed Settings
+		if (SETTINGS.exportNU20Last && self.version >= BTModelVersion.Version3 && nu20Offset == 0)
+		{
+			ConsoleLog($"Converting Model Version 4 to Version 2", CONSOLE_MODEL_LOADER);
+			self.version = BTModelVersion.Version2;
+			self.nu20Offset = 1;
+		}
+		
+		// File Version 1 to Version 2
+		if (self.version == 1)
+		{
+			ConsoleLog($"Model Version 1 detected, attempting to convert to Model Version 2", CONSOLE_MODEL_LOADER);
+			self.version = BTModelVersion.Version2;
+		}
+		
 		// Log
 		ConsoleLog($"Version: {BT_MODEL_VERSION[self.version]}", CONSOLE_MODEL_SAVER);
 		ConsoleLog($"Type: {BT_MODEL_TYPE[self.type]}", CONSOLE_MODEL_SAVER);
@@ -190,7 +217,7 @@ function BactaTankModel(model = -1) constructor
 		var preNU20Size = buffer_get_size(self.data);
 		
 		// Write NU20 if NU20 First
-		if (self.version == BTModelVersion.pcghgNU20First)
+		if (self.nu20Offset == 0)
 		{
 			// Log
 			ConsoleLog($"Writing NU20", CONSOLE_MODEL_SAVER);
@@ -206,13 +233,13 @@ function BactaTankModel(model = -1) constructor
 		ConsoleLog($"Writing {array_length(self.textures)} Textures", CONSOLE_MODEL_SAVER);
 		
 		// Write Textures
-		if (self.version == BTModelVersion.pcghgNU20Last) buffer_write(buffer, buffer_u16, array_length(self.textures)); // Texture Count
+		if (self.nu20Offset != 0) buffer_write(buffer, buffer_u16, array_length(self.textures)); // Texture Count
 		
 		for (var i = 0; i < array_length(self.textures); i++)
 		{
 			var texture = self.textures[i];
 			if (texture == 0) continue;
-			if (self.version == BTModelVersion.pcghgNU20Last)
+			if (self.nu20Offset != 0)
 			{
 				// Texture Width (Negate if Cubemap)
 				if (texture.cubemap) buffer_write(buffer, buffer_s32, -texture.width);
@@ -268,7 +295,7 @@ function BactaTankModel(model = -1) constructor
 		buffer_write(buffer, buffer_string, "Made With BactaTankClassic v0.3");
 		
 		// Pre-NU20Size
-		if (self.version == BTModelVersion.pcghgNU20Last)
+		if (self.nu20Offset != 0)
 		{
 			// Log
 			ConsoleLog($"Writing NU20", CONSOLE_MODEL_SAVER);
@@ -327,7 +354,7 @@ function BactaTankModel(model = -1) constructor
 			if (self.textures[i].width == 0)
 			{
 				self.textures[i] = 0; // Dereference Texture If Part Of Cubemap
-				if (self.version = BTModelVersion.pcghgNU20Last && self.textures[i-1] != 0) self.textures[i-1].cubemap = true; // Set Previous Textures Cubemap Value To True
+				if (self.nu20Offset != 0 && self.textures[i-1] != 0) self.textures[i-1].cubemap = true; // Set Previous Textures Cubemap Value To True
 			}
 			
 			// Seek back to start
@@ -372,12 +399,16 @@ function BactaTankModel(model = -1) constructor
 		self.meshes = [];
 		
 		// Mesh Block 1
+		var meshBlock1StartPointer = buffer_tell(buffer) + buffer_read(buffer, buffer_s32);
 		var meshCount = buffer_read(buffer, buffer_u32);
-		var meshBlock2StartPointer = buffer_read(buffer, buffer_s32);
+		var meshBlock2StartPointer = buffer_tell(buffer) + buffer_read(buffer, buffer_s32);
 		var meshBlock2Count = buffer_read(buffer, buffer_u32);
 		
 		// Log
 		ConsoleLog($"Reading {meshCount + meshBlock2Count} Meshes", CONSOLE_MODEL_LOADER);
+		
+		// Seek
+		buffer_seek(buffer, buffer_seek_start, meshBlock1StartPointer);
 		
 		// Mesh Block 1 Loop
 		for (var i = 0; i < meshCount; i++)
@@ -396,24 +427,24 @@ function BactaTankModel(model = -1) constructor
 			buffer_seek(buffer, buffer_seek_start, tempOffset);
 		}
 		
-		// Mesh Block 2 Loop
-		for (var i = meshCount; i < meshCount + meshBlock2Count; i++)
-		{
-			// Seek to mesh entry
-			var tempOffset = buffer_tell(buffer) + 4;
-			buffer_seek(buffer, buffer_seek_relative, buffer_read(buffer, buffer_u32) - 4);
+		//// Mesh Block 2 Loop (I have no idea what the fuck this does)
+		//for (var i = meshCount; i < meshCount + meshBlock2Count; i++)
+		//{
+		//	// Seek to mesh entry
+		//	var tempOffset = buffer_tell(buffer) + 4;
+		//	buffer_seek(buffer, buffer_seek_relative, buffer_read(buffer, buffer_u32) - 4);
 			
-			ConsoleLog(buffer_tell(buffer));
+		//	ConsoleLog(buffer_tell(buffer));
 			
-			// Create New Mesh
-			self.meshes[i] = new BactaTankMesh();
+		//	// Create New Mesh
+		//	self.meshes[i] = new BactaTankMesh();
 			
-			// Parse Mesh Data
-			self.meshes[i].parse(buffer, self);
+		//	// Parse Mesh Data
+		//	self.meshes[i].parse(buffer, self);
 			
-			// Seek back to start
-			buffer_seek(buffer, buffer_seek_start, tempOffset);
-		}
+		//	// Seek back to start
+		//	buffer_seek(buffer, buffer_seek_start, tempOffset);
+		//}
 	}
 	
 	static readBones = function(buffer)
@@ -749,20 +780,27 @@ function BactaTankModel(model = -1) constructor
 			// Skip Over If Buffers Don't Exist
 			if (array_length(self.meshes[i].vertices) == 0 || array_length(self.meshes[i].triangles) == 0) continue;
 			
-			// If the vertex stride isn't in the array, add a new entry. Each vertex stride is treated as a new vertexBuffer.
-			if (array_get_index(vbIndex, self.meshes[i].vertexStride) == -1) {
-				array_push(vbIndex, self.meshes[i].vertexStride);
-				writeVertexBuffers[array_get_index(vbIndex, self.meshes[i].vertexStride)] = buffer_create(1, buffer_grow, 1);
-			}
-			
 			// Get Vertex Buffer
 			var vertexBuffer = self.meshes[i].buildVertexBuffer(self);
 			
+			// Account For Dynamic Buffers
+			var vertexStride = self.meshes[i].vertexStride;
+			if (array_length(self.meshes[i].dynamicBuffers) > 0)
+			{
+				vertexStride += 1;
+			}
+			
+			// If the vertex stride isn't in the array, add a new entry. Each vertex stride is treated as a new vertexBuffer.
+			if (array_get_index(vbIndex, vertexStride) == -1) {
+				array_push(vbIndex, vertexStride);
+				writeVertexBuffers[array_get_index(vbIndex, vertexStride)] = buffer_create(1, buffer_grow, 1);
+			}
+			
 			// Set Vertex Buffer Index
-			self.meshes[i].vertexBufferID = array_get_index(vbIndex, self.meshes[i].vertexStride);
-			self.meshes[i].vertexOffset = buffer_tell(writeVertexBuffers[array_get_index(vbIndex, self.meshes[i].vertexStride)]) / self.meshes[i].vertexStride;
-			buffer_copy(vertexBuffer, 0, buffer_get_size(vertexBuffer), writeVertexBuffers[array_get_index(vbIndex, self.meshes[i].vertexStride)], buffer_tell(writeVertexBuffers[array_get_index(vbIndex, self.meshes[i].vertexStride)]));
-			buffer_seek(writeVertexBuffers[array_get_index(vbIndex, self.meshes[i].vertexStride)], buffer_seek_relative, buffer_get_size(vertexBuffer));
+			self.meshes[i].vertexBufferID = array_get_index(vbIndex, vertexStride);
+			self.meshes[i].vertexOffset = buffer_tell(writeVertexBuffers[array_get_index(vbIndex, vertexStride)]) / self.meshes[i].vertexStride;
+			buffer_copy(vertexBuffer, 0, buffer_get_size(vertexBuffer), writeVertexBuffers[array_get_index(vbIndex, vertexStride)], buffer_tell(writeVertexBuffers[array_get_index(vbIndex, vertexStride)]));
+			buffer_seek(writeVertexBuffers[array_get_index(vbIndex, vertexStride)], buffer_seek_relative, buffer_get_size(vertexBuffer));
 			
 			// Delete Vertex Buffer
 			buffer_delete(vertexBuffer);
@@ -792,6 +830,9 @@ function BactaTankModel(model = -1) constructor
 	{
 		// Log
 		ConsoleLog($"Injecting into NU20", CONSOLE_MODEL_SAVER);
+		
+		if (self.version >= BTModelVersion.Version3) buffer_poke(self.data, 0x08, buffer_u32, self.version);
+		else buffer_poke(self.data, 0x08, buffer_u64, self.version);
 		
 		// Log
 		ConsoleLog($"Injecting {array_length(self.textures)} Textures", CONSOLE_MODEL_SAVER);
@@ -1069,7 +1110,7 @@ function BactaTankModel(model = -1) constructor
 		var cacheVersion = buffer_read(buffer, buffer_f32);
 		if (cacheVersion != 1.0) show_error("Wrong Version", true);
 		
-		self.version = buffer_read(buffer, buffer_string) == "PCGHG_NU20_LAST" ? BTModelVersion.pcghgNU20Last : BTModelVersion.pcghgNU20First;
+//		self.version = buffer_read(buffer, buffer_string) == "PCGHG_NU20_LAST" ? BTModelVersion.pcghgNU20Last : BTModelVersion.pcghgNU20First;
 		
 		// Read NU20
 		var nu20Signature = buffer_read(buffer, buffer_string);
@@ -1382,14 +1423,14 @@ function BactaTankModel(model = -1) constructor
 	static destroy = function()
 	{
 		// Destroy NU20
-		buffer_delete(self.data);
+		if (buffer_exists(self.data)) buffer_delete(self.data);
 		
 		// Delete Textures
 		for (var i = 0; i < array_length(self.textures); i++)
 		{
 			if (self.textures[i] == 0 || self.textures[i].data == noone) continue;
-			buffer_delete(self.textures[i].data);
-			sprite_delete(self.textures[i].sprite);
+			if (buffer_exists(self.textures[i].data)) buffer_delete(self.textures[i].data);
+			if (sprite_exists(self.textures[i].sprite)) sprite_delete(self.textures[i].sprite);
 		}
 		
 		// Delete Meshes
@@ -1410,39 +1451,86 @@ function BactaTankModel(model = -1) constructor
 	/// @desc Pushes model onto the render queue
 	static pushToRenderQueue = function(activeLayers, renderer = RENDERER, hideDisabledMeshes = true)
 	{
-		// Layers Loop
-		for (var l = 0; l < array_length(self.layers); l++)
+		if (is_array(activeLayers))
 		{
-			// Skip if layer is not active
-			if (!activeLayers[l]) continue;
-			
-			// Loop Through Layer Meshes
-			for (var m = 0; m < array_length(self.layers[l].meshes); m++)
+			// Layers Loop
+			for (var l = 0; l < array_length(self.layers); l++)
 			{
-				// Mesh
-				var mesh = self.meshes[self.layers[l].meshes[m].mesh];
+				// Skip if layer is not active
+				if (!activeLayers[l]) continue;
+			
+				// Loop Through Layer Meshes
+				for (var m = 0; m < array_length(self.layers[l].meshes); m++)
+				{
+					// Mesh
+					var mesh = self.meshes[self.layers[l].meshes[m].mesh];
 				
-				// Skip if mesh type isn't 6
-				if ((hideDisabledMeshes && !mesh.type) || mesh.vertexBufferObject == -1) continue;
+					// Skip if mesh type isn't 6
+					if ((hideDisabledMeshes && !mesh.type) || mesh.vertexBufferObject == -1) continue;
 				
-				// Get Matrix
-				var matrix = matrix_build_identity();
-				if (self.layers[l].meshes[m].bone != -1) matrix = self.bones[self.layers[l].meshes[m].bone].matrix;
+					// Get Matrix
+					var matrix = matrix_build_identity();
+					if (self.layers[l].meshes[m].bone != -1) matrix = self.bones[self.layers[l].meshes[m].bone].matrix;
 				
-				// Create Render Struct
-				var renderStruct = {
-					vertexBuffer: mesh.vertexBufferObject,
-					material: self.materials[self.layers[l].meshes[m].material],
-					textures: self.textures,
-					matrix: matrix,
-					shader: "StandardShader",
-					primitive: pr_trianglestrip,
-					dynamicBuffers: mesh.dynamicBuffers,
+					// Create Render Struct
+					var renderStruct = {
+						vertexBuffer: mesh.vertexBufferObject,
+						material: self.materials[self.layers[l].meshes[m].material != -1 ? self.layers[l].meshes[m].material : 0],
+						textures: self.textures,
+						matrix: matrix,
+						shader: "StandardShader",
+						primitive: pr_trianglestrip,
+						dynamicBuffers: mesh.dynamicBuffers,
+					}
+				
+					// Organise Render Queue Based On Aplha Transparent Objects And Push
+					if ((renderStruct.material.alphaBlend >> BT_ALPHA_BLEND_SHIFT & BT_ALPHA_BLEND_BITS) != BTAlphaBlend.None) array_insert(renderer.renderQueue, 0, renderStruct);
+					else array_push(renderer.renderQueue, renderStruct);
 				}
+			}
+		}
+		else
+		{
+			// Special Objects Loop
+			for (var o = 0; o < array_length(self.specialObjects); o++)
+			{
+				// Model
+				var model = self.specialObjects[o].model;
 				
-				// Organise Render Queue Based On Aplha Transparent Objects And Push
-				if ((renderStruct.material.alphaBlend >> BT_ALPHA_BLEND_SHIFT & BT_ALPHA_BLEND_BITS) != BTAlphaBlend.None) array_insert(renderer.renderQueue, 0, renderStruct);
-				else array_push(renderer.renderQueue, renderStruct);
+				// Loop Through Layer Meshes
+				for (var m = 0; m < array_length(self.models[model].meshes); m++)
+				{
+					// Mesh ID
+					var meshID = self.models[model].meshes[m].mesh;
+					
+					// Validate Mesh
+					if (meshID >= 0)
+					{
+						// Mesh
+						var mesh = self.meshes[meshID];
+				
+						// Skip if mesh type isn't 6
+						if ((hideDisabledMeshes && !mesh.type) || mesh.vertexBufferObject == -1) continue;
+				
+						// Get Matrix
+						var matrix = matrix_build_identity();
+				
+						// Create Render Struct
+						var renderStruct = {
+							vertexBuffer: mesh.vertexBufferObject,
+							material: self.materials[self.models[model].meshes[m].material != -1 ? self.models[model].meshes[m].material : 0],
+							textures: self.textures,
+							matrix: matrix,
+							shader: "StandardShader",
+							primitive: pr_trianglestrip,
+							dynamicBuffers: mesh.dynamicBuffers,
+						}
+				
+						// Organise Render Queue Based On Aplha Transparent Objects And Push
+						if ((renderStruct.material.alphaBlend >> BT_ALPHA_BLEND_SHIFT & BT_ALPHA_BLEND_BITS) != BTAlphaBlend.None) array_insert(renderer.renderQueue, 0, renderStruct);
+						else array_push(renderer.renderQueue, renderStruct);
+					}
+				}
 			}
 		}
 	}
@@ -1467,7 +1555,7 @@ function BactaTankModel(model = -1) constructor
 			// Create Render Struct
 			var renderStruct = {
 				vertexBuffer: mesh.vertexBufferObject,
-				material: self.materials[self.layers[activeLayer].meshes[m].material],
+				material: self.materials[self.layers[activeLayer].meshes[m].material != -1 ? self.layers[activeLayer].meshes[m].material : 0],
 				textures: self.textures,
 				matrix: matrix,
 				shader: "StandardShader",
@@ -1494,7 +1582,7 @@ function BactaTankModel(model = -1) constructor
 		// Create Render Struct
 		var renderStruct = {
 			vertexBuffer: mesh.vertexBufferObject,
-			material: self.materials[self.getMaterial(meshIndex)],
+			material: self.materials[mesh.material != -1 ? mesh.material : 0],
 			textures: self.textures,
 			matrix: matrix,
 			shader: "StandardShader",
@@ -1520,16 +1608,22 @@ function BactaTankModel(model = -1) constructor
 		// Check for NU20 first (Batman & Indy models)
 		if (NU20 == 808605006)
 		{
+			// Seek to the version
+			buffer_seek(buffer, buffer_seek_relative, 4);
+			
+			// Version
+			var version = buffer_read(buffer, buffer_u32);
+			
 			// Seek to the start of the nu20
-			buffer_seek(buffer, buffer_seek_relative, -4);
+			buffer_seek(buffer, buffer_seek_relative, -12);
 			
 			// Return Model Version
-			return BTModelVersion.pcghgNU20First;
+			return version;
 		}
 		else
 		{
 			// Check if seek offset is within the size of the buffer
-			if (NU20 + 4 > buffer_get_size(buffer)) return BTModelVersion.none;
+			if (NU20 + 4 > buffer_get_size(buffer)) return BTModelVersion.None;
 			
 			// Seek forward value of NU20 and check for NU20 there
 			buffer_seek(buffer, buffer_seek_relative, NU20);
@@ -1538,16 +1632,22 @@ function BactaTankModel(model = -1) constructor
 			NU20 = buffer_read(buffer, buffer_u32);
 			if (NU20 == 808605006)
 			{
+				// Seek to the version
+				buffer_seek(buffer, buffer_seek_relative, 4);
+				
+				// Version
+				var version = buffer_read(buffer, buffer_u32);
+				
 				// Seek to the start of the nu20
-				buffer_seek(buffer, buffer_seek_relative, -4);
+				buffer_seek(buffer, buffer_seek_relative, -12);
 				
 				// Return Model Version
-				return BTModelVersion.pcghgNU20Last;
+				return version;
 			}
 		}
 		
 		// Return Model Version None regardless
-		return BTModelVersion.none;
+		return BTModelVersion.None;
 	}
 	
 	/// @func getMaterial()
@@ -1573,7 +1673,7 @@ function BactaTankModel(model = -1) constructor
 			for (var o = 0; o < array_length(self.specialObjects); o++)
 			{
 				// Get Model
-				var model = self.models[self.specialObjects[specialObjects[o]].model];
+				var model = self.models[self.specialObjects[o].model];
 				show_debug_message(model);
 				
 				// Special Object Meshes Loop
@@ -1615,7 +1715,7 @@ function BactaTankModel(model = -1) constructor
 			for (var o = 0; o < array_length(self.specialObjects); o++)
 			{
 				// Get Model
-				var model = self.models[self.specialObjects[specialObjects[o]].model];
+				var model = self.models[self.specialObjects[o].model];
 				
 				// Special Object Meshes Loop
 				for (var m = 0; m < array_length(model.meshes); m++)
@@ -1696,7 +1796,7 @@ function BactaTankModel(model = -1) constructor
 function loadBactaTankMesh(file)
 {
 	var cachedMesh = buffer_load(file);
-	var mesh = vertex_create_buffer_from_buffer(cachedMesh, BT_VERTEX_FORMAT);
+	var mesh = vertex_create_buffer_from_buffer(cachedMesh, BT_MATERIAL_VERTEX_FORMAT);
 	buffer_delete(cachedMesh);
 	return mesh;
 }

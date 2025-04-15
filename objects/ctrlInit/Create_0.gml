@@ -30,7 +30,8 @@ gpu_set_tex_max_mip(16);
 gpu_set_tex_max_aniso(16);
 gpu_set_tex_mip_bias(0);
 gpu_set_tex_mip_filter(tf_anisotropic);
-display_reset(8, true);
+display_reset(0, true);
+draw_set_font(fntMain);
 
 randomize();
 
@@ -48,14 +49,8 @@ SETTINGS = newSettings();
 // Load Settings or Save Default Settings
 if (file_exists(CONFIG_DIRECTORY + "settings.bin"))
 {
-	var settings = SnapFromBinary(CONFIG_DIRECTORY + "settings.bin");
-	if (settings.version == VERSION) SETTINGS = settings;
-	else 
-	{
-		directory_destroy(TEMP_DIRECTORY + @"_textures\");
-		directory_destroy(TEMP_DIRECTORY + @"_meshes\");
-		SnapToBinary(SETTINGS, CONFIG_DIRECTORY + "settings.bin");
-	}
+	SETTINGS = SnapFromBinary(CONFIG_DIRECTORY + "settings.bin");
+	upgradeSettings(SETTINGS);
 }
 else SnapToBinary(SETTINGS, CONFIG_DIRECTORY + "settings.bin");
 
@@ -66,6 +61,9 @@ if (SETTINGS.lastProjectPath == "") SETTINGS.lastProjectPath = SETTINGS.defaultP
 // Initialize Console
 if (SETTINGS.consoleEnabled) ConsoleInitialize();
 ConsoleLog("Settings Loaded");
+
+// Set MSAA
+if (SETTINGS.enableMSAA) display_reset(4, true);
 
 //var buffer = buffer_load("Untitled.dds");
 //var size = buffer_get_size(buffer);
@@ -85,7 +83,7 @@ VERSIONS = {
 	main: "v0.3.0",
 	renderer: "v1.0.0",
 	backend: "v0.2.0",
-	revision: "21",
+	revision: "28",
 }
 
 // Set Console Title
@@ -93,10 +91,11 @@ ConsoleSetTitle($"{game_display_name} | {VERSIONS.indev ? "dev_": ""}{VERSIONS.m
 
 // Context
 CONTEXT = BTContext.None;
+SHORTCUTS = new ShortcutManager();
 
 #endregion
 
-#region BactaTank Asset Packs and Templates
+#region BactaTank Asset Packs, Templates and Themes
 
 // Asset Packs Will Be Empty By Default (Potentially Autodetect Asset Packs?)
 ASSET_PACKS = [  ];
@@ -121,6 +120,9 @@ if (!directory_exists(TEMPLATES_DIRECTORY)) directory_create(TEMPLATES_DIRECTORY
 // Load Templates
 loadTemplates();
 
+// Load Themes
+loadThemes();
+
 #endregion
 
 #region Scripting
@@ -129,8 +131,8 @@ loadTemplates();
 BactaTankExternInit();
 
 // Scripting Enabled
-if (SETTINGS.enableScripting)
-	{
+if (SETTINGS.enableScripting && false)
+{
 	// Load All Scripts
 	var file = file_find_first(SCRIPT_DIRECTORY + "*.bscript", fa_none);
 	
@@ -178,6 +180,9 @@ if (SETTINGS.window.maximised) time_source_start(time_source_create(time_source_
 
 // Command Hook
 window_command_hook(window_command_close);
+
+// Title Bar
+if (os_version >= 655360) SetWindowTitleBarDark(window_handle());
 
 #endregion
 

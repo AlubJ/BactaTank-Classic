@@ -37,26 +37,26 @@ function ModelEditorMenuBar() constructor
 			
 			//ImGui.Separator();
 			
-			if (ImGui.MenuItem("New Model", "Ctrl+N", undefined))
+			if (ImGui.MenuItem("New Model", SETTINGS.shortcuts.newModel, undefined))
 			{
 				ENVIRONMENT.openConfirmModal("Unsaved Changes", "Are you sure you want to continue?", function() {
 					ENVIRONMENT.openModal("Welcome");
 				});
 			}
-			if (ImGui.MenuItem("Open Model", "Ctrl+O", undefined))
+			if (ImGui.MenuItem("Open Model", SETTINGS.shortcuts.openModel, undefined))
 			{
 				ENVIRONMENT.openConfirmModal("Unsaved Changes", "Are you sure you want to continue?", function() {
 					openProjectOrModelDialog();
 				});
 			}
-			if (ImGui.MenuItem("Save Model", "Ctrl+S", undefined))
+			if (ImGui.MenuItem("Save Model", SETTINGS.shortcuts.saveModel, undefined))
 			{
 				saveModelDialog();
 			}
 			
 			ImGui.Separator();
 			
-			if (ImGui.MenuItem("Preferences", "Ctrl+P"))
+			if (ImGui.MenuItem("Preferences", SETTINGS.shortcuts.openPreferences))
 			{
 				ENVIRONMENT.openModal("Preferences");
 			}
@@ -78,13 +78,17 @@ function ModelEditorMenuBar() constructor
 		if (ImGui.BeginMenu("Model"))
 		{
 			// Export Armature Tool
-			if (ImGui.MenuItem("Export Armature")) uiExportArmature(PROJECT.currentModel);
+			if (ImGui.MenuItem("Export Armature", SETTINGS.shortcuts.exportArmature)) uiExportArmature(PROJECT.currentModel);
+			
+			ImGui.Separator();
 			
 			// Export Model
-			if (ImGui.MenuItem("Export Model")) uiExportModel(PROJECT.currentModel);
+			if (ImGui.MenuItem("Export Model", SETTINGS.shortcuts.exportModel)) uiExportModel(PROJECT.currentModel);
 			
 			// Export Model From Preview
-			if (ImGui.MenuItem("Export Model From Preview")) uiExportModelFromPreview(PROJECT.currentModel, ENVIRONMENT.displayLayers);
+			if (ImGui.MenuItem("Export Model From Preview", SETTINGS.shortcuts.exportModelFromPreview)) uiExportModelFromPreview(PROJECT.currentModel, ENVIRONMENT.displayLayers);
+			
+			ImGui.Separator();
 			
 			// Tools Menu
 			if (array_length(TOOL_SCRIPTS) > 0 && ImGui.BeginMenu("Tools"))
@@ -102,7 +106,7 @@ function ModelEditorMenuBar() constructor
 			}
 			
 			// Export Render
-			if (ImGui.MenuItem("Export Render", "F12"))
+			if (ImGui.MenuItem("Export Render", SETTINGS.shortcuts.exportRender))
 			{
 				var file = get_save_filename_ext("Portable Network Graphics (*.png)|*.png", "Render.png", "", "Export Render");
 				if (file != "" && ord(file) != 0)

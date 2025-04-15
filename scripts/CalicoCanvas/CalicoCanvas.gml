@@ -21,6 +21,7 @@ enum CALICO_DRAW_LIST_TYPE
 	UV_MAP,
 	LOCATORS,
 	GRID,
+	DEBUG,
 }
 
 function CalicoCanvas() constructor
@@ -238,7 +239,16 @@ function CalicoCanvas() constructor
 						// Draw Bone Name
 						if (drawList[i].boneNames)
 						{
+							// Set Transparent Black
+							draw_set_colour(c_black);
+							draw_set_alpha(0.75);
+							
+							// Draw Rectangle
+							var textWidth = string_width(bone.name) / 2;
+							draw_rectangle(canvasBonePosition[0] - textWidth, canvasBonePosition[1], canvasBonePosition[0] + textWidth, canvasBonePosition[1] + string_height("|"), false);
+							
 							draw_set_colour(c_white);
+							draw_set_alpha(1);
 							draw_set_halign(fa_center);
 							draw_text(canvasBonePosition[0], canvasBonePosition[1], bone.name);
 						}
@@ -268,7 +278,17 @@ function CalicoCanvas() constructor
 						// Skip if Outside View Bounds
 						if (canvasLocatorPosition[0] == -1 || canvasLocatorPosition[1] == -1) continue;
 						
+						// Set Transparent Black
+						draw_set_colour(c_black);
+						draw_set_alpha(0.75);
+						
+						// Draw Rectangle
+						var textWidth = string_width(locator.name) / 2;
+						draw_rectangle(canvasLocatorPosition[0] - textWidth, canvasLocatorPosition[1], canvasLocatorPosition[0] + textWidth, canvasLocatorPosition[1] + string_height("|"), false);
+						
 						// Draw Locator Name
+						draw_set_colour(c_white);
+						draw_set_alpha(1);
 						draw_set_halign(fa_center);
 						draw_text(canvasLocatorPosition[0], canvasLocatorPosition[1], locator.name);
 						
@@ -276,6 +296,24 @@ function CalicoCanvas() constructor
 						draw_set_halign(fa_left);
 						draw_set_colour(c_white);
 					}
+					break;
+				case CALICO_DRAW_LIST_TYPE.DEBUG:
+					// Set Transparent Black
+					draw_set_colour(c_black);
+					draw_set_alpha(1);
+					
+					// Draw Rectangle
+					draw_rectangle(0, height - string_height("|\n|"), width, height, false);
+					
+					// Draw White
+					draw_set_colour(c_white);
+					draw_set_alpha(1);
+					
+					// Draw Text
+					var str = $"FPS: {fps} : {1000/fps}ms | Camera Position: {RENDERER.camera.position.x}, {RENDERER.camera.position.y}, {RENDERER.camera.position.z} | Camera Direction: {RENDERER.camera.lookDirectionSmooth} | Camera Pitch: {RENDERER.camera.lookPitchSmooth}\n";
+					str += $"Used Memory: {DBGMEM.totalUsed / 1_000_000}MiB | Free Memory: {DBGMEM.free / 1_000_000}MiB | Peak Usage: {DBGMEM.peakUsage / 1_000_000}MiB";
+					draw_text(4, height - string_height("|\n|"), str)
+					
 					break;
 			}
 		}
@@ -351,4 +389,9 @@ function CalicoLocatorNames(_locators, _armature, _viewMatrix, _projMatrix) cons
 function CalicoGrid() constructor
 {
 	type = CALICO_DRAW_LIST_TYPE.GRID;
+}
+
+function CalicoDebugInformation() constructor
+{
+	type = CALICO_DRAW_LIST_TYPE.DEBUG;
 }

@@ -187,8 +187,8 @@ function ModelEditPanel() constructor
 			ImGui.Separator();
 			
 			// Menu Items
-			if (ImGui.MenuItem("Export Texture")) uiExportTexture(model, index);
-			if (ImGui.MenuItem("Replace Texture")) uiReplaceTexture(model, index);
+			if (ImGui.MenuItem("Export Texture",  SETTINGS.shortcuts.exportCurrentSelected)) uiExportTexture(model, index);
+			if (ImGui.MenuItem("Replace Texture", SETTINGS.shortcuts.replaceCurrentSelected)) uiReplaceTexture(model, index);
 			
 			// End Popup
 			ImGui.EndPopup();
@@ -230,7 +230,7 @@ function ModelEditPanel() constructor
 		});
 		
 		// Render Material Preview
-		ImGui.Surface(SECONDARY_RENDERER.surface);
+		ImGui.Surface(SECONDARY_RENDERER.surface, c_white, 1, SECONDARY_RENDERER.width, SECONDARY_RENDERER.height);
 		
 		// Material Edit
 		if (ImGui.BeginChild("MaterialEdit"))
@@ -250,13 +250,25 @@ function ModelEditPanel() constructor
 			material.colour[2] = colour.b / 255;
 			material.colour[3] = colour.a;
 			
-			// Ambient Tint
-			var colour = new ImColor(material.ambientTint[0] * 255, material.ambientTint[1] * 255, material.ambientTint[2] * 255, material.ambientTint[3]);
-			ImGui.ColourEditCustom("Ambient Tint", colour, "##hiddenMaterialAmbientTint", space);
-			material.ambientTint[0] = colour.r / 255;
-			material.ambientTint[1] = colour.g / 255;
-			material.ambientTint[2] = colour.b / 255;
-			material.ambientTint[3] = colour.a;
+			// Lock Behind Advanced Settings
+			if (SETTINGS.advancedMaterialSettings) 
+			{
+				// Ambient Tint
+				var colour = new ImColor(material.ambientTint[0] * 255, material.ambientTint[1] * 255, material.ambientTint[2] * 255, material.ambientTint[3]);
+				ImGui.ColourEditCustom("Ambient Tint", colour, "##hiddenMaterialAmbientTint", space);
+				material.ambientTint[0] = colour.r / 255;
+				material.ambientTint[1] = colour.g / 255;
+				material.ambientTint[2] = colour.b / 255;
+				material.ambientTint[3] = colour.a;
+				
+				// Specular Tint
+				var colour = new ImColor(material.specularTint[0] * 255, material.specularTint[1] * 255, material.specularTint[2] * 255, material.specularTint[3]);
+				ImGui.ColourEditCustom("Specular Tint", colour, "##hiddenMaterialSpecularTint", space);
+				material.specularTint[0] = colour.r / 255;
+				material.specularTint[1] = colour.g / 255;
+				material.specularTint[2] = colour.b / 255;
+				material.specularTint[3] = colour.a;
+			}
 			
 			// Textures Text
 			ImGui.Spacing();
@@ -281,6 +293,9 @@ function ModelEditPanel() constructor
 			// Texture Index
 			material.textureID = ImGui.ComboBoxCustom("Texture Index", material.textureID + 1, textures, "##hiddenMaterialTextureID", space, NO_DEFAULT) - 1;
 			
+			// Specular Index
+			if (SETTINGS.advancedMaterialSettings) material.specularID = ImGui.ComboBoxCustom("Specular Index", material.specularID + 1, textures, "##hiddenMaterialSpecularID", space, NO_DEFAULT) - 1;
+			
 			// Normal Index
 			material.normalID = ImGui.ComboBoxCustom("Normal Index", material.normalID + 1, textures, "##hiddenMaterialNormalID", space, NO_DEFAULT) - 1;
 			
@@ -288,7 +303,7 @@ function ModelEditPanel() constructor
 			material.shineID = ImGui.ComboBoxCustom("Shine Index", material.shineID + 1, textures, "##hiddenMaterialShineID", space, NO_DEFAULT) - 1;
 			
 			// Cubemap Index
-			material.cubemapID = ImGui.ComboBoxCustom("Cubemap Index", material.cubemapID + 1, textures, "##hiddenMaterialCubemapID", space, NO_DEFAULT) - 1;
+			if (SETTINGS.advancedMaterialSettings) material.cubemapID = ImGui.ComboBoxCustom("Cubemap Index", material.cubemapID + 1, textures, "##hiddenMaterialCubemapID", space, NO_DEFAULT) - 1;
 			
 			// Specular & Reflection Text
 			ImGui.Spacing();
@@ -298,10 +313,10 @@ function ModelEditPanel() constructor
 			ImGui.Separator();
 			
 			// Specular Exponent
-			material.specularExponent = ImGui.DragFloatCustom("Specular Exponent", material.specularExponent, "##hiddenMaterialSpecularExponent", 1, 0, 30, space, NO_DEFAULT);
+			material.specularExponent = ImGui.DragFloatCustom("Specular Exponent", material.specularExponent, "##hiddenMaterialSpecularExponent", 1, 0, 50, space, NO_DEFAULT);
 			
 			// Reflection Power
-			material.reflectionPower = ImGui.DragFloatCustom("Reflection Power", material.reflectionPower, "##hiddenMaterialReflectionPower", 1, 0, 1, space, NO_DEFAULT);
+			material.reflectionPower = ImGui.DragFloatCustom("Reflection Power", material.reflectionPower, "##hiddenMaterialReflectionPower", 0.01, 0, 5, space, NO_DEFAULT);
 			
 			// Surface & Lighting Text
 			ImGui.Spacing();
@@ -331,56 +346,88 @@ function ModelEditPanel() constructor
 			material.shaderFlags = (material.shaderFlags & ~(BT_LIGHTING_BITS << BT_LIGHTING_SHIFT)) | flags << BT_LIGHTING_SHIFT;
 			
 			// Environment Map Type
-			var flags = ImGui.ComboBoxCustom("Environment Map", (material.shaderFlags >> BT_ENVMAP_SHIFT & BT_ENVMAP_BITS), BT_ENVMAP_TYPE, "##hiddenMaterialEnvmapType", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly);
-			material.shaderFlags = (material.shaderFlags & ~(BT_ENVMAP_BITS << BT_ENVMAP_SHIFT)) | flags << BT_ENVMAP_SHIFT;
+			if (SETTINGS.advancedMaterialSettings) 
+			{
+				var flags = ImGui.ComboBoxCustom("Environment Map", (material.shaderFlags >> BT_ENVMAP_SHIFT & BT_ENVMAP_BITS), BT_ENVMAP_TYPE, "##hiddenMaterialEnvmapType", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly);
+				material.shaderFlags = (material.shaderFlags & ~(BT_ENVMAP_BITS << BT_ENVMAP_SHIFT)) | flags << BT_ENVMAP_SHIFT;
+			}
 			
 			//show_message($"{material.shaderFlags} {flags} {BT_USE_SHINEMAP_SHIFT}");
 			
-			// Alpha Text
-			ImGui.Spacing();
-			ImGui.Text("Alpha Blending");
-			
-			// Separator
-			ImGui.Separator();
-			
-			// Alpha Blend Type
-			var flags = ImGui.ComboBoxCustom("Alpha Blend", (material.alphaBlend >> BT_ALPHA_BLEND_SHIFT & BT_ALPHA_BLEND_BITS), BT_ALPHA_BLEND, "##hiddenMaterialAlphaBlend", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly);
-			material.alphaBlend = (material.alphaBlend & ~(BT_ALPHA_BLEND_BITS << BT_ALPHA_BLEND_SHIFT)) | flags << BT_ALPHA_BLEND_SHIFT;
-			
-			// Depth Type
-			var flags = ImGui.ComboBoxCustom("Depth Test", (material.alphaBlend >> BT_DEPTH_TYPE_SHIFT & BT_DEPTH_TYPE_BITS), BT_DEPTH_TYPE, "##hiddenMaterialDepthTest", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly);
-			material.alphaBlend = (material.alphaBlend & ~(BT_DEPTH_TYPE_BITS << BT_DEPTH_TYPE_SHIFT)) | flags << BT_DEPTH_TYPE_SHIFT;
-			
-			// Cullmode
-			var flags = ImGui.ComboBoxCustom("Cullmode", (material.alphaBlend >> BT_CULLMODE_SHIFT & BT_CULLMODE_BITS), BT_CULLMODE, "##hiddenMaterialCullmode", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly);
-			material.alphaBlend = (material.alphaBlend & ~(BT_CULLMODE_BITS << BT_CULLMODE_SHIFT)) | flags << BT_CULLMODE_SHIFT;
-			
-			// Generate UV Map Layers
-			var uvSets = [];
-			for (var i = 0; i < array_length(material.vertexFormat); i++)
+			if (material.textureScrolls[0].enabled)
 			{
-				if (material.vertexFormat[i].attribute == BTVertexAttributes.uvSet1) array_push(uvSets, "UVSet1");
-				else if (material.vertexFormat[i].attribute == BTVertexAttributes.uvSet2) array_push(uvSets, "UVSet2");
+				// Texture Scrolling
+				ImGui.Spacing();
+				ImGui.Text("Texture Scrolling");
+				
+				// Separator
+				ImGui.Separator();
+				
+				// Scroll Type
+				material.textureScrolls[0].type[0] = ImGui.ComboBoxCustom("Scroll Type X", material.textureScrolls[0].type[0], BT_UV_ANIM_TYPE, "##hiddenMaterialScrollTypeX", space, NO_DEFAULT);
+				material.textureScrolls[0].type[1] = ImGui.ComboBoxCustom("Scroll Type Y", material.textureScrolls[0].type[1], BT_UV_ANIM_TYPE, "##hiddenMaterialScrollTypeY", space, NO_DEFAULT);
+				
+				// Scroll Speed
+				ImGui.DragFloat2Custom("Scroll Speed", material.textureScrolls[0].speed, 0.01, -10, 10, "##hiddenMaterialScrollSpeed", space, NO_DEFAULT);
+				
+				// Trig Scale
+				ImGui.DragFloat2Custom("Trig Scale", material.textureScrolls[0].trigScale, 0.01, -10, 10, "##hiddenMaterialTrigScale", space, NO_DEFAULT);
 			}
 			
-			// UVSet Text
-			ImGui.Spacing();
-			ImGui.Text("UV Sets");
 			
-			// Separator
-			ImGui.Separator();
-			
-			// Surface UV Set
-			var uvIndex = ImGui.ComboBoxCustom("Surface UV Set", material.surfaceUVMapIndex - 1, uvSets, "##hiddenMaterialSurfaceUVSet", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly) + 1;
-			material.surfaceUVMapIndex = uvIndex;
-			
-			// Normal UV Set
-			var uvIndex = ImGui.ComboBoxCustom("Normal UV Set", material.normalUVMapIndex - 1, uvSets, "##hiddenMaterialNormalUVSet", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly) + 1;
-			material.normalUVMapIndex = uvIndex;
-			
-			// Show Vertex Format
-			if (SETTINGS.showVertexFormat)
+			// Only If Advanced
+			if (SETTINGS.advancedMaterialSettings) 
 			{
+				// Alpha Text
+				ImGui.Spacing();
+				ImGui.Text("Alpha Blending");
+			
+				// Separator
+				ImGui.Separator();
+			
+				// Alpha Blend Type
+				var flags = ImGui.ComboBoxCustom("Alpha Blend", (material.alphaBlend >> BT_ALPHA_BLEND_SHIFT & BT_ALPHA_BLEND_BITS), BT_ALPHA_BLEND, "##hiddenMaterialAlphaBlend", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly);
+				material.alphaBlend = (material.alphaBlend & ~(BT_ALPHA_BLEND_BITS << BT_ALPHA_BLEND_SHIFT)) | flags << BT_ALPHA_BLEND_SHIFT;
+			
+				// Depth Type
+				var flags = ImGui.ComboBoxCustom("Depth Test", (material.alphaBlend >> BT_DEPTH_TYPE_SHIFT & BT_DEPTH_TYPE_BITS), BT_DEPTH_TYPE, "##hiddenMaterialDepthTest", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly);
+				material.alphaBlend = (material.alphaBlend & ~(BT_DEPTH_TYPE_BITS << BT_DEPTH_TYPE_SHIFT)) | flags << BT_DEPTH_TYPE_SHIFT;
+			
+				// Cullmode
+				var flags = ImGui.ComboBoxCustom("Cullmode", (material.alphaBlend >> BT_CULLMODE_SHIFT & BT_CULLMODE_BITS), BT_CULLMODE, "##hiddenMaterialCullmode", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly);
+				material.alphaBlend = (material.alphaBlend & ~(BT_CULLMODE_BITS << BT_CULLMODE_SHIFT)) | flags << BT_CULLMODE_SHIFT;
+			
+				// Generate UV Map Layers
+				var uvSets = [];
+				for (var i = 0; i < array_length(material.vertexFormat); i++)
+				{
+					if (material.vertexFormat[i].attribute == BTVertexAttributes.uvSet1) array_push(uvSets, "UVSet1");
+					else if (material.vertexFormat[i].attribute == BTVertexAttributes.uvSet2) array_push(uvSets, "UVSet2");
+				}
+			
+				// Check UV Sets First
+				if (array_length(uvSets) > 0)
+				{
+					// UVSet Text
+					ImGui.Spacing();
+					ImGui.Text("UV Sets");
+			
+					// Separator
+					ImGui.Separator();
+					
+					// Surface UV Set
+					var uvIndex = ImGui.ComboBoxCustom("Surface UV Set", material.surfaceUVMapIndex - 1, uvSets, "##hiddenMaterialSurfaceUVSet", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly) + 1;
+					material.surfaceUVMapIndex = uvIndex;
+					
+					// Normal UV Set
+					var uvIndex = ImGui.ComboBoxCustom("Normal UV Set", material.normalUVMapIndex - 1, uvSets, "##hiddenMaterialNormalUVSet", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly) + 1;
+					material.normalUVMapIndex = uvIndex;
+					
+					// Specular UV Set
+					var uvIndex = ImGui.ComboBoxCustom("Specular UV Set", material.specularUVMapIndex - 1, uvSets, "##hiddenSpecularNormalUVSet", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly) + 1;
+					material.specularUVMapIndex = uvIndex;
+				}
+			
 				// Vertex Format Text
 				ImGui.Spacing();
 				ImGui.Text("Vertex Format");
@@ -400,19 +447,20 @@ function ModelEditPanel() constructor
 					// Get Attribute and Type
 					var attribute = BT_VERTEX_ATTRIBUTES[vertexFormat[i].attribute];
 					var type = BT_VERTEX_ATTRIBUTE_TYPES[vertexFormat[i].type];
+					var position = vertexFormat[i].position;
 				
 					// Selectable
 					ImGui.Selectable($"  {attribute}##hiddenVertexFormatAttribute{i}");
-				
+					
 					// Type Text
 					ImGui.SetCursorPos(128, cursorPos[1]);
 					ImGui.Text($"{type}");
+					
+					// Position Text
+					ImGui.SetCursorPos(208, cursorPos[1]);
+					ImGui.Text($"{SETTINGS.displayHex ? $"0x{string_hex(position, 2)}" : position}");
 				}
-			}
 			
-			// Show Assigned Meshes
-			if (SETTINGS.showAssignedMeshes)
-			{
 				// Assigned To Text
 				ImGui.Spacing();
 				ImGui.Text("Assigned To");
@@ -493,8 +541,20 @@ function ModelEditPanel() constructor
 			ImGui.Separator();
 			
 			// Menu Items
-			if (ImGui.MenuItem("Export Material")) uiExportMaterial(model, index);
-			if (ImGui.MenuItem("Replace Material")) uiReplaceMaterial(model, index);
+			if (ImGui.MenuItem("Export Material",  SETTINGS.shortcuts.exportCurrentSelected)) uiExportMaterial(model, index);
+			if (ImGui.MenuItem("Replace Material", SETTINGS.shortcuts.replaceCurrentSelected)) uiReplaceMaterial(model, index);
+			
+			ImGui.Separator();
+			
+			if (ImGui.BeginMenu("Add Vertex Attribute"))
+			{
+				if (ImGui.MenuItem("Add UV Set 2"))
+				{
+					model.materials[index].setVertexFormatUV();
+				}
+				
+				ImGui.EndMenu();
+			}
 			
 			// Material Scripts
 			var names = variable_struct_get_names(MATERIAL_SCRIPTS);
@@ -536,14 +596,21 @@ function ModelEditPanel() constructor
 		
 		// Bones Array
 		var bones = [  ];
-		for (var i = -1; i < array_length(model.bones); i++)
+		if (PROJECT.currentModel.type == BTModelType.model)
 		{
-			if (i == -1)
+			for (var i = -1; i < array_length(model.bones); i++)
 			{
-				array_push(bones, $"-1 | No Bone");
-				continue;
+				if (i == -1)
+				{
+					array_push(bones, $"-1 | No Bone");
+					continue;
+				}
+				array_push(bones, $"{i} | {model.bones[i].name}");
 			}
-			array_push(bones, $"{i} | {model.bones[i].name}");
+		}
+		else
+		{
+			bones = ["-1 | No Bone"];
 		}
 		
 		// Dynamic Buffer Array
@@ -577,7 +644,7 @@ function ModelEditPanel() constructor
 		});
 		
 		// Render Material Preview
-		ImGui.Surface(SECONDARY_RENDERER.surface);
+		ImGui.Surface(SECONDARY_RENDERER.surface, c_white, 1, SECONDARY_RENDERER.width, SECONDARY_RENDERER.height);
 		
 		// Mesh Properties Child
 		if (ImGui.BeginChild("MeshProperties"))
@@ -686,14 +753,14 @@ function ModelEditPanel() constructor
 			ImGui.Separator();
 			
 			// Menu Items
-			if (ImGui.MenuItem("Export Mesh")) uiExportMesh(model, index);
-			if (ImGui.MenuItem("Replace Mesh##hiddenButton"))
+			if (ImGui.MenuItem("Export Mesh",                SETTINGS.shortcuts.exportCurrentSelected)) uiExportMesh(model, index);
+			if (ImGui.MenuItem("Replace Mesh##hiddenButton", SETTINGS.shortcuts.replaceCurrentSelected))
 			{
 				uiReplaceMesh(model, index);
 				//ENVIRONMENT.openModal("Replace Mesh");
 			}
 			ImGui.Separator();
-			if (ImGui.MenuItem("Dereference Mesh"))
+			if (ImGui.MenuItem("Dereference Mesh", SETTINGS.shortcuts.dereferenceMesh))
 			{
 				ENVIRONMENT.openConfirmModal("Dereference Mesh", "Dereferencing this mesh will delete everything associated with this mesh. Are you sure you want to continue? This cannot be undone.", function(model, index) {
 					// Dereference Mesh
@@ -761,7 +828,7 @@ function ModelEditPanel() constructor
 		model.pushLayerToRenderQueue(index, SECONDARY_RENDERER);
 		
 		// Render Layer Preview
-		ImGui.Surface(SECONDARY_RENDERER.surface);
+		ImGui.Surface(SECONDARY_RENDERER.surface, c_white, 1, SECONDARY_RENDERER.width, SECONDARY_RENDERER.height);
 		
 		// Layer Information Text
 		ImGui.Spacing();
@@ -899,8 +966,8 @@ function ModelEditPanel() constructor
 			ImGui.Separator();
 			
 			// Menu Items
-			if (ImGui.MenuItem("Export Locator")) uiExportLocator(model, index);
-			if (ImGui.MenuItem("Replace Locator")) uiReplaceLocator(model, index);
+			if (ImGui.MenuItem("Export Locator", SETTINGS.shortcuts.exportCurrentSelected)) uiExportLocator(model, index);
+			if (ImGui.MenuItem("Replace Locator", SETTINGS.shortcuts.replaceCurrentSelected)) uiReplaceLocator(model, index);
 			
 			// End Popup
 			ImGui.EndPopup();

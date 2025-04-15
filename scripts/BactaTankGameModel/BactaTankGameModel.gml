@@ -73,12 +73,17 @@ function BactaTankGameModel() constructor
 		{
 			// Mesh Start Index
 			var meshStartIndex = buffer_read(buffer, buffer_u16);
+			var meshIndex = meshStartIndex + i;
 			
-			// Apply Mesh Start Index + I
-			meshes[i].mesh = meshStartIndex + i;
-			
-			// Apply Material
-			_model.meshes[meshStartIndex + i].material = meshes[i].material;
+			// Check if we have a valid / existing mesh
+			if (meshIndex < array_length(_model.meshes))
+			{
+				// Apply Mesh Start Index + I
+				meshes[i].mesh = meshIndex;
+				
+				// Apply Material
+				_model.meshes[meshStartIndex + i].material = meshes[i].material;
+			}
 		}
 	}
 	

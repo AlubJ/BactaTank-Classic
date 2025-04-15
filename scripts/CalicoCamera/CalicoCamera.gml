@@ -132,6 +132,11 @@ function CalicoCamera() constructor
 				dcos(lookDirectionSmooth - 90),
 				dsin(lookPitchSmooth + 90),
 				dsin(lookDirectionSmooth - 90)];
+			
+			vectorV = [
+				dcos(lookDirectionSmooth),
+				dsin(lookPitchSmooth - 90),
+				dsin(lookDirectionSmooth)];
 			//var matrix = matrix_build(0, 0, 0, lookPitch, lookDirection, 0, 1, 1, 1);
 			//lookAtPosition.x += matrix[4] * window_mouse_get_delta_x() * 0.001 + matrix[8] * window_mouse_get_delta_y() * 0.001;
 			//lookAtPosition.z += matrix[5] * window_mouse_get_delta_x() * 0.001 + matrix[9] * window_mouse_get_delta_y() * 0.001;
@@ -162,6 +167,36 @@ function CalicoCamera() constructor
 		lookAtPosition.z = clamp(lookAtPosition.z, -20, 20);
 		
 		lookDistance = clamp(lookDistance, 0.05, 10);
+		
+		if (RUN_FROM_IDE)
+		{
+			if (keyboard_check(vk_space) || keyboard_check_pressed(vk_right))
+			{
+				lookDirection -= 1;
+				lookDirectionSmooth -= 1;
+				if (keyboard_check(vk_f2)) surface_save(RENDERER.surface, $"{SETTINGS.defaultProjectPath}/{MODEL_NAME}/{-(lookDirection + 45)}.png");
+			}
+			
+			if (keyboard_check_pressed(vk_left))
+			{
+				lookDirection += 1;
+				lookDirectionSmooth += 1;
+			}
+		
+			if (keyboard_check_pressed(vk_up))
+			{
+				lookPitch -= 1;
+				lookPitchSmooth -= 1;
+			}
+		
+			if (keyboard_check_pressed(vk_down))
+			{
+				lookPitch += 1;
+				lookPitchSmooth += 1;
+			}
+			
+			if (keyboard_check_pressed(vk_f1)) surface_save(RENDERER.surface, $"{SETTINGS.defaultProjectPath}/{MODEL_NAME}/{-(lookDirection + 45)}.png");
+		}
 		
 		//if (active)
 		//{

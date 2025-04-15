@@ -21,12 +21,18 @@
 #define PI 3.14159265359
 #define PI2 6.28318530718
 
+#define SCROLL_NONE		0
+#define SCROLL_LINEAR	2
+#define SCROLL_SINE		3
+#define SCROLL_COSINE	4
+
 #region Varyings
 
 // Local
 varying vec3 vPosition;
 varying vec3 vNormal;
-varying vec2 vTexcoord;
+varying vec2 vTexcoord0;
+varying vec2 vTexcoord1;
 varying vec4 vColour;
 varying float vRim;
 
@@ -56,10 +62,23 @@ uniform float uSpecularExponent;
 uniform float uReflectionStrength;
 uniform vec4 uBlendColour;
 uniform vec4 uAmbientTint;
+uniform vec4 uSpecularTint;
 uniform float uEnvironmentProbeBlend;
 uniform float uAlphaTest;
 
+// UV Sets
+uniform int uSurfaceUVSet;
+uniform int uNormalUVSet;
+uniform int uSpecularUVSet;
+
+// Texture Scrolling
+uniform ivec2 uScrollType;
+uniform vec2 uScrollScale;
+uniform vec2 uScrollSpeed;
+uniform float uCurrentTime;
+
 // Texture Samplers
+uniform sampler2D tSpecularMap;
 uniform sampler2D tNormalMap;
 uniform sampler2D tCubemap;
 uniform sampler2D tShineMap;
@@ -152,7 +171,7 @@ vec4 getCubeMapColor(vec3 normal)
     }else if (maxInd == 1){ //y
         //Rescale dir to land on unit cube
         dirOnCube = dir / dir.y;
-        
+		
         //Calculate location on the face from remaining vector components and rescale them to fit surface orientation.
         uv = vec2(sign(dir.y) * dirOnCube.x, -sign(dir.y) * dirOnCube.z);
         
@@ -174,7 +193,7 @@ vec4 getCubeMapColor(vec3 normal)
     uv = (uv + vec2(1.0)) * 0.5;
     vec2 uvR = rotateUV(uv, 3.14159);
 	
-	// Convert the [0, 1] UV coords to the cubemap
+	// Convert the [0, 1] UV coords to the cubemap faces
 	vec2 uv0 = vec2((uv.x/4.)+(1./4.)*2.,      (uv.y/3.)+(1./3.));
 	vec2 uv1 = vec2((uv.x/4.),                 (uv.y/3.)+(1./3.));
 	vec2 uv2 = vec2(((1.-uv.x)/4.)+(1./4.)*3., (uv.y/3.)+(1./3.));
@@ -290,7 +309,7 @@ float wardSpecular(
 	float NdotR = dot(surfaceNormal, viewDirection);
 
 	if(NdotL < 0.0 || NdotR < 0.0) {
-	return 0.0;
+		return 0.0;
 	}
 
 	vec3 H = normalize(lightDirection + viewDirection);
@@ -372,17 +391,19 @@ vec3 getSpecular(vec3 normal, float specularStrength, vec2 uv, bool anisotropic)
 		float specularAmount = 0.0;
 		if (!anisotropic)
 		{
-			specularAmount = pow(max(dot(viewDirection, reflectionDirection), 0.0), specularStrength) * att;
+			//half3 R0 = reflect(-fs_lightDir0.xyz, fs_normal);
+			//specularPhong = lightColor0.rgb * pow(max(0, dot(fs_incident, R0)), specular_params.r) * lightColor0.a;
+			specularAmount = pow(max(0.0, dot(viewDirection, reflectionDirection)), specularStrength) * att;
 		}
 		else
 		{
 			vec3 fiber = normalize(vec3(uv,0) - dot(vec3(uv,0), normal)*normal);
 			vec3 perp = normalize(cross(fiber, normal));
-			specularAmount = wardSpecular(lightPosition, viewDirection, normal, fiber, perp, 0.1, 0.8) * 0.5;
+			specularAmount = wardSpecular(lightPosition, viewDirection, normal, fiber, perp, clamp(1.0 - specularStrength / 27., 0.0, 0.9), clamp(specularStrength / 27., 0.0, 0.9)) * 0.5;
 		}
 		
 		// Final Colour
-		finalColour += specularAmount * NdotL * lightColour.rgb;
+		finalColour += specularAmount;
     }
 	
 	// Return Final Colour
@@ -391,24 +412,82 @@ vec3 getSpecular(vec3 normal, float specularStrength, vec2 uv, bool anisotropic)
 
 #endregion
 
+#region Texture Scrolling
+
+vec2 getScroll()
+{
+	vec2 scrollOffset = vec2(0.0);
+	
+	if (uScrollType.x == SCROLL_LINEAR)
+	{
+		scrollOffset.x = uCurrentTime * uScrollSpeed.x;
+	}
+	else if (uScrollType.x == SCROLL_SINE)
+	{
+		scrollOffset.x = sin(uCurrentTime * 2.0 * PI * uScrollSpeed.x) * uScrollScale.x;
+	}
+	else if (uScrollType.x == SCROLL_COSINE)
+	{
+		scrollOffset.x = cos(uCurrentTime * 2.0 * PI * uScrollSpeed.x) * uScrollScale.x;
+	}
+	
+	if (uScrollType.y == SCROLL_LINEAR)
+	{
+		scrollOffset.y = uCurrentTime * uScrollSpeed.y;
+	}
+	else if (uScrollType.y == SCROLL_SINE)
+	{
+		scrollOffset.y = sin(uCurrentTime * 2.0 * PI * uScrollSpeed.y) * uScrollScale.y;
+	}
+	else if (uScrollType.y == SCROLL_COSINE)
+	{
+		scrollOffset.y = cos(uCurrentTime * 2.0 * PI * uScrollSpeed.y) * uScrollScale.y;
+	}
+	
+	return scrollOffset;
+}
+
+#endregion
+
 // Main
 void main()
 {
 	// Variables
-	float specularStrength = 25.0; //clamp(uSpecularExponent, 0.0, 26.0); // Get From Material
+	float specularStrength = 21.0 + ((uSpecularExponent / 50.0) * 5.0); // Get From Material
 	float reflectionStrength = uReflectionStrength;
+	
+	// Get UV Sets
+	vec2 surfaceUVs, normalUVs, specularUVs;
+	
+	if (uSurfaceUVSet == 1) surfaceUVs = vTexcoord0;
+	else surfaceUVs = vTexcoord1;
+	if (uNormalUVSet == 1) normalUVs = vTexcoord0;
+	else normalUVs = vTexcoord1;
+	if (uSpecularUVSet == 1) specularUVs = vTexcoord0;
+	else specularUVs = vTexcoord1;
+	
+	// Get Scroll Offset
+	vec2 scrollOffset = getScroll();
 	
 	// Base Colour
 	vec4 baseColour = vColour;
-	if (uUseDiffuseMap) baseColour = texture2D(gm_BaseTexture, vTexcoord) * vColour;
+	if (uUseDiffuseMap) baseColour = texture2D(gm_BaseTexture, surfaceUVs + scrollOffset) * vColour;
 	else baseColour = uBlendColour * vColour;
 	
 	// Normal Map
 	vec3 normal;
 	if (uUseNormalMap)
 	{
-		vec4 normalMap = texture2D(tNormalMap, vTexcoord) * 2.0 - 1.0;
-		vec3 normalMapFixed = vec3(normalMap.a, normalMap.g, normalMap.b);
+		vec4 normalMap = texture2D(tNormalMap, normalUVs) * 2.0 - 1.0;
+		vec3 normalMapFixed;
+		if (normalMap.a == 1.0)
+		{
+			normalMapFixed = normalMap.rgb;
+		}
+		else
+		{
+			normalMapFixed = vec3(normalMap.a, normalMap.g, normalMap.b);
+		}
 		normal = normalize(mTBN * normalMapFixed);
 		//normal = normalize(vWorldNormal);
 	}
@@ -428,8 +507,8 @@ void main()
 	
 	// Specular / Metallic Calulations
 	vec3 specular;
-	if (uSpecularHighlighting) specular = getSpecular(normal, specularStrength, vTexcoord, false);
-	else if (uMetallic) specular = getSpecular(normal, specularStrength, vTexcoord, true);
+	if (uSpecularHighlighting) specular = getSpecular(normal, specularStrength, surfaceUVs, false);
+	else if (uMetallic) specular = getSpecular(normal, specularStrength, surfaceUVs, true);
 	else specular = vec3(0.0);
 	
     // Cubemap
@@ -442,8 +521,11 @@ void main()
 	if (uUseShineMap) shineMap = texture2D(tShineMap, xVec3ToEquirectangularUv(reflect(uCameraPosition, normal))).rgb * 0.35 * diffuse;
 	else shineMap = vec3(0.0);
 	
+	// Specular Map
+	float specularMap = texture2D(tSpecularMap, specularUVs).r;
+	
 	// Starting Fragment Colour
-	vec4 fragColour = vec4((diffuse + specular) + (cubemap * baseColour.rgb * reflectionStrength), baseColour.a);
+	vec4 fragColour = vec4((diffuse + (specular * uSpecularTint.rgb * specularMap)) + (cubemap * reflectionStrength), baseColour.a);
 	//fragColour = getCubeMapColor(normal);
 	
 	// Frag Colour (Move to frag data)

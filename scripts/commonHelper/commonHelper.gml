@@ -69,33 +69,47 @@ function openProjectOrModel(file)
 			// Load Model
 			var model = new BactaTankModel(file);
 			
-			// Save Canister Model
-			//model.saveCanister(PROJECT.workingDirectory + name + ".bcanister");
+			// Check Valid Model
+			if (model)
+			{
+				// Save Canister Model
+				//model.saveCanister(PROJECT.workingDirectory + name + ".bcanister");
+				
+				// Set Current Model
+				PROJECT.currentModel = model;
+				model.pushToRenderQueue(model.type == BTModelType.model ? array_create(array_length(model.layers), true) : -1);
+				
+				// Reset Camera
+				CAMERA.reset();
+				CAMERA.lookAtPosition.x = model.averagePosition[0];
+				CAMERA.lookAtPosition.y = model.averagePosition[1];
+				CAMERA.lookAtPosition.z = model.averagePosition[2];
+				CAMERA.stepThird();
+				
+				// Activate Renderer
+				RENDERER.activate();
+				
+				// Push To Project Models
+				array_push(MODELS, name);
+				
+				// User Feedback
+				ENVIRONMENT.closeInfoModal();
+				window_set_cursor(cr_default);
+				
+				// Set Model Name
+				MODEL_NAME = filename_name(file);
+				window_set_caption($"{MODEL_NAME} - BactaTank Classic");
 			
-			// Set Current Model
-			PROJECT.currentModel = model;
-			model.pushToRenderQueue(array_create(array_length(model.layers), true));
-			
-			// Reset Camera
-			RENDERER.camera.lookDistance = 0.6;
-			RENDERER.camera.lookPitch = -20;
-			RENDERER.camera.lookDirection = -45;
-			RENDERER.camera.lookAtPosition.x = model.averagePosition[0];
-			RENDERER.camera.lookAtPosition.y = model.averagePosition[1];
-			RENDERER.camera.lookAtPosition.z = model.averagePosition[2];
-			
-			// Activate Renderer
-			RENDERER.activate();
-			
-			// Push To Project Models
-			array_push(MODELS, name);
-			
-			// User Feedback
-			ENVIRONMENT.closeInfoModal();
-			window_set_cursor(cr_default);
-			
-			// Set Context
-			setContext(BTContext.Model);
+				// Set Context
+				setContext(model.type == BTModelType.model ? BTContext.Model : BTContext.Model);
+				
+				// Apply Font
+				ImGui.AddFontFromFile(THEMES_DIRECTORY + "nunito.ttf", 16);
+			}
+			else
+			{
+				model.destroy();
+			}
 		}
 		
 		// Timesource
@@ -109,12 +123,12 @@ function saveModelDialog()
 	var file = get_save_filename_ext(FILTERS.model, $"", SETTINGS.lastModelPath, "Save Model");
 	if (file != "" && ord(file) != 0)
 	{
-		saveModel(file);
+		uiSaveModel(file);
 		SETTINGS.lastModelPath = filename_path(file);
 	}
 }
 
-function saveModel(file)
+function uiSaveModel(file)
 {
 	if (string_lower(filename_ext(file)) == ".ghg")
 	{
@@ -198,6 +212,195 @@ function setContext(context = CONTEXT)
 		var uvViewerPanel = new UVViewerPanel();
 		uvViewerEnvironment.add(uvViewerPanel);
 		ENVIRONMENT.add(uvViewerEnvironment);
+		
+		// Clear Shortcuts
+		SHORTCUTS.clear();
+		
+		// Set Shortcuts
+		// New Model
+		SHORTCUTS.add("NewModel", SETTINGS.shortcuts.newModel, function() {
+			ENVIRONMENT.openConfirmModal("Unsaved Changes", "Are you sure you want to continue?", function() {
+				ENVIRONMENT.openModal("Welcome");
+			});
+		});
+		
+		// Open Model
+		SHORTCUTS.add("OpenModel", SETTINGS.shortcuts.openModel, function() {
+			ENVIRONMENT.openConfirmModal("Unsaved Changes", "Are you sure you want to continue?", function() {
+				openProjectOrModelDialog();
+			});
+		});
+		
+		// Save Model
+		SHORTCUTS.add("SaveModel", SETTINGS.shortcuts.saveModel, function() {
+			saveModelDialog();
+		});
+		
+		// Open Preferences
+		SHORTCUTS.add("OpenPreferences", SETTINGS.shortcuts.openPreferences, function() {
+			ENVIRONMENT.openModal("Preferences");
+		});
+		
+		// Export Current Selected
+		SHORTCUTS.add("ExportCurrentSelected", SETTINGS.shortcuts.exportCurrentSelected, function() {
+			if (ENVIRONMENT.attributeSelected != undefined || ENVIRONMENT.attributeSelected != -1)
+			{
+				var index = string_digits(ENVIRONMENT.attributeSelected);
+				if (string_pos("TEX", ENVIRONMENT.attributeSelected)) // Export Texture
+				{
+					uiExportTexture(PROJECT.currentModel, index);
+				}
+				else if (string_pos("MAT", ENVIRONMENT.attributeSelected)) // Export Material
+				{
+					uiExportMaterial(PROJECT.currentModel, index);
+				}
+				else if (string_pos("MESH", ENVIRONMENT.attributeSelected)) // Export Mesh
+				{
+					uiExportMesh(PROJECT.currentModel, index);
+				}
+				else if (string_pos("LOC", ENVIRONMENT.attributeSelected)) // Export Locator
+				{
+					uiExportLocator(PROJECT.currentModel, index);
+				}
+			}
+		});
+		
+		// Replace Current Selected
+		SHORTCUTS.add("ReplaceCurrentSelected", SETTINGS.shortcuts.replaceCurrentSelected, function() {
+			if (ENVIRONMENT.attributeSelected != undefined || ENVIRONMENT.attributeSelected != -1)
+			{
+				var index = string_digits(ENVIRONMENT.attributeSelected);
+				if (string_pos("TEX", ENVIRONMENT.attributeSelected)) // Replace Texture
+				{
+					uiReplaceTexture(PROJECT.currentModel, index);
+				}
+				else if (string_pos("MAT", ENVIRONMENT.attributeSelected)) // Replace Material
+				{
+					uiReplaceMaterial(PROJECT.currentModel, index);
+				}
+				else if (string_pos("MESH", ENVIRONMENT.attributeSelected)) // Replace Mesh
+				{
+					uiReplaceMesh(PROJECT.currentModel, index);
+				}
+				else if (string_pos("LOC", ENVIRONMENT.attributeSelected)) // Replace Locator
+				{
+					uiReplaceLocator(PROJECT.currentModel, index);
+				}
+			}
+		});
+		
+		// Dereference Mesh
+		SHORTCUTS.add("DereferenceMesh", SETTINGS.shortcuts.dereferenceMesh, function() {
+			if (ENVIRONMENT.attributeSelected != undefined || ENVIRONMENT.attributeSelected != -1)
+			{
+				var index = string_digits(ENVIRONMENT.attributeSelected);
+				if (string_pos("MESH", ENVIRONMENT.attributeSelected)) // Dereference Mesh
+				{
+					ENVIRONMENT.openConfirmModal("Dereference Mesh", "Dereferencing this mesh will delete everything associated with this mesh. Are you sure you want to continue? This cannot be undone.", function(model, index) {
+						// Dereference Mesh
+						model.meshes[index].dereference();
+						
+						// Clear Render Queue and Push Model Again
+						RENDERER.flush();
+						model.pushToRenderQueue(ENVIRONMENT.displayLayers, RENDERER, ENVIRONMENT.hideDisabledMeshes);
+						
+						// Clear Secondary Renderers Queue
+						SECONDARY_RENDERER.flush();
+						
+						// Enable Renderer
+						RENDERER.activate();
+						RENDERER.deactivate(2);
+					}, [PROJECT.currentModel, index]);
+				}
+			}
+		});
+		
+		// Toggle Mesh Type
+		SHORTCUTS.add("ToggleMeshType", SETTINGS.shortcuts.toggleMeshType, function() {
+			if (ENVIRONMENT.attributeSelected != undefined || ENVIRONMENT.attributeSelected != -1)
+			{
+				var index = string_digits(ENVIRONMENT.attributeSelected);
+				if (string_pos("MESH", ENVIRONMENT.attributeSelected) && PROJECT.currentModel.meshes[index].vertexCount != 0) // Toggle Mesh Type
+				{
+					PROJECT.currentModel.meshes[index].type = PROJECT.currentModel.meshes[index].type == 0 ? 6 : 0;
+					
+					// Clear Render Queue and Push Model Again
+					RENDERER.flush();
+					PROJECT.currentModel.pushToRenderQueue(ENVIRONMENT.displayLayers, RENDERER, ENVIRONMENT.hideDisabledMeshes);
+					
+					// Clear Secondary Renderers Queue
+					SECONDARY_RENDERER.flush();
+					
+					// Enable Renderer
+					RENDERER.activate();
+					RENDERER.deactivate(2);
+				}
+			}
+		});
+		
+		// Export Armature
+		SHORTCUTS.add("ExportArmature", SETTINGS.shortcuts.exportArmature, function() {
+			uiExportArmature(PROJECT.currentModel);
+		});
+		
+		// Export Model
+		SHORTCUTS.add("ExportModel", SETTINGS.shortcuts.exportModel, function() {
+			uiExportModel(PROJECT.currentModel);
+		});
+		
+		// Export Model From Preview
+		SHORTCUTS.add("ExportModelFromPreview", SETTINGS.shortcuts.exportModelFromPreview, function() {
+			uiExportModelFromPreview(PROJECT.currentModel, ENVIRONMENT.displayLayers);
+		});
+		
+		// Export Render
+		SHORTCUTS.add("ExportRender", SETTINGS.shortcuts.exportRender, function() {
+			var file = get_save_filename_ext("Portable Network Graphics (*.png)|*.png", "Render.png", "", "Export Render");
+			if (file != "" && ord(file) != 0)
+			{
+				surface_save(RENDERER.surface, file);
+			}
+		});
+		
+		// Toggle Locators
+		SHORTCUTS.add("ToggleLocatorDisplay", SETTINGS.shortcuts.toggleLocators, function() {
+			ENVIRONMENT.displayLocators++;
+			if (ENVIRONMENT.displayLocators > 2) ENVIRONMENT.displayLocators = 0;
+		});
+		
+		// Toggle Locator Names
+		SHORTCUTS.add("ToggleLocatorNames", SETTINGS.shortcuts.toggleLocatorNames, function() {
+			ENVIRONMENT.displayLocatorNames = !ENVIRONMENT.displayLocatorNames;
+		});
+		
+		// Toggle Bones
+		SHORTCUTS.add("ToggleBoneDisplay", SETTINGS.shortcuts.toggleBones, function() {
+			ENVIRONMENT.displayBones = !ENVIRONMENT.displayBones;
+		});
+		
+		// Toggle Bone Names
+		SHORTCUTS.add("ToggleBonesNames", SETTINGS.shortcuts.toggleBoneNames, function() {
+			ENVIRONMENT.displayBoneNames = !ENVIRONMENT.displayBoneNames;
+		});
+		
+		// Toggle Grid
+		SHORTCUTS.add("ToggleGridDisplay", SETTINGS.shortcuts.toggleGrid, function() {
+			ENVIRONMENT.displayGrid = !ENVIRONMENT.displayGrid;
+		});
+		
+		// Toggle Disabled Meshes
+		SHORTCUTS.add("ToggleDisabledMeshes", SETTINGS.shortcuts.toggleHiddenMeshes, function() {
+			ENVIRONMENT.hideDisabledMeshes = !ENVIRONMENT.hideDisabledMeshes;
+		});
+		
+		// Reset Camera
+		SHORTCUTS.add("ResetCamera", SETTINGS.shortcuts.resetCamera, function() {
+			CAMERA.reset();
+			CAMERA.lookAtPosition.x = PROJECT.currentModel.averagePosition[0];
+			CAMERA.lookAtPosition.y = PROJECT.currentModel.averagePosition[1];
+			CAMERA.lookAtPosition.z = PROJECT.currentModel.averagePosition[2];
+			CAMERA.stepThird();
+		});
 	}
 	
 	// Set Scene Editor Context
@@ -205,14 +408,25 @@ function setContext(context = CONTEXT)
 	{
 		// Create Scene Editor Environment
 		var sceneEditorEnvironment = new Environment();
-		modelEditorEnvironment.name = "Scene Editor";
+		sceneEditorEnvironment.name = "Scene Editor";
 		var modelAttributesPanel = new ModelAttributesPanel();
-		modelEditorEnvironment.add(modelAttributesPanel);
+		sceneEditorEnvironment.add(modelAttributesPanel);
 		var modelViewerPanel = new ModelViewerPanel();
-		modelEditorEnvironment.add(modelViewerPanel);
+		sceneEditorEnvironment.add(modelViewerPanel);
 		var modelEditPanel = new ModelEditPanel();
-		modelEditorEnvironment.add(modelEditPanel);
-		ENVIRONMENT.add(modelEditorEnvironment);
+		sceneEditorEnvironment.add(modelEditPanel);
+		ENVIRONMENT.add(sceneEditorEnvironment);
+	}
+	
+	// Set Icon Editor Context
+	else if (context = BTContext.Icon)
+	{
+		// Create Icon Editor Environment
+		var iconEditorEnvironment = new Environment();
+		iconEditorEnvironment.name = "Icon Editor";
+		var iconAttributesPanel = new IconAttributesPanel();
+		iconEditorEnvironment.add(iconAttributesPanel);
+		ENVIRONMENT.add(iconEditorEnvironment);
 	}
 	
 	CONTEXT = context;
@@ -448,12 +662,6 @@ function uiExportArmature(model)
 	}
 }
 
-function exportArmature(model, file)
-{
-	ConsoleLog("Exporting Armature");
-	model.armature.export(file);
-}
-
 function uiExportUVLayout(surface)
 {
 	// Get Save File Name For Mesh Replacement
@@ -549,6 +757,39 @@ function loadTemplates()
 	}
 	
 	file_find_close();
+	
+	// Console
+	ConsoleLog("Templates Loaded");
+}
+
+function loadThemes()
+{
+	// Themes
+	THEMES = {};
+	
+	// Load All Templates
+	var file = file_find_first(THEMES_DIRECTORY + "*.yml", fa_none);
+	
+	while (file != "")
+	{
+		// Load File Contents
+		var buffer = buffer_load(THEMES_DIRECTORY + file);
+		var yaml = buffer_read(buffer, buffer_text);
+		buffer_delete(buffer);
+		
+		// Snap From YAML
+		var struct = SnapFromYAML(yaml);
+		
+		// Add To Themes
+		THEMES[$ struct[$ "name"]] = struct;
+		
+	    file = file_find_next();
+	}
+	
+	file_find_close();
+	
+	// Console
+	ConsoleLog("Themes Loaded");
 }
 
 function newSettings()
@@ -586,7 +827,7 @@ function newSettings()
 		lastUVPath: "",
 		
 		// Default Paths
-		defaultProjectPath: environment_get_variable("USERPROFILE") + @"\Documents\BactaTank Projects",
+		defaultProjectPath: environment_get_variable("USERPROFILE") + @"\Documents\BactaTank Projects\",
 		
 		// Game Path Settings
 		tcsPath: "",
@@ -603,17 +844,108 @@ function newSettings()
 			randomiseUVMapColours: true,
 		},
 		
+		// Shortcuts
+		shortcuts: {
+			newModel: "Ctrl+N",
+			openModel: "Ctrl+O",
+			saveModel: "Ctrl+S",
+			openPreferences: "Ctrl+P",
+			
+			exportArmature: "Ctrl+Shift+A",
+			exportModel: "Ctrl+Shift+E",
+			exportModelFromPreview: "Ctrl+Alt+E",
+			exportRender: "F12",
+			
+			resetCamera: "R",
+			toggleHiddenMeshes: "M",
+			toggleGrid: "G",
+			toggleLocators: "L",
+			toggleLocatorNames: "Ctrl+L",
+			toggleBones: "B",
+			toggleBoneNames: "Ctrl+B",
+			
+			exportCurrentSelected: "Ctrl+E",
+			replaceCurrentSelected: "Ctrl+R",
+			toggleMeshType: "Ctrl+W",
+			dereferenceMesh: "Ctrl+D",
+		},
+		
 		// General Settings
-		showTooltips: true,
-		displayHex: false,
-		enableScripting: false,
+		showTooltips: true,					// Shows Tooltips
+		displayHex: false,					// Displays Any Decimal Values Hex
+		enableScripting: false,				// Enables The Use Of Scripting (Currently Unused)
+		exportNU20Last: false,				// Enables forcing NU20 First models (LB1 / LIJ1) to export as NU20 Last
+		allowVersion1:	false,				// Allows GHG Version 1 to be loaded (TFTG)
+		allowGSC:		false,				// Allows GSC files to be loaded
+		cacheTextures:	true,				// Cache textures for faster loading
 		
 		// Material Viewer
-		showVertexFormat: true,
-		showAssignedMeshes: true,
+		advancedMaterialSettings: false,	// Shows The Advanced Material Settings (Ambient / Specular Tint / Specular ID / Render Options)
+		showVertexFormat: true,				// Shows The Vertex Format In The Material Edit Panel
+		showAssignedMeshes: true,			// Shows The Materials Assigned Meshes
+		replaceVertexFormat: false,			// Allows Replacing The Vertex Format
 		
-		// Console
-		consoleEnabled: false,
-		verboseOutput: false,
+		// Mesh
+		rebuildDynamicBuffers: false,		// Rebuilds dynamic buffers for custom face poses and stuff
+		
+		// Rendering
+		simplifyRendering: false,			// Disabled Fancy Effects
+		lowerRenderResolution: false,		// Lowers The Render Resolution
+		enableMSAA:	false,					// Enables MSAA for rendering smooth edges
+		
+		// Debug
+		consoleEnabled: false,				// Enables The Console Window
+		verboseOutput: false,				// Extra Debug Stuff
+		displayViewerDebugInfo: false,		// Display Viewer Debug Information
+		
+		// Theme
+		theme: "Default Dark",
+	}
+}
+
+function upgradeSettings(settings)
+{
+	var defaultSettings = newSettings();
+	var defaultNames = variable_struct_get_names(defaultSettings);
+	
+	for (var i = 0; i < array_length(defaultNames); i++)
+	{
+		if (!variable_struct_exists(settings, defaultNames[i]) && !is_struct(settings[$ defaultNames[i]])) settings[$ defaultNames[i]] = defaultSettings[$ defaultNames[i]];
+		
+		// Apply Default Shortcuts
+		if (variable_struct_exists(settings, "shortcuts"))
+		{
+			var shortcutNames = variable_struct_get_names(defaultSettings.shortcuts);
+			
+			for (var j = 0; j < array_length(shortcutNames); j++)
+			{
+				if (!variable_struct_exists(settings.shortcuts, shortcutNames[j]) && !is_struct(settings.shortcuts[$ shortcutNames[j]]))
+				{
+					settings.shortcuts[$ shortcutNames[j]] = defaultSettings.shortcuts[$ shortcutNames[j]];
+				}
+			}
+		}
+		else
+		{
+			settings.shortcuts = defaultSettings.shortcuts;
+		}
+		
+		// Apply Default Viewer Settings
+		if (variable_struct_exists(settings, "viewerSettings"))
+		{
+			var viewerSettingsNames = variable_struct_get_names(defaultSettings.viewerSettings);
+			
+			for (var j = 0; j < array_length(viewerSettingsNames); j++)
+			{
+				if (!variable_struct_exists(settings.viewerSettings, viewerSettingsNames[j]) && !is_struct(settings.viewerSettings[$ viewerSettingsNames[j]]))
+				{
+					settings.viewerSettings[$ viewerSettingsNames[j]] = defaultSettings.viewerSettings[$ viewerSettingsNames[j]];
+				}
+			}
+		}
+		else
+		{
+			settings.viewerSettings = defaultSettings.viewerSettings;
+		}
 	}
 }

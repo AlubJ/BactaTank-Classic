@@ -15,7 +15,7 @@
 function ModelAttributesPanel() constructor
 {
 	
-	attributes = [ "Textures", "Materials", "Meshes", "Bones", "Layers", "Locators" ];
+	attributes = PROJECT.currentModel.type == BTModelType.model ? [ "Textures", "Materials", "Meshes", "Bones", "Layers", "Locators" ] : [ "Textures", "Materials", "Meshes", "Special Objects" ];
 	attributesOpen = [false, false, false, false, false, false, false, false, false, false, false, false];
 	modelSelected = noone;
 	ENVIRONMENT.attributeSelected = -1;
@@ -38,7 +38,7 @@ function ModelAttributesPanel() constructor
 			
 			// Header
 			if (CONTEXT == BTContext.Project) ImGui.Text("Model Attributes");
-			else ImGui.Text("ModelName");
+			else ImGui.Text(MODEL_NAME);
 			
 			ImGui.Separator();
 			

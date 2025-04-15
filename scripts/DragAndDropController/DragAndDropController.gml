@@ -1,7 +1,7 @@
 function DragAndDropController()
 {
 	// Get Files
-	var files = file_dropper_get_files([".ghg", ".btank", ".bmesh", ".bloc", ".bmat", ".dds"]);
+	var files = file_dropper_get_files([".ghg", ".gsc", ".btank", ".bmesh", ".bloc", ".bmat", ".dds"]);
 	file_dropper_flush();
 	
 	// Check Context
@@ -10,10 +10,11 @@ function DragAndDropController()
 		if (CONTEXT == BTContext.None)
 		{
 			// We only check for .GHG here.
-			if (filename_ext(files[0]) == ".ghg")
+			if (filename_ext(files[0]) == ".ghg" || filename_ext(files[0]) == ".gsc")
 			{
 				if (file_exists(files[0]))
 				{
+					SetWindowActive(window_handle());
 					openProjectOrModel(files[0]);
 					ImGui.CloseCurrentPopup();
 				}
@@ -22,142 +23,157 @@ function DragAndDropController()
 		else if (CONTEXT == BTContext.Model && ENVIRONMENT.currentEnvironment == 1)
 		{
 			// We only check for .GHG here, since there isn't anything to replace
-			if (filename_ext(files[0]) == ".ghg")
+			if (filename_ext(files[0]) == ".ghg" || filename_ext(files[0]) == ".gsc")
 			{
 				if (file_exists(files[0]))
 				{
+					SetWindowActive(window_handle());
 					ENVIRONMENT.openConfirmModal("Unsaved Changes", "Are you sure you want to continue?", function(file) {
 						openProjectOrModel(file);
 					}, [files[0]]);
 				}
 			}
 		}
-		else if (CONTEXT == BTContext.Model && ENVIRONMENT.currentEnvironment == 0)
+		else if (CONTEXT == BTContext.Model)
 		{
-			// Check Left Side Of The Screen First
-			if (point_in_rectangle(CURSOR_POSITION[0], CURSOR_POSITION[1], 0, 0, floor(WINDOW_SIZE[0] / 4) * 3, WINDOW_SIZE[1]) || ENVIRONMENT.attributeSelected == -1)
+			// We only check for .GHG here, since there isn't anything to replace
+			if ((filename_ext(files[0]) == ".ghg" || filename_ext(files[0]) == ".gsc") || ENVIRONMENT.attributeSelected == -1)
 			{
-				// We only check for .GHG here, since there isn't anything to replace
-				if (filename_ext(files[0]) == ".ghg")
+				if (file_exists(files[0]))
 				{
-					if (file_exists(files[0]))
-					{
-						ENVIRONMENT.openConfirmModal("Unsaved Changes", "Are you sure you want to continue?", function(file) {
-							openProjectOrModel(file);
-						}, [files[0]]);
-					}
+					SetWindowActive(window_handle());
+					ENVIRONMENT.openConfirmModal("Unsaved Changes", "Are you sure you want to continue?", function(file) {
+						openProjectOrModel(file);
+					}, [files[0]]);
 				}
 			}
-			else if (point_in_rectangle(CURSOR_POSITION[0], CURSOR_POSITION[1], floor(WINDOW_SIZE[0] / 4) * 3, 0, WINDOW_SIZE[0], WINDOW_SIZE[1]))
+			else if (string_pos("TEX", ENVIRONMENT.attributeSelected))
 			{
 				// Index
 				var index = string_digits(ENVIRONMENT.attributeSelected);
 				
-				// This is where we need to check which panel is open, so we can replace the appropriate attribute
-				if (string_pos("TEX", ENVIRONMENT.attributeSelected))
+				if (filename_ext(files[0]) == ".dds")
 				{
-					if (filename_ext(files[0]) == ".dds")
+					if (file_exists(files[0]))
 					{
-						if (file_exists(files[0]))
+						// Set Active Window
+						SetWindowActive(window_handle());
+						
+						// User Feedback
+						ENVIRONMENT.openInfoModal("Please wait", "Decoding DDS Texture");
+						window_set_cursor(cr_hourglass);
+						
+						// Define Function
+						var func = function(model, index, file)
 						{
-							// User Feedback
-							ENVIRONMENT.openInfoModal("Please wait", "Decoding DDS Texture");
-							window_set_cursor(cr_hourglass);
-							
-							// Define Function
-							var func = function(model, index, file)
-							{
-								// Replace Texture
-								model.textures[index].replace(file);
-								
-								// Enable Renderer
-								RENDERER.activate();
-								RENDERER.deactivate(2);
-								
-								// User Feedback
-								ENVIRONMENT.closeInfoModal();
-								window_set_cursor(cr_default);
-							}
-							
-							// Timesource
-							time_source_start(time_source_create(time_source_game, 3, time_source_units_frames, func, [PROJECT.currentModel, index, files[0]]));
-						}
-					}
-				}
-				else if (string_pos("MAT", ENVIRONMENT.attributeSelected))
-				{
-					if (filename_ext(files[0]) == ".bmat")
-					{
-						if (file_exists(files[0]))
-						{
-							// User Feedback
-							window_set_cursor(cr_hourglass);
-							
-							// Replace Material
-							PROJECT.currentModel.materials[index].replace(files[0]);
+							// Replace Texture
+							model.textures[index].replace(file);
 							
 							// Enable Renderer
 							RENDERER.activate();
 							RENDERER.deactivate(2);
 							
 							// User Feedback
+							ENVIRONMENT.closeInfoModal();
 							window_set_cursor(cr_default);
 						}
+						
+						// Timesource
+						time_source_start(time_source_create(time_source_game, 3, time_source_units_frames, func, [PROJECT.currentModel, index, files[0]]));
 					}
 				}
-				else if (string_pos("MESH", ENVIRONMENT.attributeSelected))
+			}
+			else if (string_pos("MAT", ENVIRONMENT.attributeSelected))
+			{
+				// Index
+				var index = string_digits(ENVIRONMENT.attributeSelected);
+				
+				if (filename_ext(files[0]) == ".bmat")
 				{
-					if (filename_ext(files[0]) == ".bmesh" || filename_ext(files[0]) == ".btank")
+					if (file_exists(files[0]))
 					{
-						if (file_exists(files[0]))
-						{
-							// User Feedback
-							ENVIRONMENT.openInfoModal("Please wait", "Building Mesh");
-							window_set_cursor(cr_hourglass);
-							
-							// Define Function
-							var func = function(model, index, file)
-							{
-								// Replace Texture
-								model.meshes[index].replace(file, model);
-			
-								// Clear Render Queue and Push Model Again
-								RENDERER.flush();
-								model.pushToRenderQueue(ENVIRONMENT.displayLayers, RENDERER, ENVIRONMENT.hideDisabledMeshes);
-								
-								// Enable Renderer
-								RENDERER.activate();
-								RENDERER.deactivate(2);
-								
-								// User Feedback
-								ENVIRONMENT.closeInfoModal();
-								window_set_cursor(cr_default);
-							}
-							
-							// Timesource
-							time_source_start(time_source_create(time_source_game, 3, time_source_units_frames, func, [PROJECT.currentModel, index, files[0]]));
-						}
+						// Set Active Window
+						SetWindowActive(window_handle());
+						
+						// User Feedback
+						window_set_cursor(cr_hourglass);
+						
+						// Replace Material
+						PROJECT.currentModel.materials[index].replace(files[0]);
+						
+						// Enable Renderer
+						RENDERER.activate();
+						RENDERER.deactivate(2);
+						
+						// User Feedback
+						window_set_cursor(cr_default);
 					}
 				}
-				else if (string_pos("LOC", ENVIRONMENT.attributeSelected))
+			}
+			else if (string_pos("MESH", ENVIRONMENT.attributeSelected))
+			{
+				// Index
+				var index = string_digits(ENVIRONMENT.attributeSelected);
+				
+				if (filename_ext(files[0]) == ".bmesh" || filename_ext(files[0]) == ".btank")
 				{
-					if (filename_ext(files[0]) == ".bloc")
+					if (file_exists(files[0]))
 					{
-						if (file_exists(files[0]))
+						// Set Active Window
+						SetWindowActive(window_handle());
+						
+						// User Feedback
+						ENVIRONMENT.openInfoModal("Please wait", "Building Mesh");
+						window_set_cursor(cr_hourglass);
+						
+						// Define Function
+						var func = function(model, index, file)
 						{
-							// User Feedback
-							window_set_cursor(cr_hourglass);
+							// Replace Texture
+							model.meshes[index].replace(file, model);
 							
-							// Replace Locator
-							PROJECT.currentModel.locators[index].replace(files[0], PROJECT.currentModel);
+							// Clear Render Queue and Push Model Again
+							RENDERER.flush();
+							model.pushToRenderQueue(ENVIRONMENT.displayLayers, RENDERER, ENVIRONMENT.hideDisabledMeshes);
 							
 							// Enable Renderer
 							RENDERER.activate();
 							RENDERER.deactivate(2);
 							
 							// User Feedback
+							ENVIRONMENT.closeInfoModal();
 							window_set_cursor(cr_default);
 						}
+						
+						// Timesource
+						time_source_start(time_source_create(time_source_game, 3, time_source_units_frames, func, [PROJECT.currentModel, index, files[0]]));
+					}
+				}
+			}
+			else if (string_pos("LOC", ENVIRONMENT.attributeSelected))
+			{
+				// Index
+				var index = string_digits(ENVIRONMENT.attributeSelected);
+				
+				if (filename_ext(files[0]) == ".bloc")
+				{
+					if (file_exists(files[0]))
+					{
+						// Set Active Window
+						SetWindowActive(window_handle());
+						
+						// User Feedback
+						window_set_cursor(cr_hourglass);
+						
+						// Replace Locator
+						PROJECT.currentModel.locators[index].replace(files[0], PROJECT.currentModel);
+						
+						// Enable Renderer
+						RENDERER.activate();
+						RENDERER.deactivate(2);
+						
+						// User Feedback
+						window_set_cursor(cr_default);
 					}
 				}
 			}

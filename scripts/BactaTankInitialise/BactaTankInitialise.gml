@@ -33,11 +33,13 @@ global.__context = ["None", "Project", "Model", "Scene", "Icon", "Font"];
 // Model Version
 enum BTModelVersion
 {
-	pcghgNU20Last,
-	pcghgNU20First,
-	none,
+	None,
+	Version1,	// TFTG
+	Version2,	// TCS
+	Version3,	// TCS
+	Version4,	// LB1 / LIJ1 / Prince Caspian
 }
-global.__modelVersion = ["PCGHG_NU20_LAST", "PCGHG_NU20_FIRST"];
+global.__modelVersion = ["None", "Version 1", "Version 2", "Version 3", "Version 4"];
 #macro BT_MODEL_VERSION global.__modelVersion
 
 // Model Type
@@ -45,9 +47,10 @@ enum BTModelType
 {
 	model,
 	scene,
+	icon,
 	none,
 }
-global.__modelType = ["Model", "Scene"];
+global.__modelType = ["Model", "Scene", "Icon"];
 #macro BT_MODEL_TYPE global.__modelType
 	
 // Model Vertex Attributes
@@ -63,12 +66,13 @@ enum BTVertexAttributes
 	uvSet2,
 	uvSet3,
 	uvSet4,
+	transparency,
 	blendIndices,
 	blendWeights,
 	lightDirection,
 	lightColour,
 }
-global.__attributes = ["Position", "Normal", "Tangent", "BiTangent", "ColourSet1", "ColourSet2", "UVSet1", "UVSet2", "UVSet3", "UVSet4", "BlendIndices", "BlendWeights", "LightDirection", "LightColour"];
+global.__attributes = ["Position", "Normal", "Tangent", "BiTangent", "ColourSet1", "ColourSet2", "UVSet1", "UVSet2", "UVSet3", "UVSet4", "Transparency", "BlendIndices", "BlendWeights", "LightDirection", "LightColour"];
 #macro BT_VERTEX_ATTRIBUTES global.__attributes
 
 // Model Vertex Attributes
@@ -81,6 +85,8 @@ enum BTVertexAttributeTypes
 }
 global.__attributeTypes = ["Float 2", "Float 3", "Byte 4", "Half 2"];
 #macro BT_VERTEX_ATTRIBUTE_TYPES global.__attributeTypes
+global.__attributeSizes = [8, 12, 4, 8];
+#macro BT_VERTEX_ATTRIBUTE_SIZES global.__attributeSizes
 
 // DXT Compressions
 global.DXTCompression = ["", "DXT1", "", "", "DXT3", "", "DXT5"];
@@ -104,14 +110,26 @@ global.DXTCompression = ["", "DXT1", "", "", "DXT3", "", "DXT5"];
 
 // Main Vertex Format
 vertex_format_begin();
-vertex_format_add_custom(vertex_type_float3, vertex_usage_position);
-vertex_format_add_custom(vertex_type_float3, vertex_usage_normal);
-vertex_format_add_custom(vertex_type_float2, vertex_usage_texcoord);
-vertex_format_add_colour();
-vertex_format_add_colour();
-vertex_format_add_custom(vertex_type_float2, vertex_usage_texcoord);
+vertex_format_add_custom(vertex_type_float3, vertex_usage_position); // Position
+vertex_format_add_custom(vertex_type_float3, vertex_usage_normal);	 // Normal
+vertex_format_add_custom(vertex_type_float2, vertex_usage_texcoord); // UVSet1
+vertex_format_add_custom(vertex_type_float2, vertex_usage_texcoord); // UVSet2
+vertex_format_add_colour();											 // Vertex Colour
+vertex_format_add_colour();											 // Tangent
+vertex_format_add_custom(vertex_type_float2, vertex_usage_texcoord); // Index
 global.vertexFormat = vertex_format_end();
 #macro BT_VERTEX_FORMAT global.vertexFormat
+
+// Main Vertex Format
+vertex_format_begin();
+vertex_format_add_custom(vertex_type_float3, vertex_usage_position); // Position
+vertex_format_add_custom(vertex_type_float3, vertex_usage_normal);	 // Normal
+vertex_format_add_custom(vertex_type_float2, vertex_usage_texcoord); // UVSet1
+vertex_format_add_colour();											 // Vertex Colour
+vertex_format_add_colour();											 // Tangent
+vertex_format_add_custom(vertex_type_float2, vertex_usage_texcoord); // Index
+global.matVertexFormat = vertex_format_end();
+#macro BT_MATERIAL_VERTEX_FORMAT global.matVertexFormat
 
 // Wireframe Vertex Format
 vertex_format_begin();
@@ -188,7 +206,7 @@ enum BTSurfaceType {
 	TangentMap,
 }
 #macro BT_SURFACE_TYPE global.surfaceType
-BT_SURFACE_TYPE = ["Smooth", "NormalMap", "ParallaxMap", "TangentMap"];
+BT_SURFACE_TYPE = ["Smooth", "NormalMap", "ParallaxMap", ""];
 
 // EnvMap Bits
 #macro BT_ENVMAP_BITS 0x03
@@ -202,7 +220,7 @@ enum BTEnvMapType {
 	PS2,
 }
 #macro BT_ENVMAP_TYPE global.envmapType
-BT_ENVMAP_TYPE = ["None", "Cube", "Sphere", "PS2"];
+BT_ENVMAP_TYPE = ["None", "Cube", "", ""];
 
 // Shine Map
 #macro BT_USE_SHINEMAP 0x8000

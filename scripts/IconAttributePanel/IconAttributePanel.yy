@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"IconAttributePanel",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"IconAttributePanel",
+  "parent":{
+    "name":"IconEditor",
+    "path":"folders/Environment/Environments/IconEditor.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

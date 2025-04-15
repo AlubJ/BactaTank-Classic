@@ -45,6 +45,7 @@ function BactaTankMesh() constructor
 	
 	// UV Map
 	uvSet1 = -1;
+	uvSet2 = -1;
 	
 	// Renderer
 	vertexBufferObject = noone;
@@ -65,7 +66,7 @@ function BactaTankMesh() constructor
 			
 		// Type, Tri Count and Vertex Stride
 		type = buffer_read(buffer, buffer_u32);
-		triangleCount = buffer_read(buffer, buffer_u32);
+		triangleCount = buffer_read(buffer, _model.version == BTModelVersion.Version1 ? buffer_u16 : buffer_u32);
 		vertexStride = buffer_read(buffer, buffer_u16);
 		
 		// Bones
@@ -73,7 +74,7 @@ function BactaTankMesh() constructor
 		repeat(8) array_push(bones, buffer_read(buffer, buffer_s8));
 		
 		// Flags
-		flags = buffer_read(buffer, buffer_u16); // Unused
+		if (_model.version != BTModelVersion.Version1) flags = buffer_read(buffer, buffer_u16); // Unused
 		
 		// Vertex Count, Offset and Index Offset
 		vertexOffset = buffer_read(buffer, buffer_u32);
@@ -84,31 +85,37 @@ function BactaTankMesh() constructor
 		indexBufferID = buffer_read(buffer, buffer_u32);
 		vertexBufferID = buffer_read(buffer, buffer_u32);
 		
-		// Dynamic Buffer Count
-		var dynamicBufferCount = buffer_read(buffer, buffer_u32);
-		buffer_seek(buffer, buffer_seek_relative, buffer_read(buffer, buffer_u32) - 4);
-			
-		// Dynamic Buffers
-		dynamicBuffers = [];
-		for (var i = 0; i < dynamicBufferCount; i++)
+		// New Vertex Buffer ID (Transformers)
+		if (_model.version == BTModelVersion.Version1) vertexBufferID = buffer_read(buffer, buffer_u32);
+		
+		// Check File Version Here
+		if (_model.version != BTModelVersion.Version1)
 		{
-			// Dynamic Buffer
-			var dynamicBuffer = []; // VertexCount * 3
+			// Dynamic Buffer Count
+			var dynamicBufferCount = buffer_read(buffer, buffer_u32);
+			buffer_seek(buffer, buffer_seek_relative, buffer_read(buffer, buffer_u32) - 4);
+			
+			// Dynamic Buffers
+			dynamicBuffers = [];
+			for (var i = 0; i < dynamicBufferCount; i++)
+			{
+				// Dynamic Buffer
+				var dynamicBuffer = []; // VertexCount * 3
 				
-			// Seek to Dynamic Buffer
-			var tempDynOffset = buffer_tell(buffer) + 4;
-			var dynamicBufferOffset = buffer_read(buffer, buffer_u32);
-			buffer_seek(buffer, buffer_seek_relative, dynamicBufferOffset - 4);
+				// Seek to Dynamic Buffer
+				var tempDynOffset = buffer_tell(buffer) + 4;
+				var dynamicBufferOffset = buffer_read(buffer, buffer_u32);
+				buffer_seek(buffer, buffer_seek_relative, dynamicBufferOffset - 4);
 				
-			// Add points to dynamic buffer
-			if (dynamicBufferOffset != 0) repeat(vertexCount * 3) array_push(dynamicBuffer, buffer_read(buffer, buffer_f32));
-			else dynamicBuffer = -1;
+				// Add points to dynamic buffer
+				if (dynamicBufferOffset != 0) repeat(vertexCount * 3) array_push(dynamicBuffer, buffer_read(buffer, buffer_f32));
 				
-			// Add To Dynamic Buffers List
-			dynamicBuffers[i] = dynamicBuffer;
+				// Add To Dynamic Buffers List
+				dynamicBuffers[i] = dynamicBuffer;
 				
-			// Seek back to temp offset
-			buffer_seek(buffer, buffer_seek_start, tempDynOffset);
+				// Seek back to temp offset
+				buffer_seek(buffer, buffer_seek_start, tempDynOffset);
+			}
 		}
 			
 		// Log
@@ -123,7 +130,7 @@ function BactaTankMesh() constructor
 		ConsoleLog($"    Index Offset:         {indexOffset}", CONSOLE_MODEL_LOADER_DEBUG, dOffset + 28);
 		ConsoleLog($"    Index Buffer ID:      {indexBufferID}", CONSOLE_MODEL_LOADER_DEBUG, dOffset + 32);
 		ConsoleLog($"    Vertex Buffer ID:     {vertexBufferID}", CONSOLE_MODEL_LOADER_DEBUG, dOffset + 36);
-		ConsoleLog($"    Dynamic Buffer Count: {dynamicBufferCount}", CONSOLE_MODEL_LOADER_DEBUG, dOffset + 40);
+		if (_model.version != BTModelVersion.Version1) ConsoleLog($"    Dynamic Buffer Count: {dynamicBufferCount}", CONSOLE_MODEL_LOADER_DEBUG, dOffset + 40);
 	}
 	
 	static inject = function(buffer)
@@ -147,28 +154,35 @@ function BactaTankMesh() constructor
 		buffer_poke(buffer, offset+36, buffer_s32, vertexBufferID);
 		buffer_poke(buffer, offset+40, buffer_s32, array_length(dynamicBuffers));
 		
-		// Some Offsets
-		//var dynamicBufferOffset = offset + 56;
-		//var dynamicBufferStartOffset = dynamicBufferOffset + array_length(dynamicBuffers) * 4;
-		//var dynamicBufferStartPointer = array_length(dynamicBuffers) * 4;
-		//ConsoleLog(dynamicBufferStartPointer)
-		
-		//// Calculate Offsets
-		//for (var i = 0; i < array_length(dynamicBuffers); i++)
-		//{
-		//	if (array_length(dynamicBuffers[i]) > 0) buffer_poke(buffer, dynamicBufferOffset + i * 4, buffer_s32, i == 0 ? dynamicBufferStartPointer : dynamicBufferStartPointer + ((vertexCount * 12) * i) - (i * 4));
-		//	else buffer_poke(buffer, dynamicBufferOffset + i * 4, buffer_s32, 0);
-		//}
-		
-		//// Write Dynamic Buffers
-		//for (var i = 0; i < array_length(dynamicBuffers); i++)
-		//{
-		//	for (var j = 0; j < array_length(dynamicBuffers[i]); j++)
-		//	{
-		//		buffer_poke(buffer, dynamicBufferStartOffset, buffer_f32, dynamicBuffers[i][j]);
-		//		dynamicBufferStartOffset += 4;
-		//	}
-		//}
+		// Only do this if enabled
+		if (SETTINGS.rebuildDynamicBuffers)
+		{
+			// Some Offsets
+			var dynamicBufferPointerOffset = offset + 56;
+			var dynamicBufferStartOffset = dynamicBufferPointerOffset + array_length(dynamicBuffers) * 4;
+			
+			// Set all pointers to 0
+			for (var i = 0; i < array_length(dynamicBuffers); i++)
+			{
+				if (array_length(dynamicBuffers[i]) > 0)
+				{
+					// Write the start pointer to the dynamic buffer
+					buffer_poke(buffer, dynamicBufferPointerOffset + i * 4, buffer_s32, dynamicBufferStartOffset - (dynamicBufferPointerOffset + (i * 4)));
+					
+					// Write dynamic buffer
+					for (var j = 0; j < array_length(dynamicBuffers[i]); j++)
+					{
+						buffer_poke(buffer, dynamicBufferStartOffset, buffer_f32, dynamicBuffers[i][j]);
+						dynamicBufferStartOffset += 4;
+					}
+				}
+				else
+				{
+					// Write 0 because no dynamic buffer data exists
+					buffer_poke(buffer, dynamicBufferPointerOffset + i * 4, buffer_s32, 0);
+				}
+			}
+		}
 	}
 	
 	static link = function(buffer, vbOffsets, ibOffsets, _model)
@@ -212,7 +226,7 @@ function BactaTankMesh() constructor
 			};
 			
 			// Get Vertex Format
-			var vertexFormat = _model.materials[material].vertexFormat;
+			var vertexFormat = _model.materials[material != -1 ? material : 0].vertexFormat;
 			
 			// Loop Through Vertex Format
 			for (var k = 0; k < array_length(vertexFormat); k++)
@@ -326,28 +340,40 @@ function BactaTankMesh() constructor
 			// Get Index
 			var index = triangles[i];
 			
+			// Create Default Values (We do this so we can submit a valid vertex buffer to the GPU)
 			var position = array_create(3, 0);
 			var normal = array_create(3, 0);
 			var tangent = [0, 0];
-			var uv = array_create(2, 0);
+			var uv1 = array_create(2, 0);
+			var uv2 = array_create(2, 0);
 			var colour = #ffffff;
 			
 			// Attributes
+			// Position
 			if (array_length(vertices[index].position) == 3) position = vertices[index].position;
-			if (array_length(vertices[index].normal) == 3) normal = vertices[index].normal;
-			if (array_length(vertices[index].tangent) == 4) tangent = [make_colour_rgb(vertices[index].tangent[0] / 2 + 1, vertices[index].tangent[1] / 2 + 1, vertices[index].tangent[2] / 2 + 1), vertices[index].tangent[3]];
-			if (_model.materials[material].surfaceUVMapIndex == 1)
-				if (array_length(vertices[index].uvSet1) == 2) uv = vertices[index].uvSet1;
-			else
-				if (array_length(vertices[index].uvSet2) == 2) uv = vertices[index].uvSet2;
-			if (array_length(vertices[index].colourSet1) == 4) colour = make_colour_rgb(vertices[index].colourSet1[0] * 255, vertices[index].colourSet1[1] * 255, vertices[index].colourSet1[2] * 255);
-			
-			// Add Vertex Positions
 			vertex_position_3d(currentVertexBuffer, position[0], position[1], position[2]);
+			
+			// Normal
+			if (array_length(vertices[index].normal) == 3) normal = vertices[index].normal;
 			vertex_normal(currentVertexBuffer, normal[0], normal[1], normal[2]);
-			vertex_texcoord(currentVertexBuffer, uv[0], uv[1]);
+			
+			// UV Set 1
+			if (array_length(vertices[index].uvSet1) == 2) uv1 = vertices[index].uvSet1;
+			vertex_texcoord(currentVertexBuffer, uv1[0], uv1[1]);
+			
+			// UV Set 2
+			if (array_length(vertices[index].uvSet2) == 2) uv2 = vertices[index].uvSet2;
+			vertex_texcoord(currentVertexBuffer, uv2[0], uv2[1]);
+			
+			// Colour
+			if (array_length(vertices[index].colourSet1) == 4) colour = make_colour_rgb(vertices[index].colourSet1[0] * 255, vertices[index].colourSet1[1] * 255, vertices[index].colourSet1[2] * 255);
 			vertex_colour(currentVertexBuffer, colour, 1);
+			
+			// Tangent
+			if (array_length(vertices[index].tangent) == 4) tangent = [make_colour_rgb(vertices[index].tangent[0] / 2 + 1, vertices[index].tangent[1] / 2 + 1, vertices[index].tangent[2] / 2 + 1), vertices[index].tangent[3]];
 			vertex_colour(currentVertexBuffer, tangent[0], tangent[1]);
+			
+			// Add Index
 			vertex_texcoord(currentVertexBuffer, index, 0);
 			
 			// Update Average Position
@@ -366,6 +392,8 @@ function BactaTankMesh() constructor
 		
 		// Convert Strips to Lists
 		var listTriangles = stripsToTris(triangles);
+		
+		// UV Set 1
 		uvSet1 = vertex_create_buffer();
 		vertex_begin(uvSet1, BT_WIREFRAME_VERTEX_FORMAT);
 		
@@ -391,19 +419,49 @@ function BactaTankMesh() constructor
 		uvSet1AveragePosition[0] /= array_length(listTriangles) * 6;
 		uvSet1AveragePosition[1] /= array_length(listTriangles) * 6;
 		
+		// UV Set 2
+		uvSet2 = vertex_create_buffer();
+		vertex_begin(uvSet2, BT_WIREFRAME_VERTEX_FORMAT);
+		
+		for (var i = 0; i < array_length(listTriangles); i++)
+		{
+			var vert1 = vertices[listTriangles[i][0]].uvSet2;
+			var vert2 = vertices[listTriangles[i][1]].uvSet2;
+			var vert3 = vertices[listTriangles[i][2]].uvSet2;
+			vertex_position_3d(uvSet2, vert1[0], vert1[1], 0);
+			vertex_position_3d(uvSet2, vert2[0], vert2[1], 0);
+			vertex_position_3d(uvSet2, vert2[0], vert2[1], 0);
+			vertex_position_3d(uvSet2, vert3[0], vert3[1], 0);
+			vertex_position_3d(uvSet2, vert3[0], vert3[1], 0);
+			vertex_position_3d(uvSet2, vert1[0], vert1[1], 0);
+			
+			uvSet1AveragePosition[0] += vert1[0] + vert2[0] + vert3[0];
+			uvSet1AveragePosition[1] += vert1[1] + vert2[1] + vert3[1];
+		}
+		
+		vertex_end(uvSet2);
+		
+		// Average Position
+		uvSet1AveragePosition[0] /= array_length(listTriangles) * 6;
+		uvSet1AveragePosition[1] /= array_length(listTriangles) * 6;
+		
 		// Freeze VBO For Better Performance
 		vertex_freeze(uvSet1);
+		vertex_freeze(uvSet2);
 		vertex_freeze(currentVertexBuffer);
 		vertexBufferObject = currentVertexBuffer;
 	}
 	
 	static buildVertexBuffer = function(_model = noone)
 	{
+		// Get Vertex Format
+		var vertexFormat = _model.materials[material != -1 ? material : 0].vertexFormat;
+		
+		// Evaluate Vertex Stride
+		vertexStride = array_last(vertexFormat).position + BT_VERTEX_ATTRIBUTE_SIZES[array_last(vertexFormat).type];
+		
 		// Create Vertex Buffer
 		var vertexBuffer = buffer_create(vertexCount * vertexStride, buffer_fixed, 1);
-		
-		// Get Vertex Format
-		var vertexFormat = _model.materials[material].vertexFormat;
 		
 		// Build New Vertex Buffer
 		for (var i = 0; i < vertexCount; i++)
@@ -417,64 +475,76 @@ function BactaTankMesh() constructor
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_f32, vertices[i].position[0]);
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 4, buffer_f32, vertices[i].position[1]);
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 8, buffer_f32, vertices[i].position[2]);
+						//show_debug_message("Writing Position")
 						break;
 					case BTVertexAttributes.normal:
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_u8, floor(((vertices[i].normal[0] + 1) / 2) * 255));
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 1, buffer_u8, floor(((vertices[i].normal[1] + 1) / 2) * 255));
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 2, buffer_u8, floor(((vertices[i].normal[2] + 1) / 2) * 255));
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 3, buffer_u8, 0x7f);
+						//show_debug_message("Writing Normal")
 						break;
 					case BTVertexAttributes.tangent:
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_u8, floor(((vertices[i].tangent[0] + 1) / 2) * 255));
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 1, buffer_u8, floor(((vertices[i].tangent[1] + 1) / 2) * 255));
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 2, buffer_u8, floor(((vertices[i].tangent[2] + 1) / 2) * 255));
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 3, buffer_u8, floor(((vertices[i].tangent[3] + 1) / 2) * 255));
+						//show_debug_message("Writing Tangent")
 						break;
 					case BTVertexAttributes.bitangent:
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_u8, floor(((vertices[i].bitangent[0] + 1) / 2) * 255));
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 1, buffer_u8, floor(((vertices[i].bitangent[1] + 1) / 2) * 255));
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 2, buffer_u8, floor(((vertices[i].bitangent[2] + 1) / 2) * 255));
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 3, buffer_u8, floor(((vertices[i].bitangent[3] + 1) / 2) * 255));
+						//show_debug_message("Writing BiTangent")
 						break;
 					case BTVertexAttributes.colourSet1:
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_u8, floor(vertices[i].colourSet1[0] * 255));
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 1, buffer_u8, floor(vertices[i].colourSet1[1] * 255));
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 2, buffer_u8, floor(vertices[i].colourSet1[2] * 255));
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 3, buffer_u8, floor(vertices[i].colourSet1[3] * 255));
+						//show_debug_message("Writing ColourSet1")
 						break;
 					case BTVertexAttributes.colourSet2:
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_u8, floor(vertices[i].colourSet2[0] * 255));
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 1, buffer_u8, floor(vertices[i].colourSet2[1] * 255));
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 2, buffer_u8, floor(vertices[i].colourSet2[2] * 255));
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 3, buffer_u8, floor(vertices[i].colourSet2[3] * 255));
+						//show_debug_message("Writing ColourSet2")
 						break;
 					case BTVertexAttributes.uvSet1:
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_f32, vertices[i].uvSet1[0]);
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 4, buffer_f32, vertices[i].uvSet1[1]);
+						//show_debug_message("Writing UVSet1")
 						break;
 					case BTVertexAttributes.uvSet2:
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_f32, vertices[i].uvSet2[0]);
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 4, buffer_f32, vertices[i].uvSet2[1]);
+						//show_debug_message("Writing UVSet2")
 						break;
 					case BTVertexAttributes.uvSet3:
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_f32, vertices[i].uvSet3[0]);
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 4, buffer_f32, vertices[i].uvSet3[1]);
+						//show_debug_message("Writing UVSet3")
 						break;
 					case BTVertexAttributes.uvSet4:
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_f32, vertices[i].uvSet4[0]);
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 4, buffer_f32, vertices[i].uvSet4[1]);
+						//show_debug_message("Writing UVSet4")
 						break;
 					case BTVertexAttributes.blendIndices:
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_s8, floor(vertices[i].blendIndices[0]));
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 1, buffer_s8, floor(vertices[i].blendIndices[1]));
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 2, buffer_s8, floor(vertices[i].blendIndices[2]));
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 3, buffer_s8, floor(vertices[i].blendIndices[3]));
+						//show_debug_message("Writing BlendIndices")
 						break;
 					case BTVertexAttributes.blendWeights:
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_u8, floor(vertices[i].blendWeights[0] * 255));
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 1, buffer_u8, floor(vertices[i].blendWeights[1] * 255));
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 2, buffer_u8, floor(vertices[i].blendWeights[2] * 255));
 						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 3, buffer_u8, floor(vertices[i].blendWeights[3] * 255));
+						//show_debug_message("Writing BlendWeights")
 						break;
 				}
 			}
@@ -618,6 +688,8 @@ function BactaTankMesh() constructor
 		vertexBufferObject = -1;
 		if (uvSet1 != -1) vertex_delete_buffer(uvSet1);
 		uvSet1 = -1;
+		if (uvSet2 != -1) vertex_delete_buffer(uvSet2);
+		uvSet2 = -1;
 		
 		// Destroy Buffers
 		indexBuffer = -1;

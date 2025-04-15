@@ -35,7 +35,7 @@ function AboutModal() : Modal() constructor
 			ImGui.SetCursorPos((280 - 254) + 128, 54);
 			ImGui.Image(graBactaTankText, 0);
 			ImGui.SameLine();
-			var tag = $"{global.versions.indev ? "dev_": ""}{global.versions.main}{global.versions.revision != 0 ? "_rev" + global.versions.revision : ""} | Renderer {global.versions.renderer} | Backend {global.versions.backend}";
+			var tag = $"{VERSIONS.indev ? "dev_": ""}{VERSIONS.main}{VERSIONS.revision != 0 ? "_rev" + VERSIONS.revision : ""} | Renderer {VERSIONS.renderer} | Backend {VERSIONS.backend}";
 			ImGui.SetCursorPos(((280 - 254) + 318) - floor(ImGui.CalcTextWidth(tag) / 2), 54 + 70);
 			ImGui.Text(tag);
 			
@@ -44,7 +44,7 @@ function AboutModal() : Modal() constructor
 			ImGui.Separator();
 			if (ImGui.BeginChild("##About"))
 			{
-				ImGui.TextWrapped(global.about);
+				ImGui.TextWrapped(ABOUT);
 				ImGui.EndChild();
 			}
 			

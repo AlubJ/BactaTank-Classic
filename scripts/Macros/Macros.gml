@@ -12,8 +12,8 @@
 	To Do:
 */
 
-// Global Version ([Major].[Minor][Patch][Revision])
-#macro VERSION 0.3021
+// Global Version ([Major].[Minor][Patch][Revision][1:A 2:B 3:C, 4:Public])
+#macro VERSION 0.3028
 
 // Run From IDE
 #macro RUN_FROM_IDE parameter_count() == 3 && string_count("GMS2TEMP", parameter_string(2))
@@ -21,6 +21,7 @@
 // Debug Output
 #macro DBGOUT show_debug_message
 #macro DBGMSG ($"{_GMFILE_}.{_GMFUNCTION_} line:{_GMLINE_}    -")
+#macro DBGMEM global.__debugMemory__
 
 // File System
 #macro TEMP_DIRECTORY			cache_directory
@@ -29,48 +30,100 @@
 #macro TEMPLATES_DIRECTORY		CONFIG_DIRECTORY + "templates/"
 #macro SCRIPT_DIRECTORY			CONFIG_DIRECTORY + "scripts/"
 #macro WORKING_DIRECTORY		working_directory
+#macro THEMES_DIRECTORY			WORKING_DIRECTORY + "themes/"
 #macro LOG_DIRECTORY			game_save_id + "log/"
 
 // Window
-#macro WINDOW_SIZE global.windowSize
-#macro WINDOW_POSITION global.windowPos
-#macro CURSOR_POSITION global.cursorPosition
-#macro LAST_WINDOW_SIZE global.lastWindowSize
-#macro LAST_WINDOW_POSITION global.lastWindowPosition
+#macro WINDOW_SIZE global.__windowSize__
+#macro WINDOW_POSITION global.__windowPos__
+#macro CURSOR_POSITION global.__cursorPosition__
+#macro LAST_WINDOW_SIZE global.__lastWindowSize__
+#macro LAST_WINDOW_POSITION global.__lastWindowPosition__
 
 // Renderer
-#macro RENDERER				global.renderer // Primary Renderer, used for the main model editor
-#macro SECONDARY_RENDERER	global.secondaryRenderer // Secondary renderer used for material previews, layer previews and mesh previews
-#macro CANVAS				global.canvas // Primary Canvas
-#macro SECONDARY_CANVAS		global.secondaryCanvas
-#macro CAMERA				global.renderer.camera
-#macro PRIMITIVES			global.primitives
+#macro RENDERER				global.__renderer__ // Primary Renderer, used for the main model editor
+#macro SECONDARY_RENDERER	global.__secondaryRenderer__ // Secondary renderer used for material previews, layer previews and mesh previews
+#macro CANVAS				global.__canvas__ // Primary Canvas
+#macro SECONDARY_CANVAS		global.__secondaryCanvas__
+#macro CAMERA				global.__renderer__.camera
+#macro PRIMITIVES			global.__primitives__
 PRIMITIVES = {};
 
 // Original GPU State
-#macro GPU_STATE			global.gpuState
+#macro GPU_STATE			global.__gpuState__
 
 // Global Vars
-#macro SETTINGS		global.settings
-#macro CONFIG		global.config
-#macro ASSET_PACKS	global.assetPacks
-#macro SCRIPTS		global.scripts
-#macro ABOUT		global.about
-#macro VERSIONS		global.versions
-#macro FILTERS		global.filters
-#macro CONTEXT		global.context
-#macro TEMPLATES	global.templates
+#macro SETTINGS		global.__settings__
+#macro CONFIG		global.__config__
+#macro ASSET_PACKS	global.__assetPacks__
+#macro SCRIPTS		global.__scripts__
+#macro ABOUT		global.__about__
+#macro VERSIONS		global.__versions__
+#macro FILTERS		global.__filters__
+#macro CONTEXT		global.__context__
+#macro TEMPLATES	global.__templates__
+#macro SHORTCUTS	global.__shortcuts__
+
+// Themes
+#macro THEMES			global.__themes__
+#macro THEME_BG			global.__themeBG__
+#macro THEME_COLOURS	global.__themeColours__
+#macro THEME_STYLES		global.__themeStyles__
+
+// Theme Styles For Lookup
+THEME_STYLES = [];
+THEME_STYLES[ImGuiStyleVar.WindowBorderSize] = "WindowBorderSize";
+THEME_STYLES[ImGuiStyleVar.ChildBorderSize] = "ChildBorderSize";
+THEME_STYLES[ImGuiStyleVar.PopupBorderSize] = "PopupBorderSize";
+THEME_STYLES[ImGuiStyleVar.FrameBorderSize] = "FrameBorderSize";
+THEME_STYLES[ImGuiStyleVar.WindowRounding] = "WindowRounding";
+THEME_STYLES[ImGuiStyleVar.ChildRounding] = "ChildRounding";
+THEME_STYLES[ImGuiStyleVar.FrameRounding] = "FrameRounding";
+THEME_STYLES[ImGuiStyleVar.PopupRounding] = "PopupRounding";
+THEME_STYLES[ImGuiStyleVar.ScrollbarRounding] = "ScrollbarRounding";
+THEME_STYLES[ImGuiStyleVar.GrabRounding] = "GrabRounding";
+THEME_STYLES[ImGuiStyleVar.TabRounding] = "TabRounding";
+
+// Theme Colours For Lookup
+THEME_COLOURS = [];
+THEME_COLOURS[ImGuiCol.WindowBg] = "WindowBg";
+THEME_COLOURS[ImGuiCol.TitleBg] = "TitleBg";
+THEME_COLOURS[ImGuiCol.TitleBgActive] = "TitleBgActive";
+THEME_COLOURS[ImGuiCol.MenuBarBg] = "MenuBarBg";
+THEME_COLOURS[ImGuiCol.ChildBg] = "ChildBg";
+THEME_COLOURS[ImGuiCol.PopupBg] = "PopupBg";
+THEME_COLOURS[ImGuiCol.Button] = "Button";
+THEME_COLOURS[ImGuiCol.ButtonHovered] = "ButtonHovered";
+THEME_COLOURS[ImGuiCol.ButtonActive] = "ButtonActive";
+THEME_COLOURS[ImGuiCol.Header] = "Header";
+THEME_COLOURS[ImGuiCol.HeaderHovered] = "HeaderHovered";
+THEME_COLOURS[ImGuiCol.HeaderActive] = "HeaderActive";
+THEME_COLOURS[ImGuiCol.FrameBg] = "FrameBg";
+THEME_COLOURS[ImGuiCol.FrameBgHovered] = "FrameBgHovered";
+THEME_COLOURS[ImGuiCol.FrameBgActive] = "FrameBgActive";
+THEME_COLOURS[ImGuiCol.CheckMark] = "CheckMark";
+THEME_COLOURS[ImGuiCol.SliderGrab] = "SliderGrab";
+THEME_COLOURS[ImGuiCol.SliderGrabActive] = "SliderGrabActive";
+THEME_COLOURS[ImGuiCol.Tab] = "Tab";
+THEME_COLOURS[ImGuiCol.TabActive] = "TabActive";
+THEME_COLOURS[ImGuiCol.TabHovered] = "TabHovered";
+THEME_COLOURS[ImGuiCol.Text] = "Text";
+THEME_COLOURS[ImGuiCol.TextDisabled] = "TextDisabled";
+THEME_COLOURS[ImGuiCol.ModalWindowDimBg] = "ModalWindowDimBg";
+
+// Theme BG
+THEME_BG = #080808;
 
 // Scripting
-#macro TOOL_SCRIPTS		global.toolScripts
+#macro TOOL_SCRIPTS		global.__toolScripts__
 TOOL_SCRIPTS = {  };
-#macro MATERIAL_SCRIPTS	global.materialScripts
+#macro MATERIAL_SCRIPTS	global.__materialScripts__
 MATERIAL_SCRIPTS = {  };
-#macro MESH_SCRIPTS		global.meshScripts
+#macro MESH_SCRIPTS		global.__meshScripts__
 MESH_SCRIPTS = {  };
 
 // Scripting Helper
-#macro SCRIPT_BUFFERS	global.__scriptBuffers
+#macro SCRIPT_BUFFERS	global.__scriptBuffers__
 SCRIPT_BUFFERS = [  ];
 
 // Filters
@@ -97,20 +150,22 @@ FILTERS = {
 };
 
 // Viewer
-#macro VIEWER_SETTINGS			global.viewerSettings
+#macro VIEWER_SETTINGS			global.__viewerSettings__
 
 // Projects
-#macro PROJECT					global.project
-#macro PROJECT_SAVE_LOCATION	global.project.saveLocation
-#macro CHARACTERS				global.project.characters
-#macro MODELS					global.project.models
+#macro PROJECT					global.__project__
+#macro PROJECT_SAVE_LOCATION	global.__project__.saveLocation
+#macro CHARACTERS				global.__project__.characters
+#macro MODELS					global.__project__.models
+#macro MODEL_NAME				global.__modelName__
+#macro DEFAULT_MATERIAL			global.__defaultMaterial__
 
 // Default
 PROJECT = -1;
 
 // Environment
-#macro FONT global.font
-#macro ENVIRONMENT global.environment
+#macro FONT global.__font__
+#macro ENVIRONMENT global.__environment__
 
 // Other
 #macro NULL 0xB00B1E50

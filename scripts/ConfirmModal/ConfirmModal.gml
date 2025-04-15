@@ -52,13 +52,13 @@ function ConfirmModal() : Modal() constructor
 			// Create Project Button
 			ImGui.Spacing();
 			ImGui.SetCursorPosX((width / 2) - 52);
-			if (ImGui.Button("Yes", 48))
+			if (ImGui.Button("Yes", 48) || keyboard_check_pressed(vk_enter))
 			{
 				ImGui.CloseCurrentPopup();
 				method_call(callback, args);
 			}
 			ImGui.SameLine();
-			if (ImGui.Button("No", 48)) ImGui.CloseCurrentPopup();
+			if (ImGui.Button("No", 48) || keyboard_check_pressed(vk_escape)) ImGui.CloseCurrentPopup();
 			
 			// End Popup
 			ImGui.EndPopup();

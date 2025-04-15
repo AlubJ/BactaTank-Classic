@@ -64,6 +64,11 @@ gridRenderStruct = {
 	primitive: pr_linelist,
 }
 
+// Default Material
+DEFAULT_MATERIAL = new BactaTankMaterial();
+DEFAULT_MATERIAL.colour = [0.8, 0.8, 0.8, 0.8];
+DEFAULT_MATERIAL.shaderFlags = 0x08;
+
 // Ambient Lighting
 ambient = new CalicoLight();
 ambient.type = "Ambient";

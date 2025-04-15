@@ -46,7 +46,7 @@ function BactaTankBMesh() constructor
 		mesh.vertices = vertices;
 		mesh.triangles = triangles;
 		mesh.bones = bones;
-		//mesh.dynamicBuffers = dynamicBuffers;
+		mesh.dynamicBuffers = dynamicBuffers;
 		mesh.vertexCount = vertexCount;
 		mesh.triangleCount = triangleCount;
 		mesh.type = 6;
@@ -166,7 +166,7 @@ function BactaTankBMesh() constructor
 		buffer_write(buffer, buffer_string, "Bones");
 		
 		// If no model is defined, don't write any bones
-		if (_model != noone || _model.type == BTModelType.scene)
+		if (_model != noone && _model.type == BTModelType.model)
 		{
 			// Bone Count
 			buffer_write(buffer, buffer_u32, array_length(_model.bones));
@@ -596,13 +596,13 @@ function BactaTankBMesh() constructor
 			dynamicBuffers[i] = [];
 			
 			// Read Position Data
-			repeat (vertexCount)
+			repeat (vertexCount * 3)
 			{
 				array_push(dynamicBuffers[i], buffer_read(buffer, buffer_f32));
 			}
 			
 			// Value Checker (Sometimes dynamic buffers aren't stored in the GHG so these are just put into the bmesh file as all zeros)
-			var dynamicBufferContainsValue = array_any(dynamicBuffers[i], function(_val, _ind) { return _val != 0; });
+			var dynamicBufferContainsValue = array_any(dynamicBuffers[i], function(_val, _ind) { return _val > 0.0001 || _val < -0.0001; });
 			
 			// Check
 			if (!dynamicBufferContainsValue) dynamicBuffers[i] = [];

@@ -68,11 +68,16 @@ function CalicoRenderer() constructor
 	static submitRenderQueue = function()
 	{
 		// Set Render Target
-		if (!surface_exists(surface)) surface = surface_create(width, height);
-		else if (surface_get_width(surface) != width || surface_get_height(surface) != height)
+		var newWidth = floor(width / (SETTINGS.lowerRenderResolution ? 2 : 1));
+		var newHeight = floor(height / (SETTINGS.lowerRenderResolution ? 2 : 1));
+		
+		//show_debug_message($"{width} {newWidth} | {height} {newHeight}");
+		
+		if (!surface_exists(surface)) surface = surface_create(newWidth, newHeight);
+		else if (surface_get_width(surface) != newWidth || surface_get_height(surface) != newHeight)
 		{
 			surface_free(surface);
-			surface = surface_create(width, height);
+			surface = surface_create(newWidth, newHeight);
 		}
 		
 		// Only Draw If Not Idle
@@ -81,7 +86,7 @@ function CalicoRenderer() constructor
 			surface_set_target(surface);
 			
 			// Camera Draw
-			camera.aspectRatio = -width / height;
+			camera.aspectRatio = -newWidth / newHeight;
 			camera.drawClear();
 		
 			// Get Main Render Queue Item Count
@@ -202,15 +207,15 @@ function CalicoRenderer() constructor
 				shader_set(shader);
 				
 				// Set Texture Flags
-				shader_set_uniform_i(shader_get_uniform(shader, "uUseDiffuseMap"),			material.textureID != -1);
-				shader_set_uniform_i(shader_get_uniform(shader, "uUseNormalMap"),			(material.shaderFlags >> BT_SURFACE_SHIFT & BT_SURFACE_BITS) == BTSurfaceType.NormalMap && material.normalID != -1);
-				shader_set_uniform_i(shader_get_uniform(shader, "uUseCubemap"),				(material.shaderFlags >> BT_ENVMAP_SHIFT & BT_ENVMAP_BITS) == BTEnvMapType.Cube && material.cubemapID != -1);
-				shader_set_uniform_i(shader_get_uniform(shader, "uUseShineMap"),			(material.shaderFlags & BT_USE_SHINEMAP) >= 1 && material.shineID != -1);
+				shader_set_uniform_i(shader_get_uniform(shader, "uUseDiffuseMap"),			 material.textureID != -1);
+				shader_set_uniform_i(shader_get_uniform(shader, "uUseNormalMap"),			(material.shaderFlags >> BT_SURFACE_SHIFT & BT_SURFACE_BITS) == BTSurfaceType.NormalMap && material.normalID != -1 && !SETTINGS.simplifyRendering);
+				shader_set_uniform_i(shader_get_uniform(shader, "uUseCubemap"),				(material.shaderFlags >> BT_ENVMAP_SHIFT & BT_ENVMAP_BITS) == BTEnvMapType.Cube && material.cubemapID != -1 && !SETTINGS.simplifyRendering);
+				shader_set_uniform_i(shader_get_uniform(shader, "uUseShineMap"),			(material.shaderFlags & BT_USE_SHINEMAP) >= 1 && material.shineID != -1 && !SETTINGS.simplifyRendering);
 				
 				// Set Shader Flags
 				shader_set_uniform_i(shader_get_uniform(shader, "uLightingAffected"),		(material.shaderFlags & BT_NO_LIGHTING) == 0);
 				shader_set_uniform_i(shader_get_uniform(shader, "uSpecularHighlighting"),	(material.shaderFlags >> BT_LIGHTING_SHIFT & BT_LIGHTING_BITS) == BTLighting.Phong && (material.shaderFlags & BT_NO_LIGHTING) == 0);
-				shader_set_uniform_i(shader_get_uniform(shader, "uMetallic"),				(material.shaderFlags >> BT_LIGHTING_SHIFT & BT_LIGHTING_BITS) == BTLighting.Anisotropic && (material.shaderFlags & BT_NO_LIGHTING) == 0);
+				shader_set_uniform_i(shader_get_uniform(shader, "uMetallic"),				(material.shaderFlags >> BT_LIGHTING_SHIFT & BT_LIGHTING_BITS) == BTLighting.Anisotropic && (material.shaderFlags & BT_NO_LIGHTING) == 0 && !SETTINGS.simplifyRendering);
 				
 				// Set Alpha Flags
 				shader_set_uniform_i(shader_get_uniform(shader, "uTransparency"),			(material.alphaBlend >> BT_ALPHA_BLEND_SHIFT & BT_ALPHA_BLEND_BITS) != BTAlphaBlend.None);
@@ -225,9 +230,21 @@ function CalicoRenderer() constructor
 				// Set Shader Defines
 				shader_set_uniform_f(shader_get_uniform(shader, "uBlendColour"),			material.colour[0], material.colour[1], material.colour[2], material.colour[3]);
 				shader_set_uniform_f(shader_get_uniform(shader, "uAmbientTint"),			material.ambientTint[0], material.ambientTint[1], material.ambientTint[2], material.ambientTint[3]);
+				shader_set_uniform_f(shader_get_uniform(shader, "uSpecularTint"),			material.specularTint[0], material.specularTint[1], material.specularTint[2], material.specularTint[3]);
 				shader_set_uniform_f(shader_get_uniform(shader, "uSpecularExponent"),		material.specularExponent);
 				shader_set_uniform_f(shader_get_uniform(shader, "uReflectionStrength"),		material.reflectionPower);
 				shader_set_uniform_f(shader_get_uniform(shader, "uCameraPosition"),			camera.position.x, camera.position.y, camera.position.z);
+				
+				// UV Sets
+				shader_set_uniform_i(shader_get_uniform(shader, "uSurfaceUVSet"), material.surfaceUVMapIndex);
+				shader_set_uniform_i(shader_get_uniform(shader, "uNormalUVSet"), material.normalUVMapIndex);
+				shader_set_uniform_i(shader_get_uniform(shader, "uSpecularUVSet"), material.specularUVMapIndex);
+				
+				// Texture Scrolling
+				shader_set_uniform_f(shader_get_uniform(shader, "uCurrentTime"), current_time / 1000);
+				shader_set_uniform_i(shader_get_uniform(shader, "uScrollType"), material.textureScrolls[0].type[0], material.textureScrolls[0].type[1]);
+				shader_set_uniform_f(shader_get_uniform(shader, "uScrollSpeed"), material.textureScrolls[0].speed[0], material.textureScrolls[0].speed[1]);
+				shader_set_uniform_f(shader_get_uniform(shader, "uScrollScale"), material.textureScrolls[0].trigScale[0], material.textureScrolls[0].trigScale[1]);
 				
 				// Lighting
 				var lightingDataPrimary = array_create(calicoMaxLights * 4, 0);
@@ -292,9 +309,10 @@ function CalicoRenderer() constructor
 				if (material.textureID != -1)	texture = textures[material.textureID].texture;
 				
 				// Set Textures
-				if (material.normalID != -1)				texture_set_stage(shader_get_sampler_index(shader, "tNormalMap"), textures[material.normalID].texture);
-				if (material.cubemapID != -1)				texture_set_stage(shader_get_sampler_index(shader, "tCubemap"), textures[material.cubemapID].texture);
-				if (material.shineID != -1)					texture_set_stage(shader_get_sampler_index(shader, "tShineMap"), textures[material.shineID].texture);
+				if (material.specularID != -1 && !SETTINGS.simplifyRendering)				texture_set_stage(shader_get_sampler_index(shader, "tSpecularMap"), textures[material.specularID].texture);
+				if (material.normalID != -1 && !SETTINGS.simplifyRendering)					texture_set_stage(shader_get_sampler_index(shader, "tNormalMap"), textures[material.normalID].texture);
+				if (material.cubemapID != -1 && !SETTINGS.simplifyRendering)				texture_set_stage(shader_get_sampler_index(shader, "tCubemap"), textures[material.cubemapID].texture); //sprite_get_texture(texture3, 0));
+				if (material.shineID != -1 && !SETTINGS.simplifyRendering)					texture_set_stage(shader_get_sampler_index(shader, "tShineMap"), textures[material.shineID].texture);
 				//texture_set_stage(shader_get_sampler_index(shader, "tCubemap"), sprite_get_texture(GoldCubemap, 0));
 				
 				// Dynamic Buffers

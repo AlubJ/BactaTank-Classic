@@ -100,14 +100,15 @@ function BactaTankLayer() constructor
 					{
 						var layerMaterialOffset = (readMatOffset + (readMat * 4) - 4) - _model.nu20Offset;
 						var layerMaterial = buffer_peek(buffer, readMatOffset + (readMat * 4) - 4, buffer_s32);
+						layerMaterial = layerMaterial != -1 ? layerMaterial : 0;
 						
 						// Apply Material to Mesh Directly
-						_model.meshes[_currentMesh].material = layerMaterial;
+						if (_currentMesh < array_length(_model.meshes)) _model.meshes[_currentMesh].material = layerMaterial;
 						
 						readMat--;
-				
+						
 						meshes[mesh] = {
-							mesh: _currentMesh++,
+							mesh: _currentMesh < array_length(_model.meshes) ? _currentMesh++ : noone,
 							material: layerMaterial,
 							matOffset: layerMaterialOffset,
 							bone: j,
@@ -163,14 +164,15 @@ function BactaTankLayer() constructor
 			{
 				var layerMaterialOffset = (readMatOffset + (readMat * 4) - 4) - _model.nu20Offset;
 				var layerMaterial = buffer_peek(buffer, readMatOffset + (readMat * 4) - 4, buffer_s32);
+				layerMaterial = layerMaterial != -1 ? layerMaterial : 0;
 				
 				// Apply Material to Mesh Directly
-				_model.meshes[_currentMesh].material = layerMaterial;
+				if (_currentMesh < array_length(_model.meshes)) _model.meshes[_currentMesh].material = layerMaterial;
 				
 				readMat--;
 				
 				meshes[mesh] = {
-					mesh: _currentMesh++,
+					mesh: _currentMesh < array_length(_model.meshes) ? _currentMesh++ : noone,
 					material: layerMaterial,
 					matOffset: layerMaterialOffset,
 					bone: -1,
@@ -234,14 +236,15 @@ function BactaTankLayer() constructor
 					{
 						var layerMaterialOffset = (readMatOffset + (readMat * 4) - 4) - _model.nu20Offset;
 						var layerMaterial = buffer_peek(buffer, readMatOffset + (readMat * 4) - 4, buffer_s32);
+						layerMaterial = layerMaterial != -1 ? layerMaterial : 0;
 						
 						// Apply Material to Mesh Directly
-						_model.meshes[_currentMesh].material = layerMaterial;
+						if (_currentMesh < array_length(_model.meshes)) _model.meshes[_currentMesh].material = layerMaterial;
 						
 						readMat--;
-				
+						
 						meshes[mesh] = {
-							mesh: _currentMesh++,
+							mesh: _currentMesh < array_length(_model.meshes) ? _currentMesh++ : noone,
 							material: layerMaterial,
 							matOffset: layerMaterialOffset,
 							bone: j,
@@ -297,14 +300,15 @@ function BactaTankLayer() constructor
 			{
 				var layerMaterialOffset = (readMatOffset + (readMat * 4) - 4) - _model.nu20Offset;
 				var layerMaterial = buffer_peek(buffer, readMatOffset + (readMat * 4) - 4, buffer_s32);
+				layerMaterial = layerMaterial != -1 ? layerMaterial : 0;
 				
 				// Apply Material to Mesh Directly
-				_model.meshes[_currentMesh].material = layerMaterial;
+				if (_currentMesh < array_length(_model.meshes)) _model.meshes[_currentMesh].material = layerMaterial;
 				
 				readMat--;
 				
 				meshes[mesh] = {
-					mesh: _currentMesh++,
+					mesh: _currentMesh < array_length(_model.meshes) ? _currentMesh++ : noone,
 					material: layerMaterial,
 					matOffset: layerMaterialOffset,
 					bone: -1,
