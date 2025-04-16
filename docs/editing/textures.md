@@ -31,6 +31,18 @@ To save as a DirectDraw Surface (`*.DDS`) in Photoshop, `File >> Save As...` and
   - `DXT5`/`BC3` - Eight bits of transparency, this is useful for any textures that require transparency, such as face textures.
 - `Generate Mip Maps` - This will generate lower resolution textures for use when the mesh is further away.
 
+### GIMP
+To save as a DirectDraw Surface (`*.DDS*`) in GIMP, `File >> Export As...` and replace the file extension with `.dds`. Then save the texture with the following settings:
+- `Compression` - Different compression methods for DirectDraw Surface files include `BC1/DXT1`, `BC2/DXT3`, and `BC3/DXT5`.
+  - `BC1/DXT1` - One bit of transparency, either fully transparent or fully opaque, useful for textures with no transparency, such as the main model texture.
+  - `BC2/DXT3` - Four bits of transparency, not used in any default models.
+  - `BC3/DXT5` - Eight bits of transparency, this is useful for any textures that require transparency, such as face textures.
+- `Save type` - Determines what part or how the texture is saved. Save types to know about are:
+  - `Selected layer` - Exports the image, only showing the layer that is currently selected.
+  - `All visible layers` - Exports the image, showing all layers of the image.
+  - `As cube map` - Exports the image for use with cubemapped materials.
+- `Mipmaps` - This will generate lower resolution textures for use when the mesh is further away if set to `Generate mipmaps`.
+
 ## Replacing a Texture
 You can replace a texture by clicking ![Triple Dot Button](https://i.imgur.com/xhwAmwR.png) and then clicking `Replace Texture` and select the texture you want to use. You can also use `Ctrl+R` or drop the texture file onto the program.
 
