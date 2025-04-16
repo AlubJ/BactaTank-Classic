@@ -2,6 +2,8 @@
 BactaTank Classic could not have been made with these amazing people! I wish I could thank everyone that tested and discovered things but that is unfortunately not possible.
 
 ## Development Help
+> [!TODO]
+> Add links to relevant contributors on GitHub.
 - **Javster101** - Creator of (BrickBench)[https://github.com/BrickBench/BrickBench], which is a massive source of information for BactaTank Classic's development.
 - **IsaMorphic** - Creator of various LEGO Game tools (usually relating to LEGO Star Wars The Videogame), and a massive source of information and help.
 - **Slucier** - Creator of various LEGO Game model extraction tools, which are a massive source of information.
@@ -11,6 +13,8 @@ BactaTank Classic could not have been made with these amazing people! I wish I c
 - **Suso** - Help with various reverse engineering of the files.
 
 ## Testing Help
+> [!TODO]
+> Add links to relevant contributors on GitHub.
 - **Alex (Venomander)**
 - **Austin**
 - **Bagusman**
@@ -35,6 +39,8 @@ BactaTank Classic could not have been made with these amazing people! I wish I c
 - **Vader18**
 
 ## Documentation Help
+> [!TODO]
+> Add links to relevant contributors on GitHub.
 - **DevzGuy** - Help writing sections of the docs.
 - **Cheatster9000x** - Proofreading.
 - **PollyThePankcake** - Proofreading.
