@@ -32,7 +32,7 @@ To save as a DirectDraw Surface (`*.DDS`) in Photoshop, `File >> Save As...` and
 - `Generate Mip Maps` - This will generate lower resolution textures for use when the mesh is further away.
 
 ### GIMP
-To save as a DirectDraw Surface (`*.DDS*`) in GIMP, `File >> Export As...` and replace the file extension with `.dds`. Then save the texture with the following settings:
+To save as a DirectDraw Surface (`*.DDS`) in GIMP, `File >> Export As...` and replace the file extension with `.dds`. Then save the texture with the following settings:
 - `Compression` - Different compression methods for DirectDraw Surface files include `BC1/DXT1`, `BC2/DXT3`, and `BC3/DXT5`.
   - `BC1/DXT1` - One bit of transparency, either fully transparent or fully opaque, useful for textures with no transparency, such as the main model texture.
   - `BC2/DXT3` - Four bits of transparency, not used in any default models.
