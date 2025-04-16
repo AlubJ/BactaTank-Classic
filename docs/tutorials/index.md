@@ -1,2 +1,2 @@
-# Creating a Character
-To create a character, you will first need to load a model into BactaTank Classic. You can load it from the welcome screen. Either use a template that you use a lot, or load a base `*_PC.GHG` file. You can also drop a `*_PC.GHG` file onto the program.
+# Tutorials
+The go-to page to showcase more specific cababilities of BactaTank Classic.
