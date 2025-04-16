@@ -20,7 +20,7 @@ BactaTank Classic could not have been made with these amazing people! I wish I c
 - **Bagusman**
 - **Cheatster9000x**
 - **Cosine_Rave**
-- **DevsGuy**
+- **DevzGuy**
 - **GavinWK**
 - **INGWAR**
 - **Jacko**
