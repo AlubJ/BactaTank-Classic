@@ -708,6 +708,22 @@ function BactaTankMesh() constructor
 		vertexBufferID = 0;
 		dynamicBuffers = [  ];
 	}
+	
+	/// @func generateStaticSkinning()
+	/// @desc Generates skinning for one bone
+	static generateStaticSkinning = function()
+	{
+		// Change Bones
+		bones = [0, -1, -1, -1, -1, -1, -1, -1];
+		
+		// Loop Through All Vertices
+		for (var i = 0; i < array_length(vertices); i++)
+		{
+			// Replace With Static Skinning
+			vertices[i].blendIndices = [0, -1, -1, -1];
+			vertices[i].blendWeights = [1, 1, 1, 1];
+		}
+	}
 
 	#region Rendering
 	

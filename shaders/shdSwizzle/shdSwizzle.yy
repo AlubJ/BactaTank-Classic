@@ -1,0 +1,12 @@
+{
+  "$GMShader":"",
+  "%Name":"shdSwizzle",
+  "name":"shdSwizzle",
+  "parent":{
+    "name":"Utils",
+    "path":"folders/Utils.yy",
+  },
+  "resourceType":"GMShader",
+  "resourceVersion":"2.0",
+  "type":1,
+}

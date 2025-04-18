@@ -1,2 +1,2 @@
 # Tutorials
-The go-to page to showcase more specific cababilities of BactaTank Classic.
+The go-to page to showcase more specific capabilities of BactaTank Classic.

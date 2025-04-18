@@ -135,7 +135,7 @@ FILTERS = {
 	allAssetTypes:	"BactaTank Compatible Assets (*.ghg;*.an3;*.bsa;*.wav;*.bcanister)|*.ghg;*.an3;*.bsa;*.wav;*.bcanister|TtGames Model (*.ghg)|*.ghg|TtGames Animation (*.an3)|*.an3|TtGames BSA (*.bsa)|*.bsa|Wave Audio (*.wav)|*.wav|BactaTank Canister (*.bcanister)|*.bcanister",
 	assetPack:		"BactaTank Asset Pack (*.bpack)|*.bpack",
 	
-	model: "BactaTank Compatible Models (*.ghg;*.bcanister)|*.ghg;*.bcanister|TtGames Model (*.ghg)|*.ghg|BactaTank Canister (*.bcanister)|*.bcanister",
+	model: "BactaTank Compatible Models (*.ghg)|*.ghg|TtGames Model (*.ghg)|*.ghg",
 	
 	exportModel: "BactaTank Model (*.bmodel)|*.bmodel",
 	

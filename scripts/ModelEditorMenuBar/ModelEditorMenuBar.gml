@@ -90,20 +90,49 @@ function ModelEditorMenuBar() constructor
 			
 			ImGui.Separator();
 			
-			// Tools Menu
-			if (array_length(TOOL_SCRIPTS) > 0 && ImGui.BeginMenu("Tools"))
+			// Export All
+			if (ImGui.BeginMenu("Export All"))
 			{
-				// Loop Tools
-				var names = variable_struct_get_names(TOOL_SCRIPTS);
-				
-				for (var i = 0; i < array_length(names); i++)
-				{
-					if (ImGui.MenuItem(names[i])) catspeak_function_execute(TOOL_SCRIPTS[$ names[i]], [ PROJECT ]);
-				}
+				ImGui.MenuItem("Textures");
+				ImGui.MenuItem("Materials");
+				ImGui.MenuItem("Meshes");
+				ImGui.MenuItem("Locators");
 				
 				// End Menu
 				ImGui.EndMenu();
 			}
+			
+			// Replace All
+			if (ImGui.BeginMenu("Replace All"))
+			{
+				ImGui.MenuItem("Textures");
+				ImGui.MenuItem("Materials");
+				ImGui.MenuItem("Meshes");
+				ImGui.MenuItem("Locators");
+				
+				// End Menu
+				ImGui.EndMenu();
+			}
+			
+			ImGui.Separator();
+			
+			// Tools Menu
+			if (ImGui.BeginMenu("Tools"))
+			{
+				//// Loop Tools
+				//var names = variable_struct_get_names(TOOL_SCRIPTS);
+				
+				//for (var i = 0; i < array_length(names); i++)
+				//{
+				//	if (ImGui.MenuItem(names[i])) catspeak_function_execute(TOOL_SCRIPTS[$ names[i]], [ PROJECT ]);
+				//}
+				if (ImGui.MenuItem("Swizzle Normal Map")) uiSwizzleNormalMap(false);
+				
+				// End Menu
+				ImGui.EndMenu();
+			}
+			
+			ImGui.Separator();
 			
 			// Export Render
 			if (ImGui.MenuItem("Export Render", SETTINGS.shortcuts.exportRender))

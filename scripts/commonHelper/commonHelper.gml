@@ -35,7 +35,7 @@ function saveProjectAs(project)
 function openProjectOrModelDialog()
 {
 	// Get Open File Name For Mesh Replacement
-	var file = get_open_filename_ext(FILTERS.projectOrModel, $"", SETTINGS.lastProjectPath, "Open Project or Model");
+	var file = get_open_filename_ext(FILTERS.model, $"", SETTINGS.lastProjectPath, "Open Model");
 	if (file != "" && ord(file) != 0)
 	{
 		openProjectOrModel(file);
@@ -739,6 +739,49 @@ function uiExportModelFromPreview(model, layers)
 						
 		// Timesource
 		time_source_start(time_source_create(time_source_game, 3, time_source_units_frames, func, [model, file, layers]));
+	}
+}
+
+function uiSwizzleNormalMap(flipGreenChannel = false)
+{
+	var file = get_open_filename(FILTERS.uvLayout, "normalmap.png");
+	
+	if (file != "" && ord(file) != 0)
+	{
+		// Get Filename With No Extension
+		var filename = filename_change_ext(file, "");
+		
+		// Load The PNG As A Sprite
+		var sprite = sprite_add(file, 0, false, false, 0, 0);
+		
+		// Create A Surface
+		var surface = surface_create(sprite_get_width(sprite), sprite_get_height(sprite));
+		
+		// Set Surface Target
+		surface_set_target(surface);
+		draw_clear_alpha(c_black, 0);
+		
+		// Use Shader
+		shader_set(shdSwizzle);
+		
+		// Flip Green Channel
+		shader_set_uniform_i(shader_get_uniform(shdSwizzle, "uFlipGreen"), flipGreenChannel);
+		
+		// Draw The Sprite
+		draw_sprite(sprite, 0, 0, 0);
+		
+		// Reset Shader
+		shader_reset();
+		
+		// Reset Surface
+		surface_reset_target();
+		
+		// Save Surface
+		surface_save(surface, filename + "_swizzled.png");
+		
+		// Cleanup
+		surface_free(surface);
+		sprite_delete(sprite);
 	}
 }
 

@@ -2,7 +2,7 @@
 BactaTank Classic now offers a UV viewer. It lets you view a models UVs. This is extremely helpful for aligning textures when making a custom character.
 
 ## Panning and Zooming
-To pan the UV viewer around, use `Right Mouse`, and to soom in and out, use `Middle Mouse Scroll`. You can also use `Middle Mouse` to control the zooming.
+To pan the UV viewer around, use `Right Mouse`, and to zoom in and out, use `Middle Mouse Scroll`. You can also use `Middle Mouse` to control the zooming.
 
 ## General Options
 - ![Reload Button](https://i.imgur.com/pIoKp7B.png) - This will reset the pan and zoom, incase you lose the UVs.

@@ -785,6 +785,13 @@ function ModelEditPanel() constructor
 					model.meshes[index].dynamicBuffers = [  ];
 				}, [model, index]);
 			}
+			if (ImGui.MenuItem("Generate Static Skinning"))
+			{
+				ENVIRONMENT.openConfirmModal("Generate Static Skinning", "This will remove the skinning data from this mesh and skin it to one bone. Are you sure you want to continue? This cannot be undone.", function(model, index) {
+					// Remove Dynamic Buffers
+					model.meshes[index].generateStaticSkinning();
+				}, [model, index]);
+			}
 			
 			// Mesh Scripts
 			var names = variable_struct_get_names(MESH_SCRIPTS);

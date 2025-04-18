@@ -27,7 +27,8 @@ We will go over the basic editing of the material and all the options.
   - `Phong` - The Phong shading model is basic specular lighting, this will make the material look more shiny.
   - `Anisotropic` - The Anisotropic shading model mimics how light reflects off a brushed metallic surface or hair.
 
-![Compare Surface](https://i.imgur.com/pDb7DRO.gif) ![Compare Lighting Models](https://i.imgur.com/xlBgWd1.gif)<br>
+> [!TODO]
+> Include compare screenshots here. GIFs are too big for github to render them :(
 
 ## Advanced Editing
 > [!NOTE]
