@@ -15,5 +15,7 @@ After [installing BactaTank Classic](../index.md#installation), the obvious next
 > [!NOTE]
 > BactaTank Classic can load Transformers and Narnia models, but they cannot be edited.
 
+[Next | Setting Up The Character Folder](custom-character/setting-up-folder.md)
+
 > [!TODO]
 > Move all images over to imgur or to be hosted at alub.dev
