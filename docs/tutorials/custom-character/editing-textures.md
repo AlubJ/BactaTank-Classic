@@ -1,5 +1,5 @@
 ## Editing Textures
-Once the character is open in BactaTank Classic, it should looks something like this (the will vary depending on the model used).
+Once the character is open in BactaTank Classic, it should looks something like this (what you see will vary depending on the model used).
 
 ![image](https://github.com/user-attachments/assets/b213e9b5-9b60-4564-bf67-db0c615b0bd8)
 
