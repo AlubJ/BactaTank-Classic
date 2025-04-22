@@ -15,8 +15,5 @@ After [installing BactaTank Classic](../index.md#installation), the obvious next
 > [!NOTE]
 > BactaTank Classic can load Transformers and Narnia models, but they cannot be edited.
 
-## Editing the Text File
-Now it's time to edit the character's text file. The text file contains specific traits of the character, like what abilities it has, animations it uses, character display name, icon, weapons, and more.
-
 > [!TODO]
 > Move all images over to imgur or to be hosted at alub.dev
