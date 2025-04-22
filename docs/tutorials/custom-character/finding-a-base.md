@@ -21,3 +21,5 @@ Next, paste their files in your character's folder and rename them to your chara
 > When renaming the `*_PC.GHG` or `*_LR_PC.GHG` file, keep the `_PC` or `_LR_PC` accordingly.
 
 Once renamed, open the character's `*_PC.GHG` file in BactaTank Classic by using `CTRL+O` in BactaTank Classic, dragging and dropping onto the window, or using `Open With...` when right-clicking the file. Continue to the next section.
+
+[Next | Editing Textures](editing-textures.md)
