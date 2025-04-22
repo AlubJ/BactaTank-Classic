@@ -79,11 +79,11 @@ buffer_delete(buffer);
 
 // Versions
 VERSIONS = {
-	indev: true,
+	indev: false,
 	main: "v0.3.0",
 	renderer: "v1.0.0",
 	backend: "v0.2.0",
-	revision: "28",
+	revision: "0",
 }
 
 // Set Console Title

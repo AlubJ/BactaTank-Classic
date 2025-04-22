@@ -68,8 +68,8 @@ If you have an issue and need to contact me personally, you can either message m
 
 | | |
 |-|-|
-| Add | Screenshots |
-| Here | Please
+| ![Anakin Screenshot](https://i.imgur.com/SChAQht.png) | ![C3PO Screenshot](https://i.imgur.com/Lc30pyi.png) |
+| ![Indy Screenshot](https://i.imgur.com/EhfFaB4.png) | ![Batman Screenshot](https://i.imgur.com/iJswwea.png) |
 
 ## Legal Disclaimer & Usage Notice
 This software is not affiliated, associated, authorized, endorsed by, or in any way officially connected with the LEGO Group, TT Games Studios, Lucasfilm Ltd., WarnerMedia, or any of their subsidiaries or affiliates. All trademarks and copyrights belong to their respective owners.
