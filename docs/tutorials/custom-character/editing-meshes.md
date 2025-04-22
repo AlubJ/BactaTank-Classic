@@ -15,3 +15,5 @@ Once the mesh file is saved, you can reimport it using `CTRL+R` or by clicking !
 ![image](https://github.com/user-attachments/assets/daa84770-08c8-4189-8fa2-c19050050997)
 
 Save the model using `CTRL+S` or clicking `File >> Save Model`. You should save it over the model in your character's folder. If you make drastic changes, be sure to keep a backup incase anything goes wrong.
+
+[Next | Editing the Text File](text-editing.md)
