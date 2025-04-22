@@ -16,8 +16,8 @@ When saving a texture from an image editor, the settings need to be set correctl
 To save as a DirectDraw Surface (`*.DDS`) in Paint.NET, `File >> Save As...` and change the save type to `DirectDraw Surface (DDS) (*.dds)`. When saving you will see an extra dialog pop up, this lets you set the DDS settings. The options that are useful to us are `Compression Method` (this is a dropdown), `Cube Map from crossed image` and `Generate Mip Maps`.
 
 - `Compression Method` - The three known compression methods supported are `DXT1`/`BC1`, `DXT3`/`BC2` and `DXT5`/`BC3`.
-  - `DXT1`/`BC1` - One bit of transparency, either fully transparent or fully opaque, useful for textures with no transparency, such as the main model texture.
-  - `DXT3`/`BC2` - Four bits of transparency, not used in any default models.
+  - `DXT1`/`BC1` - One bit of transparency, either fully transparent or fully opaque, useful for textures with no transparency, such as the main model texture. Opaque texels are always fully black.
+  - `DXT3`/`BC2` - Four bits of transparency, not used in any default models. You may come across this if dealing with textures from Lego Star Wars I+II, but it should otherwise be avoided due to being the same size as the much higher-quality DXT5.
   - `DXT5`/`BC3` - Eight bits of transparency, this is useful for any textures that require transparency, such as face textures.
 - `Cube Map from crossed image` - This will generate a cubemap from a crossed image. Cubemaps are used for reflections in-game. We will go over this later.
 - `Generate Mip Maps` - This will generate lower resolution textures for use when the mesh is further away.
@@ -27,7 +27,7 @@ To save as a DirectDraw Surface (`*.DDS`) in Photoshop, `File >> Save As...` and
 
 - `Format` - The three known compression methods supported are `DXT1`/`BC1a`, `DXT3`/`BC2` and `DXT5`/`BC3`. (`DXTx` is not used in the Texture Tools, so look for the `BCx` instead).
   - `DXT1`/`BC1a` - One bit of transparency, either fully transparent or fully opaque, useful for textures with no transparency, such as the main model texture.
-  - `DXT3`/`BC2` - Four bits of transparency, not used in any default models.
+  - `DXT3`/`BC2` - Four bits of transparency, not used in any default models. You may come across this if dealing with textures from Lego Star Wars I+II, but it should otherwise be avoided due to being the same size as the much higher-quality DXT5.
   - `DXT5`/`BC3` - Eight bits of transparency, this is useful for any textures that require transparency, such as face textures.
 - `Generate Mip Maps` - This will generate lower resolution textures for use when the mesh is further away.
 
