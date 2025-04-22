@@ -5,6 +5,9 @@ BactaTank Classic is a character creator and viewer for LEGO Star Wars: The Comp
 ### Installation
 Installing BactaTank Classic is as simple as extracting the contents of the zip file to its own folder, and running the executable file.
 
+> [!NOTE]
+> Windows Defender may attempt to block BactaTank Classic from running, you can just allow it to run. BactaTank Classic does not do anything malicious, and since it is now open source, you can look through the code yourself and build it if you are worried.
+
 ### Game Extraction
 TtGames archive the game files into a proprietary format that uses a propreitary compression scheme. To unpack these game files [QuickBMS](https://aluigi.altervista.org/quickbms.htm) is needed with the [TtGames BMS script](https://aluigi.altervista.org/bms/ttgames.bms).
 
