@@ -126,7 +126,7 @@ function ModelEditorMenuBar() constructor
 				//{
 				//	if (ImGui.MenuItem(names[i])) catspeak_function_execute(TOOL_SCRIPTS[$ names[i]], [ PROJECT ]);
 				//}
-				if (ImGui.MenuItem("Swizzle Normal Map")) uiSwizzleNormalMap(false);
+				if (ImGui.MenuItem("Swizzle Normal Map")) uiSwizzleNormalMap(true);
 				
 				// End Menu
 				ImGui.EndMenu();

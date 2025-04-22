@@ -478,11 +478,11 @@ void main()
 	vec3 normal;
 	if (uUseNormalMap)
 	{
-		vec4 normalMap = texture2D(tNormalMap, normalUVs) * 2.0 - 1.0;
+		vec4 normalMap = texture2D(tNormalMap, normalUVs) - 0.5;
 		vec3 normalMapFixed;
-		if (normalMap.a == 1.0)
+		if (normalMap.a == 0.5)
 		{
-			normalMapFixed = normalMap.rgb;
+			normalMapFixed = vec3(normalMap.r, 0.5 - normalMap.g, normalMap.b);
 		}
 		else
 		{
