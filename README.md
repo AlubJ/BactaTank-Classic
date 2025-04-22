@@ -63,9 +63,6 @@ Installing the Blender Add-on is required if you want to edit meshes within a mo
 If you have an issue and need to contact me personally, you can either message me on Discord: `@alub` or send me an email at `contact @ alub dot dev`. Any bug reports can or feature requests be filed here as a GitHub Issue.
 
 ## Gallery
-> [!TODO]
-> Add gallery images here of different characters loaded.
-
 | | |
 |-|-|
 | ![Anakin Screenshot](https://i.imgur.com/SChAQht.png) | ![C3PO Screenshot](https://i.imgur.com/Lc30pyi.png) |
