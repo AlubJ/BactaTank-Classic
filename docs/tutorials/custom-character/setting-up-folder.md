@@ -10,3 +10,5 @@ To start creating a character, you need to create your character's folder. The c
 Then create a folder, naming it whatever you'd like (Preferrably the character's name in all caps, but you can also just make it something you can remember). This is where all the character's files will be.
 
 ![image](https://github.com/user-attachments/assets/fe7e2a4e-1b66-44b7-ad2e-a0a642d7287c)
+
+[Next | Finding a Base](finding-a-base.md)
