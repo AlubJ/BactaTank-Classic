@@ -93,10 +93,7 @@ Once the mesh file is saved, you can reimport it using `CTRL+R` or by clicking !
 Save the model using `CTRL+S` or clicking `File >> Save Model`. You should save it over the model in your character's folder. If you make drastic changes, be sure to keep a backup incase anything goes wrong.
 
 ## Editing the Text File
-Now it's time to edit the character's text file. The text file contains specific traits of the character like what abilities it has, animations it uses, 
-
-> [!TODO]
-> Finish this lmao im going on a walk rq
+Now it's time to edit the character's text file. The text file contains specific traits of the character, like what abilities it has, animations it uses, character display name, icon, weapons, and more.
 
 > [!TODO]
 > Move all images over to imgur or to be hosted at alub.dev
