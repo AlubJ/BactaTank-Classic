@@ -11,7 +11,7 @@ Click on one of the textures and find the one you want to edit. Clicking on a te
 
 ![image](https://github.com/user-attachments/assets/ff037065-1431-4522-976e-79df9816b893)
 
-Export the texture using `CTRL+E` or by clicking ![Triple Dot Button](https://i.imgur.com/xhwAmwR.png) in the upper-right hand corner and clicking `Export Texture`. Save the texture in any place you'll remember later. Refer to [Editing Textures](../editing/textures.md) for opening and exporting textures.
+Export the texture using `CTRL+E` or by clicking ![Triple Dot Button](https://i.imgur.com/xhwAmwR.png) in the upper-right hand corner and clicking `Export Texture`. Save the texture in any place you'll remember later. Refer to [Editing Textures](../../editing/textures.md) for opening and exporting textures.
 
 Once the texture file is saved, you can reimport it using `CTRL+R` or by clicking ![Triple Dot Button](https://i.imgur.com/xhwAmwR.png) in the upper-right hand corner and clicking `Replace Texture`. Then select the new texture file. You should see the new texture in place of the old one.
 

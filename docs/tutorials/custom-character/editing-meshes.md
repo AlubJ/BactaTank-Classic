@@ -8,7 +8,7 @@ Click on one of the meshes and find the one you want to edit. Clicking on a mesh
 ![image](https://github.com/user-attachments/assets/0d1c332b-cb83-44c1-8247-e43a0776c26f)
 
 Export the mesh using `CTRL+E` or by clicking ![Triple Dot Button](https://i.imgur.com/xhwAmwR.png) in the upper-right hand corner and clicking `Export Mesh`. Save the mesh in any place you'll remember later. 
-Refer to [Editing Textures](../editing/meshes.md) for opening and exporting meshes.
+Refer to [Editing Textures](../../editing/textures.md) for opening and exporting meshes.
 
 Once the mesh file is saved, you can reimport it using `CTRL+R` or by clicking ![Triple Dot Button](https://i.imgur.com/xhwAmwR.png) in the upper-right hand corner and clicking `Replace Mesh`. Then select the new mesh file. You should see the new mesh in place of the old one.
 
