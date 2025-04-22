@@ -24,13 +24,6 @@ Installing the Blender Add-on is required if you want to edit meshes within a mo
 ### Useful Resources
 - [TtGames Modding Discord Server](https://discord.gg/ttgames-lego-modding-539431629718945793)
 
-### Additional Notes
-> [!NOTE]
-> BactaTank Classic only supports loading `*_PC.GHG` files.
-
-> [!NOTE]
-> The supported games will be referred to as their abbreviated forms (TCS, LIJ1 and LB1 respectively).
-
 ### Known Un-Loadable and Un-Editable Model Files
 | Known TCS Un-Loadable Models | Known LB1 Un-Loadable Models |
 | ---------------------------- | ---------------------------- |
@@ -56,6 +49,25 @@ Installing the Blender Add-on is required if you want to edit meshes within a mo
 
 > [!NOTE]
 > The `*_LR_PC.GHG` equivalent have been left out of the table, however they are not loadable/editable either.
+
+### Additional Notes
+> [!NOTE]
+> BactaTank Classic only supports loading `*_PC.GHG` files.
+
+> [!NOTE]
+> The supported games will be referred to as their abbreviated forms (TCS, LIJ1 and LB1 respectively).
+
+## Contacting
+If you have an issue and need to contact me personally, you can either message me on Discord: `@alub` or send me an email at `contact @ alub dot dev`. Any bug reports can or feature requests be filed here as a GitHub Issue.
+
+## Gallery
+> [!TODO]
+> Add gallery images here of different characters loaded.
+
+| | |
+|-|-|
+| Add | Screenshots |
+| Here | Please
 
 ## Legal Disclaimer & Usage Notice
 This software is not affiliated, associated, authorized, endorsed by, or in any way officially connected with the LEGO Group, TT Games Studios, Lucasfilm Ltd., WarnerMedia, or any of their subsidiaries or affiliates. All trademarks and copyrights belong to their respective owners.
