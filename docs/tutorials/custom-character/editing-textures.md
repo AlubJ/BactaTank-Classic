@@ -18,3 +18,5 @@ Once the texture file is saved, you can reimport it using `CTRL+R` or by clickin
 ![image](https://github.com/user-attachments/assets/dc3fcf59-b58d-422c-857f-a19acf50c41e)
 
 Save the model using `CTRL+S` or clicking `File >> Save Model`. You should save it over the model in your character's folder. If you make drastic changes, be sure to keep a backup incase anything goes wrong.
+
+[Next | Editing Meshes](editing-meshes.md)
