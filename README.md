@@ -60,7 +60,7 @@ Installing the Blender Add-on is required if you want to edit meshes within a mo
 > The supported games will be referred to as their abbreviated forms (TCS, LIJ1 and LB1 respectively).
 
 ## Contacting
-If you have an issue and need to contact me personally, you can either message me on Discord: `@alub` or send me an email at `contact @ alub dot dev`. Any bug reports can or feature requests be filed here as a GitHub Issue.
+If you have an issue and need to contact me personally, you can either message me on Discord: `@alub` or send me an email at `contact @ alub dot dev`. Any bug reports or feature requests can be filed here as a GitHub Issue.
 
 ## Gallery
 | | |
