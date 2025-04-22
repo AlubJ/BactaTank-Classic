@@ -49,7 +49,7 @@ You can replace a texture by clicking ![Triple Dot Button](https://i.imgur.com/x
 ## Normal Maps
 Normal maps are used in-game to add extra detail to the meshes. The games swizzle the texture information around so typical normal maps won't work properly. You will need to swizzle the channels around to get the in-game corrected normal maps. To do this you can use GIMP or Photoshop to swap the original normal map `RGBA` to the in-game one `AGBR`. You can also use [this tool](https://cdn.discordapp.com/attachments/540477596123660288/1333300302442532986/GLtoTCSNM.zip?ex=67fe906b&is=67fd3eeb&hm=f313c02e5b3ac8f22cad908042f947fc807e38ad11b608388c5028c7b1a85457&) (TODO - non-Discord link) to swizzle and un-swizzle the maps as well. 
 
-Why did TtGames do this? It's due to how DXT5 compresses images: without going into too much detail, the green and alpha channels of DXT5 are the highest quality, so swizzling the red into the alpha allows the normal map to much more accurately represent intended normals once compressed. (The blue channel, by comparision, is much less important.)
+Why did TtGames do this? It's due to how DXT5 compresses images: without going into too much detail, the green and alpha channels of DXT5 are the highest quality, so swizzling the red into the alpha allows the normal map to much more accurately represent intended normals once compressed. (The blue channel, by comparison, is much less important.)
 
 Additionally, the game uses OpenGL normal maps, even though it runs on DirectX. OpenGL maps have the green channel flipped compared to DirectX maps.
 
