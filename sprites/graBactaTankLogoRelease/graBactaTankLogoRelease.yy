@@ -3,8 +3,8 @@
   "%Name":"graBactaTankLogoRelease",
   "bboxMode":0,
   "bbox_bottom":127,
-  "bbox_left":1,
-  "bbox_right":126,
+  "bbox_left":2,
+  "bbox_right":124,
   "bbox_top":0,
   "collisionKind":1,
   "collisionTolerance":0,
@@ -73,7 +73,9 @@
     "timeUnits":1,
     "tracks":[
       {"$GMSpriteFramesTrack":"","builtinName":0,"events":[],"inheritsTrackColour":true,"interpolation":1,"isCreationTrack":false,"keyframes":{"$KeyframeStore<SpriteFrameKeyframe>":"","Keyframes":[
-            {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{"0":{"$SpriteFrameKeyframe":"","Id":{"name":"7ab22535-4e9e-4dc8-b109-38ec176c3986","path":"sprites/graBactaTankLogoRelease/graBactaTankLogoRelease.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},},"Disabled":false,"id":"2a24e8a6-f8ed-4b14-9cc0-8d5222b86138","IsCreationKey":false,"Key":0.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
+            {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
+                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"7ab22535-4e9e-4dc8-b109-38ec176c3986","path":"sprites/graBactaTankLogoRelease/graBactaTankLogoRelease.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
+              },"Disabled":false,"id":"2a24e8a6-f8ed-4b14-9cc0-8d5222b86138","IsCreationKey":false,"Key":0.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
           ],"resourceType":"KeyframeStore<SpriteFrameKeyframe>","resourceVersion":"2.0",},"modifiers":[],"name":"frames","resourceType":"GMSpriteFramesTrack","resourceVersion":"2.0","spriteId":null,"trackColour":0,"tracks":[],"traits":0,},
     ],
     "visibleRange":null,
