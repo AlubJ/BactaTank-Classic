@@ -6,18 +6,18 @@ After [installing BactaTank Classic](../index.md#installation), the obvious next
 
 ## Compatible Games
 
-This table outlines which games are compatble with BactaTank Classic. It includes "classic" era LEGO games developed by TT Games/Traveller's Tales, aswell as some of their other games based on similar revisions of the engine.
+This table outlines which games are compatible with BactaTank Classic. It includes "classic" era LEGO games developed by TT Games/Traveller's Tales, as well as some of their other games based on similar revisions of the engine.
 
 | Game                                        | Can be loaded | Can be edited |
 | ------------------------------------------- | ------------- | ------------- |
-| LEGO Star Wars: The Video Game              |      ❌       |      ❌       |
-| LEGO Star Wars II: The Original Trillogy    |      ❌       |      ❌       | 
+| LEGO Star Wars: The Videogame               |      ❌       |      ❌       |
+| LEGO Star Wars II: The Original Trilogy     |      ❌       |      ❌       | 
 | Bionicle Heroes                             |      ❌       |      ❌       | 
 | LEGO Star Wars: The Complete Saga           |      ✅       |      ✅       |               
 | LEGO Batman: The Videogame                  |      ✅       |      ✅       | 
 | LEGO Indiana Jones: The Original Adventures |      ✅       |      ✅       | 
 | Transformers: The Videogame                 |      ⚠️       |      ❌       | 
-| The Chronicals of Narnia: Prince Caspian    |      ⚠️       |      ❌       |
+| The Chronicles of Narnia: Prince Caspian    |      ⚠️       |      ❌       |
 
 > [!WARNING]
 > Transformers and Narinia models can be loaded for viewing, however this functionality is extremely experimental and can result in crashing. These are only supported for viewing. (Transformers model versions need to be enabled for loading in the preferences).

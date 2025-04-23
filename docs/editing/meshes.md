@@ -64,3 +64,12 @@ If a mesh is not needed in your model, you can completely dereference the mesh t
 
 ## Removing Dynamic Buffers
 If you don't need shape keys for a mesh, you can remove them entirely by clicking ![Triple Dot Button](https://i.imgur.com/xhwAmwR.png) and then clicking `Remove Dynamic Buffers`.
+
+## Limitations
+### Linked Bones / Vertex Groups
+TtGames implemented an optimisation where they only send a maximum of 8 bone transformations into the shader at any given time, meaning that when a mesh is submitted, it can only be affected by 8 bones simultaneously. This is usually capped at 7 bones for all vanilla models.
+
+Due to what I can only assume to be an oversight, a given vertex can only be influenced by 3 bones maximum, as opposed to 4 in most other games of the era. One byte of the Blend Indices and Blend Weights is unused. This presents an issue when skinning, where having too many bones influencing a single vertex will produce erroneous results.
+
+### Vertex Count
+The index buffer is defined with an array unsigned 16-bit integers, which reference vertices in the vertex buffer. Due to this value being an unsigned 16-bit integer, the maximum number of vertices a mesh can have is 65,565. It is impractical to have this many vertices in a mesh though. Just remember that this mesh is for a video game that came out in 2007, so try and optimise your meshes for a game of that era.
