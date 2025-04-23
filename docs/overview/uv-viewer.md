@@ -32,3 +32,6 @@ Viewing by material will show all meshes that have that material assigned to the
 
 ### Layer
 Viewing by layer will let you see all the meshes that are assigned to that layer.
+
+### Next
+- [Preferences Overview](preferences.md)

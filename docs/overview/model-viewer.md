@@ -22,3 +22,6 @@ Layers are what the games use to decide what meshes to render when. These mainly
 ## Locator Helper
 ![Locator Helper](https://i.imgur.com/ehqHluS.png)<br>
 The locator helper is a new addition, allowing you to have a test mesh applied to the locator that you are currently editing. This is useful for lining up locators properly. You can also pin locator helpers to locators for comparing and matching.
+
+### Next
+- [UV Viewer Overview](uv-viewer.md)

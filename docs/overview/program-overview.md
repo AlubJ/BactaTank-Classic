@@ -49,3 +49,6 @@ Templates are models that you can reuse to make new characters. Many people in t
 
 > [!NOTE]
 > Only `*_PC.GHG` files will be recognized when detecting template files.
+
+### Next
+- [Model Viewer Overview](model-viewer.md)

@@ -1,19 +1,21 @@
 ![BactaTank Classic Banner](https://i.imgur.com/ffW2kKR.png)<br>
 BactaTank Classic is a character creator and viewer for LEGO Star Wars: The Complete Saga, LEGO Indiana Jones: The Original Adventures and LEGO Batman: The Videogame. This program is designed to preview the models as accurately as possible to the games. If you like this tool, and are able to support me financially, I would greatly appreciate it if you could throw me a few bucks [here](https://ko-fi.com/Y8Y219SKRX).
 
-## Compatible Games
+## Welcome
+Welcome to the BactaTank Classic documentation. These docs contain a large collection of information and resources that are going to be very useful when using BactaTank Classic. Please read over as much as you can.
 
-This table outlines which games are compatble with BactaTank Classic. It includes "classic" era LEGO games developed by TT Games/Traveller's Tales, aswell as some of their other games based on similar revisions of the engine.
+## Compatible Games
+This table outlines which games are compatible with BactaTank Classic. It includes "classic" era LEGO games developed by TT Games/Traveller's Tales, as well as some of their other games based on similar revisions of the engine.
 
 | Game                                        | Can be loaded | Can be edited |
 | ------------------------------------------- | ------------- | ------------- |
 | LEGO Star Wars: The Video Game              |      ❌       |      ❌       |
-| LEGO Star Wars II: The Original Trillogy    |      ❌       |      ❌       | 
-| Bionicle Heroes                             |      ❌       |      ❌       | 
-| LEGO Star Wars: The Complete Saga           |      ✅       |      ✅       |               
-| LEGO Batman: The Videogame                  |      ✅       |      ✅       | 
-| LEGO Indiana Jones: The Original Adventures |      ✅       |      ✅       | 
-| Transformers: The Videogame                 |      ⚠️       |      ❌       | 
+| LEGO Star Wars II: The Original Trillogy    |      ❌       |      ❌       |
+| Bionicle Heroes                             |      ❌       |      ❌       |
+| LEGO Star Wars: The Complete Saga           |      ✅       |      ✅       |
+| LEGO Batman: The Videogame                  |      ✅       |      ✅       |
+| LEGO Indiana Jones: The Original Adventures |      ✅       |      ✅       |
+| Transformers: The Videogame                 |      ⚠️       |      ❌       |
 | The Chronicals of Narnia: Prince Caspian    |      ⚠️       |      ❌       |
 
 > [!WARNING]
@@ -75,6 +77,6 @@ Installing the Blender Add-on is required if you want to edit meshes within a mo
 > The `*_LR_PC.GHG` equivalent have been left out of the table, however they are not loadable/editable either.
 
 ### Next
-- UI Overview
-- Viewing Models
-- Creating a Character
+- [Program Overview](overview/program-overview.md)
+- [Editing](editing/index.md)
+- [Tutorials](tutorials/index.md)
