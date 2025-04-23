@@ -1,6 +1,24 @@
 ![BactaTank Classic Backdrop](https://i.imgur.com/ffW2kKR.png)<br>
 BactaTank Classic is a character creator and viewer for LEGO Star Wars: The Complete Saga, LEGO Indiana Jones: The Original Adventures and LEGO Batman: The Videogame. This program is designed to preview the models as accurately as possible to the games. If you like this tool, and are able to support me financially, I would greatly appreciate it if you could throw me a few bucks [here](https://ko-fi.com/Y8Y219SKRX).
 
+## Compatible Games
+
+This table outlines which games are compatble with BactaTank Classic. It includes "classic" era LEGO games developed by TT Games/Traveller's Tales, aswell as some of their other games based on similar revisions of the engine.
+
+| Game                                        | Can be loaded | Can be edited |
+| ------------------------------------------- | ------------- | ------------- |
+| LEGO Star Wars: The Video Game              |      ❌       |      ❌       |
+| LEGO Star Wars II: The Original Trillogy    |      ❌       |      ❌       | 
+| Bionicle Heroes                             |      ❌       |      ❌       | 
+| LEGO Star Wars: The Complete Saga           |      ✅       |      ✅       |               
+| LEGO Batman: The Videogame                  |      ✅       |      ✅       | 
+| LEGO Indiana Jones: The Original Adventures |      ✅       |      ✅       | 
+| Transformers: The Videogame                 |      ⚠️       |      ❌       | 
+| The Chronicals of Narnia: Prince Caspian    |      ⚠️       |      ❌       |
+
+> [!WARNING]
+> Transformers and Narinia models can be loaded for viewing, however this functionality is extremely experimental and can result in crashing. These are only supported for viewing. (Transformers model versions need to be enabled for loading in the preferences).
+
 ## Getting Started
 ### Installation
 Installing BactaTank Classic is as simple as extracting the contents of the zip file to its own folder, and running the executable file.
