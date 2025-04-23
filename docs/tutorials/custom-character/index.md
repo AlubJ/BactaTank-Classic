@@ -22,7 +22,7 @@ This table outlines which games are compatble with BactaTank Classic. It include
 > [!WARNING]
 > Transformers and Narinia models can be loaded for viewing, however this functionality is extremely experimental and can result in crashing. These are only supported for viewing. (Transformers model versions need to be enabled for loading in the preferences).
 
-[Next | Setting Up The Character Folder](custom-character/setting-up-folder.md)
+[Next | Setting Up The Character Folder](setting-up-folder.md)
 
 > [!TODO]
 > Move all images over to imgur or to be hosted at alub.dev
