@@ -3,7 +3,7 @@
 Once the character's folder is setup, you'll need to find a character to copy as a starting point, or a base. Questions to consider when finding a base for a character are:
 - Are there enough texture/mesh slots?
 - Do they work with the animations I want?
-- Do they have a face similar to that of the character I want?
+- Do they have a face structure similar to that of the character I want?
 - Do they have similar abilities to the character I want? (doesn't matter, makes txt setup easier though)
 
 > [!NOTE]
