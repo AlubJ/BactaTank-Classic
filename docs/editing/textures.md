@@ -47,13 +47,13 @@ To save as a DirectDraw Surface (`*.DDS`) in GIMP, `File >> Export As...` and re
 You can replace a texture by clicking ![Triple Dot Button](https://i.imgur.com/xhwAmwR.png) and then clicking `Replace Texture` and select the texture you want to use. You can also use `Ctrl+R` or drop the texture file onto the program.
 
 ## Normal Maps
-Normal maps are used in-game to add extra detail to the meshes. The games swizzle the texture information around so typical normal maps won't work properly. You will need to swizzle the channels around to get the in-game corrected normal maps. To do this you can use GIMP or Photoshop to swap the original normal map `RGBA` to the in-game one `AGBR`. You can also use [this tool](https://cdn.discordapp.com/attachments/540477596123660288/1333300302442532986/GLtoTCSNM.zip?ex=67fe906b&is=67fd3eeb&hm=f313c02e5b3ac8f22cad908042f947fc807e38ad11b608388c5028c7b1a85457&) (TODO - non-Discord link) to swizzle and un-swizzle the maps as well. 
+Normal maps are used in-game to add extra detail to the meshes. The games swizzle the texture information around so typical normal maps won't work properly. You will need to swizzle the channels around to get the in-game corrected normal maps. To do this you can use GIMP or Photoshop to swap the original normal map `RGBA` to the in-game one `AGBR`. You can also use [this tool](https://cdn.discordapp.com/attachments/540477596123660288/1333300302442532986/GLtoTCSNM.zip?ex=67fe906b&is=67fd3eeb&hm=f313c02e5b3ac8f22cad908042f947fc807e38ad11b608388c5028c7b1a85457&) (TODO - remove entirely and document bactatanks normal map swizzler) to swizzle and un-swizzle the maps as well. 
 
 Why did TtGames do this? It's due to how DXT5 compresses images: without going into too much detail, the green and alpha channels of DXT5 are the highest quality, so swizzling the red into the alpha allows the normal map to much more accurately represent intended normals once compressed. (The blue channel, by comparison, is much less important.)
 
 Additionally, the game uses OpenGL normal maps, even though it runs on DirectX. OpenGL maps have the green channel flipped compared to DirectX maps.
 
-BactaTank Classic will detect if a normal map is DirectX or swizzled, so if you are creating a new normal map you can quickly replace it and see how it will look, before swizzling the channels.
+BactaTank Classic will detect if a normal map is DirectX/OpenGL or swizzled, so if you are creating a new normal map you can quickly replace it and see how it will look, before swizzling the channels.
 
 ## Limitations
 ### Texture Sizes
@@ -65,5 +65,5 @@ The games also have a limit on how big a texture can be. `4096x4096` is the hard
 Cubemaps are a special case in the `*_PC.GHG` model files. A single cubemap counts as 6 individual textures, as each face of a cubemap count as their own texture. At the moment, you cannot replace a none-cubemap texture with a cubemap. You can replace a cubemap texture with a new one though.
 
 ## Example Textures
-Here are some examples of textures. Normal maps should always be exported with `DXT5`/`BC3` because the red and alpha channel are swapped around.
+Here are some examples of textures. Normal maps should always be exported with `DXT5`/`BC3` because the red and alpha channel are swapped around, and the extra bits for the alpha channel produce higher quality normal maps.
 ![Triple Dot Button](https://i.imgur.com/cBbqqsj.png)<br>

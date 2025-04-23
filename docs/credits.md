@@ -1,10 +1,10 @@
 # Credits
-BactaTank Classic could not have been made with these amazing people! I wish I could thank everyone that tested and discovered things but that is unfortunately not possible.
+BactaTank Classic could not have been made with these amazing people! I wish I could thank everyone that tested and discovered things but that is unfortunately not possible. Links to the relevant persons GitHub or other links are included where possible.
 
 ## Development Help
 - [**Javster101**](https://github.com/javster101) - Creator of [BrickBench](https://github.com/BrickBench/BrickBench), which is a massive source of information for BactaTank Classic's development.
 - [**IsaMorphic**](https://github.com/IsaMorphic) - Creator of various LEGO Game tools (usually relating to LEGO Star Wars The Videogame), and a massive source of information and help.
-- **Slucier** - Creator of various LEGO Game model extraction tools, which are a massive source of information.
+- [**Slucier**](https://rockraidersunited.com/profile/9708-sluicer/) - Creator of various LEGO Game model extraction tools, which are a massive source of information.
 - [**Aaron**](https://github.com/aaronlink127) - Creator of the original [PLYtoLSWMesh tool and TCSConv](https://github.com/aaronlink127/LEGOTTGamesProjects), the former being the original way to convert meshes to be used inside of LEGO Games, and the latter which helped with the version 2 conversion.
 - [**Skulluse**](https://gamebanana.com/members/2001203) - Creator of the original GHG Repack tool, in which BactaTank Classic was a successor to.
 - [**BarioTheWeird**](https://gamebanana.com/members/1980048) - Help with various reverse engineering of the files.
@@ -38,4 +38,4 @@ BactaTank Classic could not have been made with these amazing people! I wish I c
 - [**DevzGuy**](https://github.com/brickmodding) - Help writing sections of the docs
 - [**Cheatster9000x**](https://gamebanana.com/members/1609018) - Proofreading
 - [**PollyThePancake**](https://github.com/PollyThePancake) - Proofreading
-- [**SirYodaJedi**](https://github.com/SirYodaJedi) - Proofreading
+- [**SirYodaJedi**](https://github.com/SirYodaJedi) - Proofreading and other help
