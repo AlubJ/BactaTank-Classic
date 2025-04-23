@@ -13,10 +13,16 @@ Click on one of the textures and find the one you want to edit. Clicking on a te
 
 Export the texture using `CTRL+E` or by clicking ![Triple Dot Button](https://i.imgur.com/xhwAmwR.png) in the upper-right hand corner and clicking `Export Texture`. Save the texture in any place you'll remember later. Refer to [Editing Textures](../../editing/textures.md) for opening and exporting textures.
 
+### Exporting UVs
+By clicking the tab at the top that says "UV Viewer," you can view how your character's texture(s) is projected across a surface. You can save the current UV map as an image for reference by clicking the button that looks like a floppy disk and saving the file where you can remember. The button should say `Export UV Layout`.
+
 Once the texture file is saved, you can reimport it using `CTRL+R` or by clicking ![Triple Dot Button](https://i.imgur.com/xhwAmwR.png) in the upper-right hand corner and clicking `Replace Texture`. Then select the new texture file. You should see the new texture in place of the old one.
 
 ![image](https://github.com/user-attachments/assets/dc3fcf59-b58d-422c-857f-a19acf50c41e)
 
 Save the model using `CTRL+S` or clicking `File >> Save Model`. You should save it over the model in your character's folder. If you make drastic changes, be sure to keep a backup incase anything goes wrong.
+
+> [!TODO]
+> Find the export uv button image
 
 [Next | Editing Meshes](editing-meshes.md)
