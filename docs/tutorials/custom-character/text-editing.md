@@ -18,3 +18,6 @@ This will go over a few important tags in the character's text file.
   - `layers_medium` - Drawn when the camera is a medium distance from the character.
   - `layers_low` - Drawn when the camera is far from the player.
   - `layers_dead` - Drawn when the character "explodes" or dies.
+
+> [!NOTE]
+> Most generic tags can be found and explained in the [Lego Star Wars: The Complete Saga Modding Resource](https://docs.google.com/document/d/1HyLlJhCfjT6hUY-UU9ACqak4tDqorkk464dm7nuvH74/edit?tab=t.0).
