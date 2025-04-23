@@ -21,3 +21,5 @@ This will go over a few important tags in the character's text file.
 
 > [!NOTE]
 > Most generic tags can be found and explained in the [Lego Star Wars: The Complete Saga Modding Resource](https://docs.google.com/document/d/1HyLlJhCfjT6hUY-UU9ACqak4tDqorkk464dm7nuvH74/edit?tab=t.0).
+
+[Next | Adding the Character In Game](adding-the-char.md)
