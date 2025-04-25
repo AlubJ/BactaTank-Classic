@@ -16,7 +16,7 @@ Export the texture using `CTRL+E` or by clicking ![Triple Dot Button](https://i.
 ![image](https://github.com/user-attachments/assets/dc3fcf59-b58d-422c-857f-a19acf50c41e)
 
 ### Exporting UVs
-By clicking the tab at the top that says "UV Viewer," you can view how your character's texture(s) is projected across a surface. You can save the current UV map as an image for reference by clicking the button that looks like a floppy disk and saving the file where you can remember. The button should say `Export UV Layout`.
+By clicking the tab at the top that says "UV Viewer," you can view how your character's texture(s) is projected across a surface. You can save the current UV map as an image for reference by clicking ![Save Button](https://i.imgur.com/4unEPH8.png) and saving the file where you can remember.
 
 ![image](https://github.com/user-attachments/assets/6ebb0d16-b059-44f6-9e3f-ef3451f2dac1)
 
@@ -26,8 +26,5 @@ Once the texture file is saved, you can reimport it using `CTRL+R` or by clickin
 > Some UVs may be shown below the actual texture. This is due to a way TCS UV maps were programmed. You can fix this by changing the `1.000`, or the Y offset, to `0` at the top of the UV viewer.
 
 Save the model using `CTRL+S` or clicking `File >> Save Model`. You should save it over the model in your character's folder. If you make drastic changes, be sure to keep a backup incase anything goes wrong.
-
-> [!TODO]
-> Find the export uv button image
 
 [Next | Editing Meshes](editing-meshes.md)

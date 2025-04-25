@@ -6,7 +6,7 @@ To pan the UV viewer around, use `Right Mouse`, and to zoom in and out, use `Mid
 
 ## General Options
 - ![Reload Button](https://i.imgur.com/pIoKp7B.png) - This will reset the pan and zoom, incase you lose the UVs.
-- (Save Button) - This lets you export the UV map to a `*.png` file, which you can then use in your image editor.
+- ![Save Button](https://i.imgur.com/4unEPH8.png) - This lets you export the UV map to a `*.png` file, which you can then use in your image editor.
 - ![Grid Button](https://i.imgur.com/zd2WKVX.png) - This button will toggle viewing the grid (the grid is not exported when saving the UV map).
 
 ## UV Offset
