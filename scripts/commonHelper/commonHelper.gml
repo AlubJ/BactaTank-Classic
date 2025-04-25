@@ -1027,7 +1027,7 @@ function newSettings()
 		replaceVertexFormat: false,			// Allows Replacing The Vertex Format
 		
 		// Mesh
-		rebuildDynamicBuffers: false,		// Rebuilds dynamic buffers for custom face poses and stuff
+		rebuildDynamicBuffers: true,		// Rebuilds dynamic buffers for custom face poses and stuff
 		
 		// Rendering
 		simplifyRendering: false,			// Disabled Fancy Effects
