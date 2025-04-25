@@ -27,7 +27,15 @@ function UVViewerPanel() constructor
 	viewUVExportSize = [512, 512];
 	viewPreviewTexture = array_length(PROJECT.currentModel.textures) > 0 ? 0 : -1;
 	viewPreviewTextures = [  ];
-	for (var i = -1; i < array_length(PROJECT.currentModel.textures); i++) array_push(viewPreviewTextures, $"{i == -1 ? "No Preview Texture" : $"Preview Texture {i}"}");
+	for (var i = -1; i < array_length(PROJECT.currentModel.textures); i++)
+	{
+		if (i == -1) array_push(viewPreviewTextures, "No Preview Texture");
+		else
+		{
+			if (PROJECT.currentModel.textures[i] == 0) array_push(viewPreviewTextures, $"");
+			else array_push(viewPreviewTextures, $"Preview Texture {i}");
+		}
+	}
 	viewGrid = true;
 	
 	viewTypePopup = false;
@@ -85,7 +93,7 @@ function UVViewerPanel() constructor
 				for (var i = 0; i < array_length(PROJECT.currentModel.textures); i++)
 				{
 					if (PROJECT.currentModel.textures[i] == 0) array_push(textureList, $"");
-					array_push(textureList, $"Texture {i}");
+					else array_push(textureList, $"Texture {i}");
 				}
 				var newTex = ImGui.ComboBox(textureSelected, textureList, "##hiddenTextures", 256, graImage, ImGuiComboFlags.NoArrowButton);
 				ImGui.ShowTooltip("UV Texture");

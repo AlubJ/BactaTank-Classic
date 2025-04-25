@@ -24,17 +24,8 @@ function BactaTankModel(model = -1) constructor
 		ConsoleLog($"Attempting To Load \"{model}\"", CONSOLE_MODEL_LOADER);
 		
 		// Try to Load
-		try
-		{
-			if (filename_ext(string_lower(model)) == ".ghg" || filename_ext(string_lower(model)) == ".gsc") loadGHG(model);
-			else if (filename_ext(string_lower(model)) == ".bcanister") loadCanister(model);
-			return true;
-		}
-		catch (exception)
-		{
-			throwException(exception);
-			return false;
-		}
+		if (filename_ext(string_lower(model)) == ".ghg" || filename_ext(string_lower(model)) == ".gsc") loadGHG(model);
+		else if (filename_ext(string_lower(model)) == ".bcanister") loadCanister(model);
 	}
 	
 	#region Load and Save GHG

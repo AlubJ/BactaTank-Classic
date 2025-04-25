@@ -120,11 +120,12 @@ function GlobalEnvironment() constructor
 		confirmModal.open = true;
 	}
 	
-	static openInfoModal = function(header = "Please wait", text = "Something is happening")
+	static openInfoModal = function(header = "Please wait", text = "Something is happening", buttons = INFO_BUTTONS.NONE)
 	{
 		infoModal.header = header;
 		infoModal.text = text;
 		infoModal.open = true;
+		infoModal.buttons = buttons;
 	}
 	
 	static closeInfoModal = function()

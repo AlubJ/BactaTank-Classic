@@ -93,10 +93,10 @@ function ModelEditorMenuBar() constructor
 			// Export All
 			if (ImGui.BeginMenu("Export All"))
 			{
-				ImGui.MenuItem("Textures");
-				ImGui.MenuItem("Materials");
-				ImGui.MenuItem("Meshes");
-				ImGui.MenuItem("Locators");
+				if (ImGui.MenuItem("Textures")) uiBulkExportTextures(PROJECT.currentModel);
+				if (ImGui.MenuItem("Materials")) uiBulkExportMaterials(PROJECT.currentModel);
+				if (ImGui.MenuItem("Meshes")) uiBulkExportMeshes(PROJECT.currentModel);
+				if (ImGui.MenuItem("Locators")) uiBulkExportLocators(PROJECT.currentModel);
 				
 				// End Menu
 				ImGui.EndMenu();

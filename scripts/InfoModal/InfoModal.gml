@@ -12,6 +12,12 @@
 	To Do:
 */
 
+enum INFO_BUTTONS
+{
+	NONE,
+	OK,
+}
+
 function InfoModal() : Modal() constructor
 {
 	name = "Info";
@@ -22,6 +28,8 @@ function InfoModal() : Modal() constructor
 	header = "Please Wait";
 	text = "Something is happening";
 	
+	buttons = INFO_BUTTONS.NONE;
+	
 	close = false;
 	
 	static render = function()
@@ -31,7 +39,7 @@ function InfoModal() : Modal() constructor
 		ImGui.SetNextWindowSize(width, height, ImGuiCond.Once);
 		
 		// Begin Modal
-		if (ImGui.BeginPopupModal(name, undefined, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize))
+		if (ImGui.BeginPopupModal(name, buttons = INFO_BUTTONS.OK ? true : undefined, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize))
 		{
 			// Set Modal Open
 			modalOpen = true;

@@ -67,10 +67,18 @@ function openProjectOrModel(file)
 			PROJECT = new BactaTankProject("DefaultProject");
 			
 			// Load Model
-			var model = new BactaTankModel(file);
+			var model = noone;
+			try
+			{
+				model = new BactaTankModel(file);
+			}
+			catch (exception)
+			{
+				throwException(exception, true, true);
+			}
 			
 			// Check Valid Model
-			if (model)
+			if (model != noone)
 			{
 				// Save Canister Model
 				//model.saveCanister(PROJECT.workingDirectory + name + ".bcanister");
@@ -108,7 +116,9 @@ function openProjectOrModel(file)
 			}
 			else
 			{
-				model.destroy();
+				//model.destroy();
+				ENVIRONMENT.closeInfoModal();
+				ENVIRONMENT.openInfoModal("Model Load Error", "There was an error whilst loading the model file.", INFO_BUTTONS.OK);
 			}
 		}
 		
@@ -782,6 +792,94 @@ function uiSwizzleNormalMap(flipGreenChannel = false)
 		// Cleanup
 		surface_free(surface);
 		sprite_delete(sprite);
+	}
+}
+
+function uiBulkExportTextures(model)
+{
+	// Get Save File Name For All Textures Export
+	var file = get_save_filename_ext(FILTERS.texture, $"textures.dds", SETTINGS.lastTexturePath, "Export All Textures");
+	if (file != "" && ord(file) != 0)
+	{
+		// User Feedback
+		window_set_cursor(cr_hourglass);
+		
+		var path = filename_path(file);
+		
+		for (var i = 0; i < array_length(model.textures); i++)
+		{
+			if (model.textures[i] != 0) model.textures[i].export($"{path}texture{i}.dds");
+		}
+		
+		SETTINGS.lastTexturePath = filename_path(file);
+		
+		window_set_cursor(cr_default);
+	}
+}
+
+function uiBulkExportMaterials(model)
+{
+	// Get Save File Name For All Materials Export
+	var file = get_save_filename_ext(FILTERS.material, $"material.bmat", SETTINGS.lastMaterialPath, "Export All Materials");
+	if (file != "" && ord(file) != 0)
+	{
+		// User Feedback
+		window_set_cursor(cr_hourglass);
+		
+		var path = filename_path(file);
+		
+		for (var i = 0; i < array_length(model.materials); i++)
+		{
+			model.materials[i].export($"{path}material{i}.bmat");
+		}
+		
+		SETTINGS.lastMaterialPath = filename_path(file);
+		
+		window_set_cursor(cr_default);
+	}
+}
+
+function uiBulkExportMeshes(model)
+{
+	// Get Save File Name For All Meshes Export
+	var file = get_save_filename_ext(FILTERS.mesh, $"meshes.bmesh", SETTINGS.lastMeshPath, "Export All Meshes");
+	if (file != "" && ord(file) != 0)
+	{
+		// User Feedback
+		window_set_cursor(cr_hourglass);
+		
+		var path = filename_path(file);
+		
+		for (var i = 0; i < array_length(model.meshes); i++)
+		{
+			if (model.meshes[i].vertexCount != 0) model.meshes[i].export($"{path}mesh{i}.bmesh", model);
+		}
+		
+		SETTINGS.lastMeshPath = filename_path(file);
+		
+		window_set_cursor(cr_default);
+	}
+}
+
+function uiBulkExportLocators(model)
+{
+	// Get Save File Name For All Locators Export
+	var file = get_save_filename_ext(FILTERS.locator, $"locators.bloc", SETTINGS.lastLocatorPath, "Export All Locators");
+	if (file != "" && ord(file) != 0)
+	{
+		// User Feedback
+		window_set_cursor(cr_hourglass);
+		
+		var path = filename_path(file);
+		
+		for (var i = 0; i < array_length(model.locators); i++)
+		{
+			if (model.locators[i] != -1) model.locators[i].export($"{path}locator{i}.bloc");
+		}
+		
+		SETTINGS.lastLocatorPath = filename_path(file);
+		
+		window_set_cursor(cr_default);
 	}
 }
 

@@ -1,7 +1,7 @@
 function DragAndDropController()
 {
 	// Get Files
-	var files = file_dropper_get_files([".ghg", ".gsc", ".btank", ".bmesh", ".bloc", ".bmat", ".dds"]);
+	var files = file_dropper_get_files([".ghg", /*".gsc",*/ ".btank", ".bmesh", ".bloc", ".bmat", ".dds"]);
 	file_dropper_flush();
 	
 	// Check Context
@@ -37,7 +37,7 @@ function DragAndDropController()
 		else if (CONTEXT == BTContext.Model)
 		{
 			// We only check for .GHG here, since there isn't anything to replace
-			if ((filename_ext(files[0]) == ".ghg" || filename_ext(files[0]) == ".gsc") || ENVIRONMENT.attributeSelected == -1)
+			if ((filename_ext(files[0]) == ".ghg" || filename_ext(files[0]) == ".gsc"))
 			{
 				if (file_exists(files[0]))
 				{
