@@ -16,7 +16,7 @@ Open your characters `*.TXT` file. Change the number next to `name_id=` to your 
 
 ![image](https://github.com/user-attachments/assets/aeff8abd-b76f-4ed3-a7e4-7df25f37fd2d)
 
-Open `~CHARS/CHARS.TXT`. This file handles what characters are loaded into the game.
+Open `~/CHARS/CHARS.TXT`. This file handles what characters are loaded into the game.
 
 ![image](https://github.com/user-attachments/assets/2fa9044b-d11d-4f91-8d79-af3de494f5d3)
 
@@ -26,7 +26,7 @@ Scroll to the bottom of the file and add your character to the file like this:
 
 Now your character will be loaded in game, but still needs to be added to the character roster.
 
-Open `~CHARS/COLLECTION.TXT`. This file handles what characters are added to the in game roster.
+Open `~/CHARS/COLLECTION.TXT`. This file handles what characters are added to the in game roster.
 
 ![image](https://github.com/user-attachments/assets/448cbf47-9a80-4cbc-91bf-06d7ec2c57ca)
 
@@ -42,7 +42,7 @@ Your character should now show up in game and be playable! Nice!
 ![20250426125755_1](https://github.com/user-attachments/assets/1360c34c-7626-4266-a3bc-dc42d6804cd6)
 
 > [!NOTE]
-> If your character shows up as a blank slot with a "?" as the name, you may have a file called `CHARSTXT.FPK` that you need to delete. You can find and delete it in `~CHARS`.
+> If your character shows up as a blank slot with a "?" as the name, you may have a file called `CHARSTXT.FPK` that you need to delete. You can find and delete it in `~/CHARS`.
 
 ## Conclusion
 In this tutorial, you learned the basics of how to create and add a character to a classic LEGO game with BactaTank Classic. You learned how to find bases, edit textures, models, text files, and more. With this knowledge, you can create almost any character you can imagine.
