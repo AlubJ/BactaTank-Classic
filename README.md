@@ -3,7 +3,7 @@ BactaTank Classic is a character creator and viewer for LEGO Star Wars: The Comp
 
 ## Compatible Games
 
-This table outlines which games are compatable with BactaTank Classic. It includes "classic" era LEGO games developed by TT Games/Traveller's Tales, as well as some of their other games based on similar revisions of the engine.
+This table outlines which games are compatable with BactaTank Classic. It includes "classic" era LEGO games developed by TtGames/Traveller's Tales, as well as some of their other games based on similar revisions of the engine.
 
 | Game                                        | Can be loaded | Can be edited |
 | ------------------------------------------- | ------------- | ------------- |

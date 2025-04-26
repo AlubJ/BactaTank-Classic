@@ -1,5 +1,5 @@
 # Creating a Custom Character
-After [installing BactaTank Classic](../index.md#installation), the obvious next step is to create a character.
+After [installing BactaTank Classic](../../index.md#installation), the obvious next step is to create a character.
 
 > [!NOTE]
 > Character editing and creation varies in difficulty, depending on your goal. This tutorial will cover the most basic of character creation, more complex characters may require looking into some of the other docs, unless already given a tutorial.
@@ -9,7 +9,7 @@ After [installing BactaTank Classic](../index.md#installation), the obvious next
 
 ## Compatible Games
 
-This table outlines which games are compatible with BactaTank Classic. It includes "classic" era LEGO games developed by TT Games/Traveller's Tales, as well as some of their other games based on similar revisions of the engine.
+This table outlines which games are compatible with BactaTank Classic. It includes "classic" era LEGO games developed by TtGames/Traveller's Tales, as well as some of their other games based on similar revisions of the engine.
 
 | Game                                        | Can be loaded | Can be edited |
 | ------------------------------------------- | ------------- | ------------- |
