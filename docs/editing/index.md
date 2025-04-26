@@ -8,7 +8,7 @@ Model editing is the staple of BactaTank Classic and is what it does best, you c
 - [**Locators**](locators.md) - Positions relating to bones for extra in-game placements.
 
 > [!NOTE]
-> Hard limits exist within the file format causing adding or removing attributes not possible. You can find out more here.
+> Hard limits exist within the file format causing adding or removing attributes not possible. You can find out more [here](../things-to-be-aware-of.md#format-limits).
 
 ## Viewable Attributes
 - **Bones** - Bones (also sometimes referred to as an armature, skeleton or rig) are what the meshes bind to for animations.
