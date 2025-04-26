@@ -16,6 +16,7 @@ Open your characters `*.TXT` file. Change the number next to `name_id=` to your 
 
 ![image](https://github.com/user-attachments/assets/aeff8abd-b76f-4ed3-a7e4-7df25f37fd2d)
 
+### Adding Them to the Roster
 Open `~/CHARS/CHARS.TXT`. This file handles what characters are loaded into the game.
 
 ![image](https://github.com/user-attachments/assets/2fa9044b-d11d-4f91-8d79-af3de494f5d3)
