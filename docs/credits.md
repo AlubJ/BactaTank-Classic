@@ -10,6 +10,9 @@ BactaTank Classic could not have been made with these amazing people! I wish I c
 - [**BarioTheWeird**](https://gamebanana.com/members/1980048) - Help with various reverse engineering of the files.
 - **Suso** - Help with various reverse engineering of the files.
 
+## Logo Creation Help
+- [**Cheatster9000x**](https://gamebanana.com/members/1609018)
+
 ## Testing Help
 - [**Alex (Venomander)**](https://gamebanana.com/members/2190525)
 - [**Austin**](https://gamebanana.com/members/2178719)
