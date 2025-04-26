@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\BactaTankUtils">
+      <UniqueIdentifier>{aa40c26a-62c2-4513-8297-9a4e1d492eae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Console">
+      <UniqueIdentifier>{19498b8e-f19a-4b89-b3ca-c600b6c39b7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core">
+      <UniqueIdentifier>{873e376d-1d8a-4a85-8ef8-5ee35aebdc48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\FileDropper">
+      <UniqueIdentifier>{787347b8-0ae3-4ec6-88c3-8755bec64284}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\TextureUtils">
+      <UniqueIdentifier>{e8a0b5ae-1412-4d5d-b287-17d1ff8192dc}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Core.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Console.h">
+      <Filter>Source Files\Console</Filter>
+    </ClInclude>
+    <ClInclude Include="FileDropper.h">
+      <Filter>Source Files\FileDropper</Filter>
+    </ClInclude>
+    <ClInclude Include="BactaTankUtils.h">
+      <Filter>Source Files\BactaTankUtils</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Console.cpp">
+      <Filter>Source Files\Console</Filter>
+    </ClCompile>
+    <ClCompile Include="FileDropper.cpp">
+      <Filter>Source Files\FileDropper</Filter>
+    </ClCompile>
+    <ClCompile Include="FileDropperDLL.cpp">
+      <Filter>Source Files\FileDropper</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureUtils.cpp">
+      <Filter>Source Files\TextureUtils</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,11 @@
+﻿  Console.cpp
+  FileDropper.cpp
+  FileDropperDLL.cpp
+  main.cpp
+  TextureUtils.cpp
+     Creating library D:\Projects\C++\BactaTankUtils\x64\Release\BactaTankUtils.lib and object D:\Projects\C++\BactaTankUtils\x64\Release\BactaTankUtils.exp
+  Generating code
+  Previous IPDB not found, fall back to full compilation.
+  All 249 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  BactaTankUtils.vcxproj -> D:\Projects\C++\BactaTankUtils\x64\Release\BactaTankUtils.dll
