@@ -405,28 +405,28 @@ function ModelEditPanel() constructor
 					else if (material.vertexFormat[i].attribute == BTVertexAttributes.uvSet2) array_push(uvSets, "UVSet2");
 				}
 			
-				// Check UV Sets First
-				if (array_length(uvSets) > 0)
-				{
-					// UVSet Text
-					ImGui.Spacing();
-					ImGui.Text("UV Sets");
+				//// Check UV Sets First
+				//if (array_length(uvSets) > 0)
+				//{
+				//	// UVSet Text
+				//	ImGui.Spacing();
+				//	ImGui.Text("UV Sets");
 			
-					// Separator
-					ImGui.Separator();
+				//	// Separator
+				//	ImGui.Separator();
 					
-					// Surface UV Set
-					var uvIndex = ImGui.ComboBoxCustom("Surface UV Set", material.surfaceUVMapIndex - 1, uvSets, "##hiddenMaterialSurfaceUVSet", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly) + 1;
-					material.surfaceUVMapIndex = uvIndex;
+				//	// Surface UV Set
+				//	var uvIndex = ImGui.ComboBoxCustom("Surface UV Set", material.surfaceUVMapIndex - 1, uvSets, "##hiddenMaterialSurfaceUVSet", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly) + 1;
+				//	material.surfaceUVMapIndex = uvIndex;
 					
-					// Normal UV Set
-					var uvIndex = ImGui.ComboBoxCustom("Normal UV Set", material.normalUVMapIndex - 1, uvSets, "##hiddenMaterialNormalUVSet", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly) + 1;
-					material.normalUVMapIndex = uvIndex;
+				//	// Normal UV Set
+				//	var uvIndex = ImGui.ComboBoxCustom("Normal UV Set", material.normalUVMapIndex - 1, uvSets, "##hiddenMaterialNormalUVSet", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly) + 1;
+				//	material.normalUVMapIndex = uvIndex;
 					
-					// Specular UV Set
-					var uvIndex = ImGui.ComboBoxCustom("Specular UV Set", material.specularUVMapIndex - 1, uvSets, "##hiddenSpecularNormalUVSet", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly) + 1;
-					material.specularUVMapIndex = uvIndex;
-				}
+				//	// Specular UV Set
+				//	var uvIndex = ImGui.ComboBoxCustom("Specular UV Set", material.specularUVMapIndex - 1, uvSets, "##hiddenSpecularNormalUVSet", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly) + 1;
+				//	material.specularUVMapIndex = uvIndex;
+				//}
 			
 				// Vertex Format Text
 				ImGui.Spacing();
@@ -544,17 +544,17 @@ function ModelEditPanel() constructor
 			if (ImGui.MenuItem("Export Material",  SETTINGS.shortcuts.exportCurrentSelected)) uiExportMaterial(model, index);
 			if (ImGui.MenuItem("Replace Material", SETTINGS.shortcuts.replaceCurrentSelected)) uiReplaceMaterial(model, index);
 			
-			ImGui.Separator();
+			//ImGui.Separator();
 			
-			if (ImGui.BeginMenu("Add Vertex Attribute"))
-			{
-				if (ImGui.MenuItem("Add UV Set 2"))
-				{
-					model.materials[index].setVertexFormatUV();
-				}
+			//if (ImGui.BeginMenu("Add Vertex Attribute"))
+			//{
+			//	if (ImGui.MenuItem("Add UV Set 2"))
+			//	{
+			//		model.materials[index].setVertexFormatUV();
+			//	}
 				
-				ImGui.EndMenu();
-			}
+			//	ImGui.EndMenu();
+			//}
 			
 			// Material Scripts
 			var names = variable_struct_get_names(MATERIAL_SCRIPTS);
