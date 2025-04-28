@@ -149,10 +149,10 @@ function ModelEditorMenuBar() constructor
 		// Help Menu
 		if (ImGui.BeginMenu("Help"))
 		{
-			if (ImGui.MenuItem("Documentation")) url_open("https://alub.dev/archive.html?archive=0");
+			if (ImGui.MenuItem("Documentation")) url_open("https://github.com/AlubJ/BactaTank-Classic/wiki");
 			ImGui.Separator();
 			
-			if (ImGui.MenuItem("Submit Bug Report")) url_open("https://github.com/AlubJ/BactaTankClassic/issues");
+			if (ImGui.MenuItem("Submit Bug Report")) url_open("https://github.com/AlubJ/BactaTank-Classic/issues");
 			if (ImGui.MenuItem("About")) ENVIRONMENT.openModal("About");
 			
 			ImGui.Separator();
