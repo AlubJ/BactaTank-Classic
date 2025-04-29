@@ -18,10 +18,15 @@
 
 # Global Imports
 from struct import pack
+import bpy
 
 # Global Variables Defines
 engine = "PCGHG"
 version = 0.4
+
+# Check Blender version
+bVersion = bpy.app.version
+b41_up = bVersion[0] == 4 and bVersion[1] >= 1  # Blender 4.1 and up
 
 # Common Functions Here!
 def mesh_triangulate(me):
@@ -140,7 +145,8 @@ def prepare_meshes(context, meshes, global_matrix = None, apply_moderfiers = Tru
         mesh.transform(global_matrix)
 
     # Calculate the normals here
-    mesh.calc_normals_split()
+    if b41_up:
+        mesh.calc_normals_split()
 
     # And we flip the normals due to the left-handed coordinate system that TtGames uses.
     mesh.flip_normals()
