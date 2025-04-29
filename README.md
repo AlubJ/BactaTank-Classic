@@ -51,7 +51,6 @@ Installing the Blender Add-on is required if you want to edit meshes within a mo
 | `ANAKINSPOD_PC.GHG`          | `RC_COPTER_PC.GHG`           |
 | `BATTLEDROIDCOMP_PC.GHG`     |
 | `GASGANOSPOD_PC.GHG`         |
-| `GASGANO_PC.GHG`             |
 | `GUNGANBALL_PC.GHG`          |
 | `LIGHTSABRE_PC.GHG`          |
 | `MINI_DROIDEKA_PC.GHG`       |
