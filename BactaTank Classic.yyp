@@ -64,7 +64,7 @@
   "ForcedPrefabProjectReferences":[],
   "IncludedFiles":[
     {"$GMIncludedFile":"","%Name":"about.txt","CopyToMask":-1,"filePath":"datafiles","name":"about.txt","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
-    {"$GMIncludedFile":"","%Name":"bactatank-blender-addon-v3.1.4.zip","CopyToMask":-1,"filePath":"datafiles","name":"bactatank-blender-addon-v3.1.4.zip","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
+    {"$GMIncludedFile":"","%Name":"bactatank-blender-addon-v3.1.5.zip","CopyToMask":-1,"filePath":"datafiles","name":"bactatank-blender-addon-v3.1.5.zip","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
     {"$GMIncludedFile":"","%Name":"blaster.mesh","CopyToMask":-1,"filePath":"datafiles/resources","name":"blaster.mesh","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
     {"$GMIncludedFile":"","%Name":"hat.mesh","CopyToMask":-1,"filePath":"datafiles/resources","name":"hat.mesh","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
     {"$GMIncludedFile":"","%Name":"pistol.mesh","CopyToMask":-1,"filePath":"datafiles/resources","name":"pistol.mesh","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
