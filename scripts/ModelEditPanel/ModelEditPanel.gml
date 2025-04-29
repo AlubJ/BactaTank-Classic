@@ -165,8 +165,8 @@ function ModelEditPanel() constructor
 		ImGui.InputTextCustom("Data Size", SETTINGS.displayHex ? "0x" + string_hex(size, 1) : size, "##hiddenTextureSize", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly);
 		
 		// Compression
-		var compression = model.textures[index].compression;
-		ImGui.InputTextCustom("Compression Type", BT_DXT_COMPRESSION[compression], "##hiddenTextureCompression", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly);
+		//var compression = model.textures[index].compression;
+		//ImGui.InputTextCustom("Compression Type", BT_DXT_COMPRESSION[compression], "##hiddenTextureCompression", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly);
 		
 		// Offset
 		var offset = model.textures[index].offset;

@@ -83,7 +83,7 @@ VERSIONS = {
 	main: "v0.3.0",
 	renderer: "v1.2.0",
 	backend: "v0.3.0",
-	revision: "9",
+	revision: "0",
 }
 
 // Set Console Title

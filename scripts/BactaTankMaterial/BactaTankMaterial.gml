@@ -190,8 +190,14 @@ function BactaTankMaterial() constructor
 			
 			// Get Scroll Types
 			textureScrolls[i].type[0] = buffer_peek(buffer, scrollOffset, buffer_s8);
+			
+			// Gasgano Fix
+			textureScrolls[i].type[0] = textureScrolls[i].type[0] != -128 ? textureScrolls[i].type[0]: 0;
+			textureScrolls[i].enabled = textureScrolls[i].type[0] != -128 && textureScrolls[i].enabled ? textureScrolls[i].enabled: false;
+			
 			ConsoleLog($"        X-Type:             {BT_UV_ANIM_TYPE[textureScrolls[i].type[0]]}", CONSOLE_MODEL_LOADER_DEBUG, scrollOffset);
 			textureScrolls[i].type[1] = buffer_peek(buffer, scrollOffset + 1, buffer_s8);
+			textureScrolls[i].type[1] = textureScrolls[i].type[1] != -128 ? textureScrolls[i].type[1]: 0; 
 			ConsoleLog($"        Y-Type:             {BT_UV_ANIM_TYPE[textureScrolls[i].type[0]]}", CONSOLE_MODEL_LOADER_DEBUG, scrollOffset + 1);
 			
 			// Get Scroll Things
