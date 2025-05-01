@@ -145,7 +145,7 @@ def prepare_meshes(context, meshes, global_matrix = None, apply_moderfiers = Tru
         mesh.transform(global_matrix)
 
     # Calculate the normals here
-    if b41_up:
+    if not b41_up:
         mesh.calc_normals_split()
 
     # And we flip the normals due to the left-handed coordinate system that TtGames uses.
