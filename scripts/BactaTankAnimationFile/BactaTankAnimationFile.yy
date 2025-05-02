@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"BactaTankAnimationFile",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"BactaTankAnimationFile",
+  "parent":{
+    "name":"BactaTankAnimation",
+    "path":"folders/BactaTank/BactaTankAnimation.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

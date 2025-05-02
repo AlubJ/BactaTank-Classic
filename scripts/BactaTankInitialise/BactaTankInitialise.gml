@@ -116,6 +116,8 @@ vertex_format_add_custom(vertex_type_float2, vertex_usage_texcoord); // UVSet1
 vertex_format_add_custom(vertex_type_float2, vertex_usage_texcoord); // UVSet2
 vertex_format_add_colour();											 // Vertex Colour
 vertex_format_add_colour();											 // Tangent
+vertex_format_add_colour();											 // BlendIndices
+vertex_format_add_colour();											 // BlendWeights
 vertex_format_add_custom(vertex_type_float2, vertex_usage_texcoord); // Index
 global.vertexFormat = vertex_format_end();
 #macro BT_VERTEX_FORMAT global.vertexFormat

@@ -227,6 +227,9 @@ function ModelEditPanel() constructor
 			matrix: matrix_build(0, 0, 0, 0, current_time / 50, 0, 1, 1, 1),
 			shader: "StandardShader",
 			primitive: pr_trianglestrip,
+			submitBones: noone,
+			animate: false,
+			bone: 0,
 		});
 		
 		// Render Material Preview
@@ -1047,5 +1050,39 @@ function ModelEditPanel() constructor
 		
 		// Bone Identity Offset
 		ImGui.InputTextCustom("Offset", "0x" + string_hex(model.nu20Offset + bone.inverseBindOffset), "##hiddenBoneInverseBindMatrixOffset", space, NO_DEFAULT, ImGuiInputTextFlags.ReadOnly);
+		
+		// Bone Preview Pose Text
+		ImGui.Spacing();
+		ImGui.Text("Bone Preview Pose");
+		
+		// Separator
+		ImGui.Separator();
+		
+		// Bone Translation
+		var boneTranslation = ImGui.DragFloat3Custom("Bone Translation", bone.previewMatrixDecomposed[0], 0.001, -360, 360, "##hiddenBoneTranslation", space, NO_DEFAULT);
+		if (boneTranslation)
+		{
+			bone.previewPoseMatrix = matrix_build(bone.previewMatrixDecomposed[0][0], bone.previewMatrixDecomposed[0][1], bone.previewMatrixDecomposed[0][2],
+												  bone.previewMatrixDecomposed[1][0], bone.previewMatrixDecomposed[1][1], bone.previewMatrixDecomposed[1][2],
+												  bone.previewMatrixDecomposed[2][0], bone.previewMatrixDecomposed[2][1], bone.previewMatrixDecomposed[2][2]);
+		}
+		
+		// Bone Rotation
+		var boneRotation = ImGui.DragFloat3Custom("Bone Rotation", bone.previewMatrixDecomposed[1], 0.1, -360, 360, "##hiddenBoneRotation", space, NO_DEFAULT);
+		if (boneRotation)
+		{
+			bone.previewPoseMatrix = matrix_build(bone.previewMatrixDecomposed[0][0], bone.previewMatrixDecomposed[0][1], bone.previewMatrixDecomposed[0][2],
+												  bone.previewMatrixDecomposed[1][0], bone.previewMatrixDecomposed[1][1], bone.previewMatrixDecomposed[1][2],
+												  bone.previewMatrixDecomposed[2][0], bone.previewMatrixDecomposed[2][1], bone.previewMatrixDecomposed[2][2]);
+		}
+		
+		// Bone Scale
+		var boneScale = ImGui.DragFloat3Custom("Bone Scale", bone.previewMatrixDecomposed[2], 0.1, -360, 360, "##hiddenBoneScale", space, NO_DEFAULT);
+		if (boneScale)
+		{
+			bone.previewPoseMatrix = matrix_build(bone.previewMatrixDecomposed[0][0], bone.previewMatrixDecomposed[0][1], bone.previewMatrixDecomposed[0][2],
+												  bone.previewMatrixDecomposed[1][0], bone.previewMatrixDecomposed[1][1], bone.previewMatrixDecomposed[1][2],
+												  bone.previewMatrixDecomposed[2][0], bone.previewMatrixDecomposed[2][1], bone.previewMatrixDecomposed[2][2]);
+		}
 	}
 }

@@ -312,10 +312,10 @@ function BactaTankBMesh() constructor
 			{
 				if (array_length(vertices[i].blendIndices) == 4)
 				{
-					buffer_write(buffer, buffer_s8, floor(vertices[i].blendIndices[0]));
-					buffer_write(buffer, buffer_s8, floor(vertices[i].blendIndices[1]));
-					buffer_write(buffer, buffer_s8, floor(vertices[i].blendIndices[2]));
-					buffer_write(buffer, buffer_s8, floor(vertices[i].blendIndices[3]));
+					buffer_write(buffer, buffer_u8, floor(vertices[i].blendIndices[0]));
+					buffer_write(buffer, buffer_u8, floor(vertices[i].blendIndices[1]));
+					buffer_write(buffer, buffer_u8, floor(vertices[i].blendIndices[2]));
+					buffer_write(buffer, buffer_u8, floor(vertices[i].blendIndices[3]));
 				}
 				else buffer_write(buffer, buffer_s32, -1);
 			}
@@ -547,10 +547,10 @@ function BactaTankBMesh() constructor
 			for (var i = 0; i < vertexCount; i++)
 			{
 				// Read Blend Indices
-				var blendX = buffer_read(buffer, buffer_s8);
-				var blendY = buffer_read(buffer, buffer_s8);
-				var blendZ = buffer_read(buffer, buffer_s8);
-				var blendW = buffer_read(buffer, buffer_s8);
+				var blendX = buffer_read(buffer, buffer_u8);
+				var blendY = buffer_read(buffer, buffer_u8);
+				var blendZ = buffer_read(buffer, buffer_u8);
+				var blendW = buffer_read(buffer, buffer_u8);
 				
 				// Set Blend Indices
 				vertices[i].blendIndices = [blendX, blendY, blendZ, blendW];

@@ -188,6 +188,8 @@ function BactaTankBone() constructor
 	// Other
 	matrix = matrix_build_identity();
 	matrixLocal = matrix_build_identity();
+	previewPoseMatrix = matrix_build_identity();
+	previewMatrixDecomposed = [[0, 0, 0], [0, 0, 0], [1, 1, 1]];
 	
 	// Offsets
 	offset = 0;

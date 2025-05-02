@@ -20,6 +20,8 @@ attribute vec2 in_TextureCoord0;			// Texture Coords
 attribute vec2 in_TextureCoord1;			// Texture Coords
 attribute vec4 in_Colour0;					// Colour
 attribute vec4 in_Colour1;					// Tangent
+attribute vec4 in_Colour2;					// BlendIndices
+attribute vec4 in_Colour3;					// BlendWeights
 attribute vec2 in_TextureCoord2;			// Extra Data
 
 // Varyings
@@ -50,6 +52,11 @@ varying mat3 mTBN;
 uniform vec3 uDynamicBuffer[1000];
 uniform bool uUseDynamicBuffer;
 
+// Bones
+uniform mat4 uBones[8];
+uniform bool uAnimate;
+uniform bool uStatic;
+
 void main()
 {
 	// Set Vertex Position
@@ -58,29 +65,89 @@ void main()
 	// Dynamic Buffer
 	//if (uUseDynamicBuffer) vPosition += uDynamicBuffer[int(in_TextureCoord1.x)];
 	
-	// Set Vertex Position
-    gl_Position = gm_Matrices[MATRIX_WORLD_VIEW_PROJECTION] * vec4(in_Position, 1.0);
+	// Get Blend Index
+	ivec4 blendIndex = ivec4(in_Colour2 * 255.);
+	vec4 blendWeights = in_Colour3;
     
 	// Local
     vNormal = in_Normal;
     vColour = clamp(vec4(in_Colour0.b, in_Colour0.g, in_Colour0.r, in_Colour0.a) * 2.0, 0.0, 1.0);
 	//vColour = vec4(1.0);
+	//vColour = blendWeights;
     vTexcoord0 = in_TextureCoord0;
     vTexcoord1 = in_TextureCoord1;
 	
+	// Animate
+	if (uAnimate)
+	{
+		if (uStatic)
+		{
+			vPosition = (uBones[0] * vec4(vPosition,1.0)).xyz;
+			vNormal = mat3(uBones[0]) * vNormal;
+		}
+		else
+		{
+			// Create Total Position and Total Normal Vectors
+			vec4 totalPosition = vec4(0.0);
+			vec3 totalNormal = vec3(0.0);
+		
+			// Loop All Possible Bone Influences
+		    for (int i = 0 ; i < 3 ; i++)
+		    {
+				// Skip If No Bone Influence
+		        if (blendIndex[i] == 255)
+		            continue;
+			
+				// Skip If Outside Bones
+		        if (blendIndex[i] >= 8)
+		        {
+		            totalPosition = vec4(vPosition,1.0);
+					totalNormal = vec3(vNormal);
+		            break;
+		        }
+			
+				// Get Full Influence Of Blend
+		        vec4 localPosition = uBones[blendIndex[i]] * vec4(vPosition,1.0);
+				vec3 localNormal = mat3(uBones[blendIndex[i]]) * vNormal;
+			
+				// Get Weight
+				float weight = blendWeights[i];
+			
+				// Do This Because Tt Decided To Resolve The Third Weight From The First Two Weights
+				if (i == 2)
+				{
+					weight = 1.0 - blendWeights[0] - blendWeights[1];
+				}
+			
+				// Add To Total Position
+		        totalPosition += localPosition * weight;
+			
+				// Add To Total Normal
+				totalNormal += localNormal * weight;
+		    }
+		
+			// Apply Final Values
+			vPosition = totalPosition.xyz;
+			vNormal = totalNormal;
+		}
+	}
+	
+	// Set Vertex Position
+    gl_Position = gm_Matrices[MATRIX_WORLD_VIEW_PROJECTION] * vec4(vPosition, 1.0);
+	
 	// World
-    vWorldPosition = (gm_Matrices[MATRIX_WORLD] * vec4(in_Position, 1.0)).xyz;
+    vWorldPosition = (gm_Matrices[MATRIX_WORLD] * vec4(vPosition, 1.0)).xyz;
     vWorldNormal = (gm_Matrices[MATRIX_WORLD] * vec4(vNormal, 0.0)).xyz;
 	
 	// View
-    vViewPosition = (gm_Matrices[MATRIX_WORLD_VIEW] * vec4(in_Position, 1.0)).xyz;
+    vViewPosition = (gm_Matrices[MATRIX_WORLD_VIEW] * vec4(vPosition, 1.0)).xyz;
     vViewNormal = (gm_Matrices[MATRIX_WORLD_VIEW] * vec4(vNormal, 0.0)).xyz;
 	
 	// Rim
 	vRim = normalize((gm_Matrices[MATRIX_WORLD_VIEW_PROJECTION] * vec4(vWorldNormal, 0.0)).xyz).z;
 	
 	// Screen
-	vScreenPosition = (gm_Matrices[MATRIX_WORLD_VIEW_PROJECTION] * vec4(in_Position, 1.0)).xyz;
+	vScreenPosition = (gm_Matrices[MATRIX_WORLD_VIEW_PROJECTION] * vec4(vPosition, 1.0)).xyz;
 	
 	// TBN (Normal Mapping Calculations)
 	vec4 tangentFixed = vec4((in_Colour1.r * 2.) - 1., (in_Colour1.g * 2.) - 1., (in_Colour1.b * 2.) - 1., (in_Colour1.a * 2.) - 1.);

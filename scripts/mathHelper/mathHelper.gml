@@ -132,3 +132,49 @@ function euler_from_quaternion(quaternion)
 function copysign(x,y) {				//Returns x with magnitude of y
 	if(y<0 and x>0)or(y>0 and x<0){return(x*-1)}else{return(x)}
 }
+
+/// NuMtxPreScaleVU0(matrix, scaling_factors)
+/// matrix: The flat 1D array representing a 4x4 transformation matrix
+/// scaling_factors: An array with scaling factors for X, Y, and Z
+
+function matrix_prescale(matrix, scaling_factors)
+{
+    // Extract scaling factors for easier reference
+    var scaleX = scaling_factors[0];
+    var scaleY = scaling_factors[1];
+    var scaleZ = scaling_factors[2];
+    
+    // Pre-scale the matrix rows (this multiplies each row by the corresponding scale factor)
+    
+    // Scale the first row (matrix[0] to matrix[3]) - These are the elements matrix[0..3]
+    matrix[0] *= scaleX;   // matrix[0, 0]
+    matrix[1] *= scaleY;   // matrix[0, 1]
+    matrix[2] *= scaleZ;   // matrix[0, 2]
+    
+    // Scale the second row (matrix[4] to matrix[7]) - These are the elements matrix[4..7]
+    matrix[4] *= scaleX;   // matrix[1, 0]
+    matrix[5] *= scaleY;   // matrix[1, 1]
+    matrix[6] *= scaleZ;   // matrix[1, 2]
+    
+    // Scale the third row (matrix[8] to matrix[11]) - These are the elements matrix[8..11]
+    matrix[8] *= scaleX;   // matrix[2, 0]
+    matrix[9] *= scaleY;   // matrix[2, 1]
+    matrix[10] *= scaleZ;  // matrix[2, 2]
+    
+    // The fourth row (matrix[12] to matrix[15]) typically contains translation values
+    // These should *not* be scaled in most cases, but you can scale them if needed
+    // matrix[12] *= scaleX; // Uncomment if you want to scale the translation as well
+    // matrix[13] *= scaleY; // Uncomment if you want to scale the translation as well
+    // matrix[14] *= scaleZ; // Uncomment if you want to scale the translation as well
+    
+    return matrix;
+}
+
+function matrix_translate(matrix, translation)
+{
+	matrix[12] += translation[0];
+	matrix[13] += translation[1];
+	matrix[14] += translation[2];
+	
+	return matrix;
+}

@@ -67,6 +67,8 @@ function ModelViewerPanel() constructor
 			ImGui.Text("Model Viewer");
 			ImGui.Separator();
 			
+			//PROJECT.animation.play();
+			
 			// Get Cursor Pos
 			var cursorPos = [ImGui.GetCursorPosX(), ImGui.GetCursorPosY()];
 			
@@ -151,6 +153,9 @@ function ModelViewerPanel() constructor
 							matrix: matrix,
 							shader: "WireframeShader",
 							primitive: pr_linelist,
+							submitBones: noone,
+							animate: false,
+							bone: 0,
 						});
 						
 						// Display Locator Helper Pin
@@ -163,6 +168,9 @@ function ModelViewerPanel() constructor
 								matrix: matrix,
 								shader: "StandardShader",
 								primitive: pr_trianglestrip,
+								submitBones: noone,
+								animate: false,
+								bone: 0,
 							});
 						}
 					}
@@ -186,6 +194,9 @@ function ModelViewerPanel() constructor
 						matrix: matrix,
 						shader: "StandardShader",
 						primitive: pr_trianglestrip,
+						submitBones: noone,
+						animate: false,
+						bone: 0,
 					});
 				}
 				

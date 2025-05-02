@@ -87,6 +87,12 @@ function openProjectOrModel(file)
 				PROJECT.currentModel = model;
 				model.pushToRenderQueue(model.type == BTModelType.model ? array_create(array_length(model.layers), true) : -1);
 				
+				// Animation Test
+				//var animationFile = new BactaTankAnimationFile();
+				//animationFile.parse("IDLE.AN3");
+				//PROJECT.animation = new BactaTankAnimation(animationFile, model.armature);
+				//PROJECT.animation.debugData(7, 45);
+				
 				// Reset Camera
 				CAMERA.reset();
 				CAMERA.lookAtPosition.x = model.averagePosition[0];

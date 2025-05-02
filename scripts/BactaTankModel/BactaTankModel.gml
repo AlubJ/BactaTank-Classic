@@ -1472,6 +1472,10 @@ function BactaTankModel(model = -1) constructor
 						shader: "StandardShader",
 						primitive: pr_trianglestrip,
 						dynamicBuffers: mesh.dynamicBuffers,
+						linkedBones: mesh.bones,
+						submitBones: self.armature,
+						animate: true,
+						bone: self.layers[l].meshes[m].bone,
 					}
 				
 					// Organise Render Queue Based On Aplha Transparent Objects And Push
@@ -1552,6 +1556,10 @@ function BactaTankModel(model = -1) constructor
 				shader: "StandardShader",
 				primitive: pr_trianglestrip,
 				dynamicBuffers: mesh.dynamicBuffers,
+				linkedBones: mesh.bones,
+				submitBones: self.armature,
+				animate: false,
+				bone: self.layers[activeLayer].meshes[m].bone,
 			}
 			
 			// Organise Render Queue Based On Aplha Transparent Objects And Push
@@ -1578,6 +1586,10 @@ function BactaTankModel(model = -1) constructor
 			matrix: matrix,
 			shader: "StandardShader",
 			primitive: pr_trianglestrip,
+			linkedBones: mesh.bones,
+			submitBones: self.armature,
+			animate: false,
+			bone: 0,
 		}
 		
 		// Organise Render Queue Based On Aplha Transparent Objects And Push

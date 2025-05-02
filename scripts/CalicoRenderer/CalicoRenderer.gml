@@ -103,7 +103,7 @@ function CalicoRenderer() constructor
 				matrix_set(matrix_world, renderItem.matrix);
 				
 				// Submit Mesh Here
-				submitMesh(renderItem.vertexBuffer, renderItem.primitive, renderItem.material, renderItem.textures, renderItem.shader, renderItem.dynamicBuffers);
+				submitMesh(renderItem.vertexBuffer, renderItem.primitive, renderItem.material, renderItem.textures, renderItem.shader, renderItem.dynamicBuffers, renderItem.linkedBones, renderItem.submitBones, renderItem.animate, renderItem.bone);
 			}
 		
 			// Repeat Debug Render Queue Item Count
@@ -169,7 +169,7 @@ function CalicoRenderer() constructor
 	}
 	
 	// Submit Mesh
-	static submitMesh = function(vertexBuffer, primitive, material, textures, shader, dynamicBuffers = [])
+	static submitMesh = function(vertexBuffer, primitive, material, textures, shader, dynamicBuffers = [], linkedBones = [], submitBones = [], animate = false, boneIndex = 0)
 	{
 		switch(shader)
 		{
@@ -199,6 +199,7 @@ function CalicoRenderer() constructor
 				gpu_pop_state();
 				break;
 			case "StandardShader":
+				//if !animate return;
 				// Push GPU State
 				gpu_push_state();
 				
@@ -298,7 +299,52 @@ function CalicoRenderer() constructor
 				shader_set_uniform_f_array(shader_get_uniform(shader, "uLightDataTertiary"), lightingDataTertiary);
 				shader_set_uniform_matrix_array(shader_get_uniform(shader, "uInvertedViewMatrix"), matrix_inverse(matrix_get(matrix_view)));
 				
-				//shader_set_uniform_matrix_array(shader_get_uniform(shader, "bones"), ctrlScene.test.armature.bonesAnimated);
+				// Skeletal Animation
+				// Set Animate Flag
+				shader_set_uniform_i(shader_get_uniform(shader, "uAnimate"), animate);
+				if (animate)
+				{
+					// Create Animated Bones Array (Move to animation handler)
+					var animatedBones = [];
+					for (var i = 0; i < array_length(submitBones.bones); i++)
+					{
+						animatedBones[i] = matrix_multiply(submitBones.bones[i].previewPoseMatrix, submitBones.bones[i].bindMatrix);
+						if (submitBones.bones[i].parent != -1) animatedBones[i] = matrix_multiply(animatedBones[i], animatedBones[submitBones.bones[i].parent]);
+						submitBones.bones[i].matrix = animatedBones[i];
+					}
+					
+					// Create Flat Bone Array
+					var bones = [];
+					var isSkinned = false;
+					for (var i = 0; i < 8; i++)
+					{
+						if (linkedBones[i] == -1)
+						{
+							var matrix = matrix_build_identity();
+							repeat (16) array_push(bones, array_shift(matrix));
+						}
+						else
+						{
+							var matrix = matrix_multiply(submitBones.bones[linkedBones[i]].inverseBindMatrix, animatedBones[linkedBones[i]]);
+							repeat (16) array_push(bones, array_shift(matrix));
+							isSkinned = true;
+						}
+					}
+					
+					if (!isSkinned)
+					{
+						var matrix = matrix_multiply(submitBones.bones[boneIndex].inverseBindMatrix, animatedBones[boneIndex]);
+						for (var i = 0; i < 16; i++)
+						{
+							bones[i] = matrix[i];
+						}
+					}
+					
+					// Submit Bones
+					shader_set_uniform_matrix_array(shader_get_uniform(shader, "uBones"), bones);
+					shader_set_uniform_i(shader_get_uniform(shader, "uStatic"), !isSkinned);
+				}
+				//show_debug_message(array_length(bones));
 				
 				// Set GPU Settings
 				gpu_set_tex_mip_enable(mip_on);

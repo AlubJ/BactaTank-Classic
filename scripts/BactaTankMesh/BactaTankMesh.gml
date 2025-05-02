@@ -290,10 +290,10 @@ function BactaTankMesh() constructor
 											   buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 3, buffer_u8)/255];
 						break;
 					case BTVertexAttributes.blendIndices:
-						vertices[i].blendIndices = [buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_s8),
-											   buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 1, buffer_s8),
-											   buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 2, buffer_s8),
-											   buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 3, buffer_s8)];
+						vertices[i].blendIndices = [buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_u8),
+											   buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 1, buffer_u8),
+											   buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 2, buffer_u8),
+											   buffer_peek(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 3, buffer_u8)];
 						break;
 				}
 			}
@@ -347,6 +347,8 @@ function BactaTankMesh() constructor
 			var uv1 = array_create(2, 0);
 			var uv2 = array_create(2, 0);
 			var colour = #ffffff;
+			var blendIndices = [255, 255, 255, 255];
+			var blendWeights = [255, 255, 255, 255];
 			
 			// Attributes
 			// Position
@@ -372,6 +374,14 @@ function BactaTankMesh() constructor
 			// Tangent
 			if (array_length(vertices[index].tangent) == 4) tangent = [make_colour_rgb(vertices[index].tangent[0] / 2 + 1, vertices[index].tangent[1] / 2 + 1, vertices[index].tangent[2] / 2 + 1), vertices[index].tangent[3]];
 			vertex_colour(currentVertexBuffer, tangent[0], tangent[1]);
+			
+			// BlendIndices
+			if (array_length(vertices[index].blendIndices) == 4) blendIndices = vertices[index].blendIndices;
+			vertex_colour(currentVertexBuffer, make_colour_rgb(blendIndices[0], blendIndices[1], blendIndices[2]), blendIndices[3]/255);
+			
+			// BlendWeights
+			if (array_length(vertices[index].blendWeights) == 4) blendWeights = vertices[index].blendWeights;
+			vertex_colour(currentVertexBuffer, make_colour_rgb(blendWeights[0] * 255, blendWeights[1] * 255, blendWeights[2] * 255), blendWeights[3]);
 			
 			// Add Index
 			vertex_texcoord(currentVertexBuffer, index, 0);
@@ -533,10 +543,10 @@ function BactaTankMesh() constructor
 						//show_debug_message("Writing UVSet4")
 						break;
 					case BTVertexAttributes.blendIndices:
-						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_s8, floor(vertices[i].blendIndices[0]));
-						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 1, buffer_s8, floor(vertices[i].blendIndices[1]));
-						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 2, buffer_s8, floor(vertices[i].blendIndices[2]));
-						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 3, buffer_s8, floor(vertices[i].blendIndices[3]));
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position, buffer_u8, floor(vertices[i].blendIndices[0]));
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 1, buffer_u8, floor(vertices[i].blendIndices[1]));
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 2, buffer_u8, floor(vertices[i].blendIndices[2]));
+						buffer_poke(vertexBuffer, (vertexStride * i) + vertexFormat[k].position + 3, buffer_u8, floor(vertices[i].blendIndices[3]));
 						//show_debug_message("Writing BlendIndices")
 						break;
 					case BTVertexAttributes.blendWeights:
