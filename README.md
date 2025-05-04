@@ -36,7 +36,7 @@ To unpack the game files, run QuickBMS, select the BMS script, then select all o
 
 ### Recommended Tools
 - [Paint.NET](https://getpaint.net/) - an image editor capable of exporting DirectDraw Surface (`*.dds`) textures. (Alternatives are [GIMP](https://www.gimp.org/) and Photoshop with the [nVidia Texture Tools plugin](https://developer.nvidia.com/texture-tools-exporter)).
-- [Blender](https://www.blender.org/) - a free and open-source model editor. Blender is required when editing meshes since BactaTank Classic has a bespoke plugin made for it. Version 4.0 - 4.1 are the versions that are needed.
+- [Blender](https://www.blender.org/) - a free and open-source model editor. Blender is required when editing meshes since BactaTank Classic has a bespoke plugin made for it. Version 4.0+ is needed.
 
 ### Installing The Blender Add-on
 Installing the Blender Add-on is required if you want to edit meshes within a model. To install, in Blender go to `Edit >> Preferences >> Add-ons`, hit the `Install` button and select `bactatank-blender-addon-v[version].zip`. After installing you can enable the plugin and the BactaTank features will now be present.
