@@ -1041,6 +1041,9 @@ function newSettings()
 		
 		// Theme
 		theme: "Default Dark",
+		
+		// Ignore Version
+		ignoreVersion: "0.0.0",
 	}
 }
 

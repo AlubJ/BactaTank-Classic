@@ -242,6 +242,7 @@
     {"id":{"name":"StartupModal","path":"scripts/StartupModal/StartupModal.yy",},},
     {"id":{"name":"stringHelper","path":"scripts/stringHelper/stringHelper.yy",},},
     {"id":{"name":"uiHelper","path":"scripts/uiHelper/uiHelper.yy",},},
+    {"id":{"name":"UpdateModal","path":"scripts/UpdateModal/UpdateModal.yy",},},
     {"id":{"name":"UVViewerPanel","path":"scripts/UVViewerPanel/UVViewerPanel.yy",},},
     {"id":{"name":"windowHelper","path":"scripts/windowHelper/windowHelper.yy",},},
     {"id":{"name":"FXAA","path":"shaders/FXAA/FXAA.yy",},},

@@ -25,6 +25,7 @@ ENVIRONMENT.addModal(new AddModelModal());
 ENVIRONMENT.addModal(new AboutModal());
 ENVIRONMENT.addModal(new PreferencesModal());
 ENVIRONMENT.addModal(new ReplaceMeshModal());
+ENVIRONMENT.addModal(new UpdateModal());
 
 // Asset Pack Modals
 ENVIRONMENT.addModal(new AssetPacksModal());
@@ -39,6 +40,7 @@ if (array_length(args) > 0 && string_lower(filename_ext(args[0])) == ".ghg")
 }
 
 alarm[0] = 60;
+alarm[1] = 20;
 DBGMEM = debug_event("DumpMemory", true);
 
 // STRESS TESTING

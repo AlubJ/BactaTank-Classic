@@ -79,7 +79,7 @@ buffer_delete(buffer);
 
 // Versions
 VERSIONS = {
-	indev: true,
+	indev: false,
 	main: "v0.3.0",
 	renderer: "v1.2.0",
 	backend: "v0.3.0",
@@ -186,16 +186,23 @@ if (os_version >= 655360) SetWindowTitleBarDark(window_handle());
 
 #endregion
 
+#region Goto Next Scene
+
+//room_goto(scnMain);
+
+#endregion
+
+#region Check For Updates
+
+requestID = http_get("https://raw.githubusercontent.com/AlubJ/BactaTank-Classic/refs/heads/main/update.txt");
+VERSION_LATEST = noone;
+
+#endregion
+
 #region Create Instances
 
 instance_create_layer(0, 0, layer, ctrlRenderer);
 //instance_create_layer(0, 0, layer, ctrlScene);
 instance_create_layer(0, 0, layer, ctrlUI);
-
-#endregion
-
-#region Goto Next Scene
-
-//room_goto(scnMain);
 
 #endregion

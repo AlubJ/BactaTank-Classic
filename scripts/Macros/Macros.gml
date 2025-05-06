@@ -14,6 +14,10 @@
 
 // Global Version ([Major].[Minor][Patch][Revision][1:A 2:B 3:C, 4:Public])
 #macro VERSION 0.3
+#macro VERSION_MAJOR 0
+#macro VERSION_MINOR 3
+#macro VERSION_PATCH 0
+#macro VERSION_LATEST global.__versionLatest__
 
 // Run From IDE
 #macro RUN_FROM_IDE parameter_count() == 3 && string_count("GMS2TEMP", parameter_string(2))
