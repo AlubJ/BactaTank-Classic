@@ -17,7 +17,7 @@ function ConfirmModal() : Modal() constructor
 	name = "Confirm";
 	
 	width = 420;
-	height = 128;
+	//height = 128;
 	
 	header = "Unsaved Changes";
 	text = "Are you sure you want to continue?";
@@ -27,8 +27,7 @@ function ConfirmModal() : Modal() constructor
 	static render = function()
 	{
 		// Calculate Height
-		//if (ImGui.CalcTextWidth > 404) height = 128;
-		//else height = 114;
+		height = 96 + ImGui.CalcTextHeight(text, false, width - 16);
 		
 		// Set Modal Position and Size
 		ImGui.SetNextWindowPos(floor(WINDOW_SIZE[0] / 2) - floor(width / 2), floor(WINDOW_SIZE[1] / 2) - floor(height / 2), ImGuiCond.Always);

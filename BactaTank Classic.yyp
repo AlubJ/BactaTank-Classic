@@ -29,6 +29,7 @@
     {"$GMFolder":"","%Name":"MenuBars","folderPath":"folders/Environment/MenuBars.yy","name":"MenuBars","resourceType":"GMFolder","resourceVersion":"2.0",},
     {"$GMFolder":"","%Name":"Modals","folderPath":"folders/Environment/Modals.yy","name":"Modals","resourceType":"GMFolder","resourceVersion":"2.0",},
     {"$GMFolder":"","%Name":"AssetPack","folderPath":"folders/Environment/Modals/AssetPack.yy","name":"AssetPack","resourceType":"GMFolder","resourceVersion":"2.0",},
+    {"$GMFolder":"","%Name":"Dialogs","folderPath":"folders/Environment/Modals/Dialogs.yy","name":"Dialogs","resourceType":"GMFolder","resourceVersion":"2.0",},
     {"$GMFolder":"","%Name":"MenuBar","folderPath":"folders/Environment/Modals/MenuBar.yy","name":"MenuBar","resourceType":"GMFolder","resourceVersion":"2.0",},
     {"$GMFolder":"","%Name":"Panels","folderPath":"folders/Environment/Modals/Panels.yy","name":"Panels","resourceType":"GMFolder","resourceVersion":"2.0",},
     {"$GMFolder":"","%Name":"ModelEditPanel","folderPath":"folders/Environment/Modals/Panels/ModelEditPanel.yy","name":"ModelEditPanel","resourceType":"GMFolder","resourceVersion":"2.0",},

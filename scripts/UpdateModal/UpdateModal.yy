@@ -5,8 +5,8 @@
   "isDnD":false,
   "name":"UpdateModal",
   "parent":{
-    "name":"Modals",
-    "path":"folders/Environment/Modals.yy",
+    "name":"Dialogs",
+    "path":"folders/Environment/Modals/Dialogs.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

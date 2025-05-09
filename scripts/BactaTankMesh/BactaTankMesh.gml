@@ -666,15 +666,53 @@ function BactaTankMesh() constructor
 	/// @desc Replace BactaTankMesh
 	static replace = function(filepath, _model = noone)
 	{
+		// Load .bmesh
 		var bmesh = new BactaTankBMesh();
 		bmesh.import(filepath, _model);
-		bmesh.toMesh(self, _model);
 		
-		// Collect Garbage (Because we've derefereced an older mesh here, I need to use this more!)
-		gc_collect();
+		// Validation
+		if (array_length(bmesh.dynamicBuffers) != array_length(dynamicBuffers))
+		{
+			ENVIRONMENT.openConfirmModal("Warning!", "You are trying to replace a mesh that has a mismatch in dynamic buffer count, which may produce unexpected results. Do you want to continue?", function(bmesh, mesh, _model)
+			{
+				// Set Mesh
+				bmesh.toMesh(mesh, _model);
 		
-		// Build Mesh
-		build(_model);
+				// Collect Garbage (Because we've derefereced an older mesh here, I need to use this more!)
+				gc_collect();
+		
+				// Build Mesh
+				mesh.build(_model);	
+			}, [bmesh, self, _model]);
+		}
+		else if (array_length(bmesh.dynamicBuffers) == array_length(dynamicBuffers) && array_length(bmesh.dynamicBuffers) != 0)
+		{
+			if (array_length(vertices) < array_length(bmesh.vertices))
+			{
+				ENVIRONMENT.openConfirmModal("Warning!", "You are trying to replace a mesh with dynamic buffers that has more vertices, which may produce unexpected results. Do you want to continue?", function(bmesh, mesh, _model)
+				{
+					// Set Mesh
+					bmesh.toMesh(mesh, _model);
+		
+					// Collect Garbage (Because we've derefereced an older mesh here, I need to use this more!)
+					gc_collect();
+		
+					// Build Mesh
+					mesh.build(_model);	
+				}, [bmesh, self, _model]);
+			}
+		}
+		else
+		{
+			// Set Mesh
+			bmesh.toMesh(self, _model);
+		
+			// Collect Garbage (Because we've derefereced an older mesh here, I need to use this more!)
+			gc_collect();
+		
+			// Build Mesh
+			build(_model);
+		}
 	}
 	
 	#endregion
