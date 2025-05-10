@@ -16,7 +16,7 @@ gpu_set_tex_filter(false);
 gpu_set_tex_mip_filter(tf_point);
 gpu_set_alphatestref(0);
 draw_clear(THEME_BG);
-if (window_get_width() > 0 && window_get_height() > 0) ImGui.__Render();
+if (window_get_width() > 0 && window_get_height() > 0) ImGui.__Draw();
 //if (surface_exists(RENDERER.surface)) draw_surface(RENDERER.surface, 0, 0);
 gpu_set_tex_mip_filter(tf_anisotropic);
 gpu_set_alphatestref(254);

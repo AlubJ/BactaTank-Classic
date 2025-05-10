@@ -13,6 +13,8 @@
 	To Do:
 */
 
+ImGui.__Render();
+
 RENDERER.submitRenderQueue();
 
 //array_push(RENDERER.debugRenderQueue, {
