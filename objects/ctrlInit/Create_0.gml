@@ -80,9 +80,9 @@ buffer_delete(buffer);
 // Versions
 VERSIONS = {
 	indev: false,
-	main: "v0.3.0",
+	main: "v0.3.1",
 	renderer: "v1.2.0",
-	backend: "v0.3.1",
+	backend: "v0.3.0",
 	revision: "0",
 }
 
