@@ -17,7 +17,7 @@ function UpdateModal() : Modal() constructor
 	name = "Update";
 	
 	width = 420;
-	height = 140;
+	height = 132;
 	
 	totalButtonWidth = 80 * 2 + 8 * 2;
 	
