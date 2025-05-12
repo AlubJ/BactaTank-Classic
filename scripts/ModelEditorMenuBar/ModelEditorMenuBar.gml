@@ -158,6 +158,16 @@ function ModelEditorMenuBar() constructor
 			ImGui.Separator();
 			if (ImGui.MenuItem("Support Me")) url_open("https://ko-fi.com/Y8Y219SKRX");
 			
+			if (VERSION_LATEST != noone && VERSION_LATEST)
+			{
+				var version = string_split(VERSION_LATEST, ".");
+				if (version[0] > VERSION_MAJOR || version[1] > VERSION_MINOR || version[2] > VERSION_PATCH)
+				{
+					ImGui.Separator();
+					if (ImGui.MenuItem("Download Latest Update")) url_open("https://github.com/AlubJ/BactaTank-Classic/releases/latest/");
+				}
+			}
+			
 			// End Menu
 			ImGui.EndMenu();
 		}

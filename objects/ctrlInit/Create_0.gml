@@ -82,7 +82,7 @@ VERSIONS = {
 	indev: false,
 	main: "v0.3.0",
 	renderer: "v1.2.0",
-	backend: "v0.3.0",
+	backend: "v0.3.1",
 	revision: "0",
 }
 
