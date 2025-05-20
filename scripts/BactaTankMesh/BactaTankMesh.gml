@@ -701,6 +701,17 @@ function BactaTankMesh() constructor
 					mesh.build(_model);	
 				}, [bmesh, self, _model]);
 			}
+			else
+			{
+				// Set Mesh
+				bmesh.toMesh(self, _model);
+				
+				// Collect Garbage (Because we've derefereced an older mesh here, I need to use this more!)
+				gc_collect();
+				
+				// Build Mesh
+				build(_model);
+			}
 		}
 		else
 		{
