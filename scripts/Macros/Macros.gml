@@ -151,6 +151,9 @@ FILTERS = {
 	armature: "BactaTank Armature (*.barm)|*.barm",
 	
 	uvLayout: "Portable Graphics Network (*.png)|*.png",
+	
+	// Exe
+	exe: "Windows Executable File (*.exe)|*.exe",
 };
 
 // Viewer

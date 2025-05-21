@@ -56,6 +56,7 @@ function BactaTankMesh() constructor
 	offset = 0;
 	averagePosition = [0, 0, 0, 0];
 	uvSet1AveragePosition = [0, 0];
+	lastFilename = "";
 	
 	#region Parse / Inject
 	
@@ -660,6 +661,9 @@ function BactaTankMesh() constructor
 		var bmesh = new BactaTankBMesh();
 		bmesh.fromMesh(self, _model);
 		bmesh.export(filepath, _model);
+		
+		// Change Last Filename
+		lastFilename = filepath;
 	}
 	
 	/// @func replace()
@@ -723,6 +727,42 @@ function BactaTankMesh() constructor
 		
 			// Build Mesh
 			build(_model);
+		}
+		
+		// Change Last Filename
+		lastFilename = filepath;
+	}
+	
+	/// @func reload()
+	/// @desc Reloads last texture if the file exists
+	static reload = function(_model = noone)
+	{
+		if (file_exists(lastFilename))
+		{
+			// User Feedback
+			ENVIRONMENT.openInfoModal("Please wait", "Building Mesh");
+			window_set_cursor(cr_hourglass);
+			
+			// Define Function
+			var func = function(mesh, file, _model)
+			{
+				// Replace Mesh
+				mesh.replace(file, _model);
+				
+				// Set Last Mesh Path
+				SETTINGS.lastMeshPath = filename_path(file);
+				
+				// Enable Renderer
+				RENDERER.activate();
+				RENDERER.deactivate(2);
+				
+				// User Feedback
+				ENVIRONMENT.closeInfoModal();
+				window_set_cursor(cr_default);
+			}
+			
+			// Timesource
+			time_source_start(time_source_create(time_source_game, 3, time_source_units_frames, func, [self, lastFilename, _model]));
 		}
 	}
 	

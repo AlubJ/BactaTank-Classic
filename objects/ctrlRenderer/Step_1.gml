@@ -12,7 +12,7 @@
 	
 	To Do:
 */
-if (window_get_width() > 0 && window_get_height() > 0) ImGui.__NewFrame();
+if (window_get_width() > 0 && window_get_height() > 0) ImGui.__Update();
 
 // Mouse Position
 CURSOR_POSITION[0] = window_mouse_get_x();

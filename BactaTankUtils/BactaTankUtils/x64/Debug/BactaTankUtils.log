@@ -1,3 +1,7 @@
 ﻿  Console.cpp
-     Creating library D:\Projects\C++\BactaTankUtils\x64\Debug\BactaTankUtils.lib and object D:\Projects\C++\BactaTankUtils\x64\Debug\BactaTankUtils.exp
-  BactaTankUtils.vcxproj -> D:\Projects\C++\BactaTankUtils\x64\Debug\BactaTankUtils.dll
+  FileDropper.cpp
+  FileDropperDLL.cpp
+  main.cpp
+  TextureUtils.cpp
+  Generating Code...
+D:\Projects\BactaTank\BactaTank Classic\BactaTankUtils\BactaTankUtils\Console.cpp(139,1): error C4716: 'ExecuteShell': must return a value

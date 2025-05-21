@@ -13,7 +13,7 @@
 	To Do:
 */
 
-ImGui.__Render();
+//ImGui.__Render();
 
 RENDERER.submitRenderQueue();
 

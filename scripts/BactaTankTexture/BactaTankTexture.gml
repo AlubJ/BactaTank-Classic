@@ -21,6 +21,7 @@ function BactaTankTexture() constructor
 	compression = 0;
 	size = 0;
 	cubemap = false;
+	lastFilename = "";
 	
 	// Texture
 	sprite = noone;
@@ -143,6 +144,9 @@ function BactaTankTexture() constructor
 	{
 		// Save Texture
 		buffer_save(data, filepath);
+		
+		// Set Last Filepath
+		lastFilename = filepath;
 	}
 	
 	/// @func replace()
@@ -170,6 +174,42 @@ function BactaTankTexture() constructor
 		sprite = ddsLoad(data);
 		sprite_save(sprite, 0, TEMP_DIRECTORY + @"\_textures\" + name + ".png");
 		texture = sprite_get_texture(sprite, 0);
+		
+		// Set Last Filepath
+		lastFilename = filepath;
+	}
+	
+	/// @func reload()
+	/// @desc Reloads last texture if the file exists
+	static reload = function()
+	{
+		if (file_exists(lastFilename))
+		{
+			// User Feedback
+			ENVIRONMENT.openInfoModal("Please wait", "Decoding DDS Texture");
+			window_set_cursor(cr_hourglass);
+			
+			// Define Function
+			var func = function(texture, file)
+			{
+				// Replace Texture
+				texture.replace(file);
+				
+				// Set Last Texture Path
+				SETTINGS.lastTexturePath = filename_path(file);
+				
+				// Enable Renderer
+				RENDERER.activate();
+				RENDERER.deactivate(2);
+				
+				// User Feedback
+				ENVIRONMENT.closeInfoModal();
+				window_set_cursor(cr_default);
+			}
+			
+			// Timesource
+			time_source_start(time_source_create(time_source_game, 3, time_source_units_frames, func, [self, lastFilename]));
+		}
 	}
 	
 	/// @func addTexture()

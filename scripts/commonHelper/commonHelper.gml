@@ -299,6 +299,34 @@ function setContext(context = CONTEXT)
 			}
 		});
 		
+		// Reload Current Selected
+		SHORTCUTS.add("ReloadCurrentSelected", SETTINGS.shortcuts.reloadCurrentSelected, function() {
+			if (ENVIRONMENT.attributeSelected != undefined || ENVIRONMENT.attributeSelected != -1)
+			{
+				var index = string_digits(ENVIRONMENT.attributeSelected);
+				if (string_pos("TEX", ENVIRONMENT.attributeSelected)) // Export Texture
+				{
+					PROJECT.currentModel.textures[index].reload();
+				}
+				else if (string_pos("MESH", ENVIRONMENT.attributeSelected)) // Export Mesh
+				{
+					PROJECT.currentModel.meshes[index].reload(PROJECT.currentModel);
+				}
+			}
+		});
+		
+		// Open In External Editor
+		SHORTCUTS.add("EditInExternalEditor", SETTINGS.shortcuts.editInExternalEditor, function() {
+			if (ENVIRONMENT.attributeSelected != undefined || ENVIRONMENT.attributeSelected != -1)
+			{
+				var index = string_digits(ENVIRONMENT.attributeSelected);
+				if (string_pos("TEX", ENVIRONMENT.attributeSelected)) // Export Texture
+				{
+					uiEditInExternalEditor(PROJECT.currentModel.textures[index]);
+				}
+			}
+		});
+		
 		// Dereference Mesh
 		SHORTCUTS.add("DereferenceMesh", SETTINGS.shortcuts.dereferenceMesh, function() {
 			if (ENVIRONMENT.attributeSelected != undefined || ENVIRONMENT.attributeSelected != -1)
@@ -883,6 +911,17 @@ function uiBulkExportLocators(model)
 	}
 }
 
+function uiEditInExternalEditor(texture)
+{
+	if (file_exists(SETTINGS.textureEditor) && string_lower(filename_ext(SETTINGS.textureEditor)) == ".exe")
+	{
+		// Export Texture
+		var name = TEMP_DIRECTORY + @"_textures\" + buffer_md5(texture.data, 0, buffer_get_size(texture.data)) + ".dds";
+		texture.export(name);
+		ExecuteShell(SETTINGS.textureEditor, $"\"{name}\"");
+	}
+}
+
 function loadTemplates()
 {
 	// Templates (Are here temporarily)
@@ -959,6 +998,9 @@ function newSettings()
 		lastCharacterPath: "",
 		lastModelPath: "",
 		
+		// External Editors
+		textureEditor: "",
+		
 		// Attribute Specific Paths
 		lastMeshPath: "",
 		lastTexturePath: "",
@@ -1009,6 +1051,8 @@ function newSettings()
 			replaceCurrentSelected: "Ctrl+R",
 			toggleMeshType: "Ctrl+W",
 			dereferenceMesh: "Ctrl+D",
+			reloadCurrentSelected: "Alt+R",
+			editInExternalEditor: "Alt+E",
 		},
 		
 		// General Settings

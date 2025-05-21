@@ -189,6 +189,9 @@ function ModelEditPanel() constructor
 			// Menu Items
 			if (ImGui.MenuItem("Export Texture",  SETTINGS.shortcuts.exportCurrentSelected)) uiExportTexture(model, index);
 			if (ImGui.MenuItem("Replace Texture", SETTINGS.shortcuts.replaceCurrentSelected)) uiReplaceTexture(model, index);
+			ImGui.Separator();
+			if (ImGui.MenuItem("Reload Texture", SETTINGS.shortcuts.reloadCurrentSelected)) model.textures[index].reload();
+			if (ImGui.MenuItem("Open in External Editor", SETTINGS.shortcuts.editInExternalEditor)) uiEditInExternalEditor(model.textures[index]);
 			
 			// End Popup
 			ImGui.EndPopup();
@@ -792,6 +795,9 @@ function ModelEditPanel() constructor
 					model.meshes[index].generateStaticSkinning();
 				}, [model, index]);
 			}
+			
+			ImGui.Separator();
+			if (ImGui.MenuItem("Reload Mesh", SETTINGS.shortcuts.reloadCurrentSelected)) model.meshes[index].reload(model);
 			
 			// Mesh Scripts
 			var names = variable_struct_get_names(MESH_SCRIPTS);

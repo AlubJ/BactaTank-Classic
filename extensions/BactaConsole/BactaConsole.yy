@@ -28,6 +28,7 @@
         {"$GMExtensionFunction":"","%Name":"SetWindowActive","argCount":0,"args":[1,],"documentation":"","externalName":"SetWindowActive","help":"","hidden":false,"kind":1,"name":"SetWindowActive","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":2,},
         {"$GMExtensionFunction":"","%Name":"SetWindowTitleBarDark","argCount":0,"args":[1,],"documentation":"","externalName":"SetWindowTitleBarDark","help":"","hidden":false,"kind":1,"name":"SetWindowTitleBarDark","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":2,},
         {"$GMExtensionFunction":"","%Name":"SetWindowTitleBarLight","argCount":0,"args":[1,],"documentation":"","externalName":"SetWindowTitleBarLight","help":"","hidden":false,"kind":1,"name":"SetWindowTitleBarLight","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":2,},
+        {"$GMExtensionFunction":"","%Name":"ExecuteShell","argCount":0,"args":[1,1,],"documentation":"","externalName":"ExecuteShell","help":"","hidden":false,"kind":1,"name":"ExecuteShell","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":2,},
       ],"init":"","kind":1,"name":"","order":[],"origname":"","ProxyFiles":[
         {"$GMProxyFile":"","%Name":"BactaTankUtils.dll","name":"BactaTankUtils.dll","resourceType":"GMProxyFile","resourceVersion":"2.0","TargetMask":6,},
       ],"resourceType":"GMExtensionFile","resourceVersion":"2.0","uncompress":false,"usesRunnerInterface":false,},

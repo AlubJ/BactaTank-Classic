@@ -168,6 +168,25 @@ function PreferencesModal() : Modal() constructor
 					// Spacing
 					ImGui.Spacing();
 					
+					// Create Paths Header
+					ImGui.Text("Paths");
+					ImGui.Separator();
+					
+					// Spacing
+					ImGui.Spacing();
+					
+					// Image Editor Path
+					SETTINGS.textureEditor = ImGui.InputFileCustom("Image Editor", SETTINGS.textureEditor, "##hiddenTextureEditor", space, NO_DEFAULT, FILTERS.exe, "", "", ImGuiInputFileFlags.Open)
+					
+					// End Tab Item
+					ImGui.EndTabItem();
+				}
+				
+				if (ImGui.BeginTabItem("Viewer"))
+				{
+					// Spacing
+					ImGui.Spacing();
+					
 					// Create Viewer Colours Header
 					ImGui.Text("Viewer Colours");
 					ImGui.Separator();
@@ -229,6 +248,9 @@ function PreferencesModal() : Modal() constructor
 					// Randomise UV Colours
 					viewer.randomiseUVMapColours = ImGui.CheckboxCustom("Randomise UV Map Colours", viewer.randomiseUVMapColours, "##hiddenRandomiseUVMapColours", space);
 					ImGui.ShowTooltip("Randomises the colour of the UV map per mesh");
+					
+					// Spacing
+					ImGui.Spacing();
 					
 					// End Tab Item
 					ImGui.EndTabItem();

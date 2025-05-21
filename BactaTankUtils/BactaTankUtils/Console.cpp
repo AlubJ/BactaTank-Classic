@@ -108,3 +108,12 @@ DLLEX double SetWindowTitleBarLight(char* handle)
     bool SET_WINDOW_DARK = SUCCEEDED(DwmSetWindowAttribute((HWND)handle, DWMWINDOWATTRIBUTE::DWMWA_USE_IMMERSIVE_DARK_MODE, &DARK_MODE, sizeof(DARK_MODE)));
     return SET_WINDOW_DARK;
 }
+
+DLLEX double ExecuteShell(char* process, char* args)
+{
+    // Spawn Process
+    HINSTANCE proc = ShellExecuteA(NULL, "open", process, args, NULL, SW_SHOWDEFAULT);
+
+    // Return Out
+    return (int) proc > 32;
+}
