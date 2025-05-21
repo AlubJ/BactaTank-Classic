@@ -63,7 +63,7 @@ if (SETTINGS.consoleEnabled) ConsoleInitialize();
 ConsoleLog("Settings Loaded");
 
 // Set MSAA
-if (SETTINGS.enableMSAA) display_reset(4, true);
+if (SETTINGS.enableMSAA) enableAA(true);
 
 //var buffer = buffer_load("Untitled.dds");
 //var size = buffer_get_size(buffer);
@@ -80,9 +80,9 @@ buffer_delete(buffer);
 // Versions
 VERSIONS = {
 	indev: false,
-	main: "v0.3.1",
-	renderer: "v1.2.0",
-	backend: "v0.3.0",
+	main: "v0.3.2",
+	renderer: "v1.2.2",
+	backend: "v0.3.2",
 	revision: "0",
 }
 

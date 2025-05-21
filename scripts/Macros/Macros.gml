@@ -13,10 +13,10 @@
 */
 
 // Global Version ([Major].[Minor][Patch][Revision][1:A 2:B 3:C, 4:Public])
-#macro VERSION 0.3
+#macro VERSION 0.32
 #macro VERSION_MAJOR 0
 #macro VERSION_MINOR 3
-#macro VERSION_PATCH 1
+#macro VERSION_PATCH 2
 #macro VERSION_LATEST global.__versionLatest__
 
 // Run From IDE

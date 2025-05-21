@@ -1137,3 +1137,11 @@ function upgradeSettings(settings)
 		}
 	}
 }
+
+function enableAA(enabled)
+{
+	if (!enabled) return display_reset(0, true);
+	if (display_aa == 2) display_reset(2, true);
+	else if (display_aa == 6) display_reset(4, true);
+	else if (display_aa == 14) display_reset(8, true);
+}

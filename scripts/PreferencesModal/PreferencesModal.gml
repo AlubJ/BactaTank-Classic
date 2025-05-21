@@ -110,7 +110,7 @@ function PreferencesModal() : Modal() constructor
 					if (value != general.enableMSAA)
 					{
 						general.enableMSAA = value;
-						display_reset(general.enableMSAA ? 4 : 0, true);
+						enableAA(general.enableMSAA ? true : false);
 					}
 					
 					// Cursor Pos
