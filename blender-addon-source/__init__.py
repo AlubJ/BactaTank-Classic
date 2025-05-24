@@ -21,7 +21,7 @@
 bl_info = {
     "name": "BactaTank Classic v0.3 Format",
     "author": "Alub",
-    "version": (3, 1, 5),
+    "version": (3, 1, 6),
     "blender": (4, 0, 0),
     "location": "File > Import/Export",
     "description": "Import-Export TtGames mesh data for use in BactaTank Classic v0.3",

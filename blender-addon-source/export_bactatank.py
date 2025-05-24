@@ -721,7 +721,7 @@ def exportMesh(
     
     # Get All Meshes (Selected Only If Enabled)
     if use_selection:
-        meshes = [o for o in objects if o.type == 'MESH' and o.get_selected() == True]
+        meshes = [obj for obj in bpy.context.selected_objects if obj.type == 'MESH']
     else:
         meshes = [o for o in objects if o.type == 'MESH']
     
