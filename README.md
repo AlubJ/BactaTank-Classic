@@ -17,7 +17,7 @@ This table outlines which games are compatable with BactaTank Classic. It includ
 | The Chronicles of Narnia: Prince Caspian    |      ⚠️       |      ❌       |
 
 > [!WARNING]
-> Transformers and Narinia models can be loaded for viewing, however this functionality is extremely experimental and can result in crashing. These are only supported for viewing. (Transformers model versions need to be enabled for loading in the preferences).
+> Transformers and Narnia models can be loaded for viewing, however this functionality is extremely experimental and can result in crashing. These are only supported for viewing. (Transformers model versions need to be enabled for loading in the preferences).
 
 ## Getting Started
 ### Installation
