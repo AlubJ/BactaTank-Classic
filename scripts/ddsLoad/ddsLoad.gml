@@ -381,107 +381,116 @@ function readDXT3Block(buffer, imageBuffer, xx, yy, width, height)
 
 function readDXT5Block(buffer, imageBuffer, xx, yy, width, height)
 {
-	var alpha0 = buffer_read(buffer, buffer_u8);
+    var alpha0 = buffer_read(buffer, buffer_u8);
     var alpha1 = buffer_read(buffer, buffer_u8);
-	
-    var alphaMask = buffer_read(buffer, buffer_u8);
-    alphaMask += buffer_read(buffer, buffer_u8) << 8;
-    alphaMask += buffer_read(buffer, buffer_u8) << 16;
-    alphaMask += buffer_read(buffer, buffer_u8) << 24;
-    alphaMask += buffer_read(buffer, buffer_u8) << 32;
-    alphaMask += buffer_read(buffer, buffer_u8) << 40;
-	
+
+    // Read 6 bytes of alpha data into array
+    var alphaBytes = array_create(6);
+    for (var i = 0; i < 6; i++) {
+        alphaBytes[i] = buffer_read(buffer, buffer_u8);
+    }
+
     var c0 = buffer_read(buffer, buffer_u16);
     var c1 = buffer_read(buffer, buffer_u16);
-	
-	var r0, g0, b0;
-	var r1, g1, b1;
-	var temp;
-		
+
+    var r0, g0, b0;
+    var r1, g1, b1;
+    var temp;
+
     temp = (c0 >> 11) * 255 + 16;
-	r0 = ((temp / 32 + temp) / 32);
-	temp = ((c0 & 0x07E0) >> 5) * 255 + 32;
-	g0 = ((temp / 64 + temp) / 64);
-	temp = (c0 & 0x001F) * 255 + 16;
-	b0 = ((temp / 32 + temp) / 32);
-	
+    r0 = floor((temp / 32 + temp) / 32);
+    temp = ((c0 & 0x07E0) >> 5) * 255 + 32;
+    g0 = floor((temp / 64 + temp) / 64);
+    temp = (c0 & 0x001F) * 255 + 16;
+    b0 = floor((temp / 32 + temp) / 32);
+
     temp = (c1 >> 11) * 255 + 16;
-	r1 = ((temp / 32 + temp) / 32);
-	temp = ((c1 & 0x07E0) >> 5) * 255 + 32;
-	g1 = ((temp / 64 + temp) / 64);
-	temp = (c1 & 0x001F) * 255 + 16;
-	b1 = ((temp / 32 + temp) / 32);
-	
+    r1 = floor((temp / 32 + temp) / 32);
+    temp = ((c1 & 0x07E0) >> 5) * 255 + 32;
+    g1 = floor((temp / 64 + temp) / 64);
+    temp = (c1 & 0x001F) * 255 + 16;
+    b1 = floor((temp / 32 + temp) / 32);
+
     var lookupTable = buffer_read(buffer, buffer_u32);
-	
+
     for (var blockY = 0; blockY < 4; blockY++)
     {
         for (var blockX = 0; blockX < 4; blockX++)
         {
-			var r = 0, g = 0, b = 0, a = 255;
-            var index = (lookupTable >> 2 * (4 * blockY + blockX)) & 0x03;
-			
-			var alphaIndex = ((alphaMask >> 3 * (4 * blockY + blockX)) & 0x07);
+            var r = 0, g = 0, b = 0, a = 255;
+            var pixelIndex = 4 * blockY + blockX;
+
+            var index = (lookupTable >> (2 * pixelIndex)) & 0x03;
+
+            // Decode 3-bit alpha index
+            var bitPos = 3 * pixelIndex;
+            var byteIndex = bitPos div 8;
+            var bitOffset = bitPos mod 8;
+
+            var currentByte = alphaBytes[byteIndex];
+            var nextByte = (byteIndex < 5) ? alphaBytes[byteIndex + 1] : 0;
+
+            var alphaIndex = ((currentByte >> bitOffset) | (nextByte << (8 - bitOffset))) & 0x07;
+
             if (alphaIndex == 0)
-			{
+            {
                 a = alpha0;
             }
-			else if (alphaIndex == 1)
-			{
+            else if (alphaIndex == 1)
+            {
                 a = alpha1;
             }
-			else if (alpha0 > alpha1)
-			{
-                a = (((8 - alphaIndex) * alpha0 + (alphaIndex - 1) * alpha1) / 7);
+            else if (alpha0 > alpha1)
+            {
+                a = floor((((8 - alphaIndex) * alpha0 + (alphaIndex - 1) * alpha1) / 7) + 0.5);
             }
-			else if (alphaIndex == 6)
-			{
-                a = 0;
+            else
+            {
+                switch (alphaIndex)
+                {
+                    case 6:
+                        a = 0;
+                        break;
+                    case 7:
+                        a = 255;
+                        break;
+                    default:
+                        a = floor((((6 - alphaIndex) * alpha0 + (alphaIndex - 1) * alpha1) / 5) + 0.5);
+                        break;
+                }
             }
-			else if (alphaIndex == 7)
-			{
-                a = 0xff;
+
+            switch (index)
+            {
+                case 0:
+                    r = r0; g = g0; b = b0;
+                    break;
+                case 1:
+                    r = r1; g = g1; b = b1;
+                    break;
+                case 2:
+                    r = floor((2 * r0 + r1) / 3);
+                    g = floor((2 * g0 + g1) / 3);
+                    b = floor((2 * b0 + b1) / 3);
+                    break;
+                case 3:
+                    r = floor((r0 + 2 * r1) / 3);
+                    g = floor((g0 + 2 * g1) / 3);
+                    b = floor((b0 + 2 * b1) / 3);
+                    break;
             }
-			else
-			{
-                a = (((6 - alphaIndex) * alpha0 + (alphaIndex - 1) * alpha1) / 5);
+
+            var px = (xx << 2) + blockX;
+            var py = (yy << 2) + blockY;
+            if ((px < width) && (py < height))
+            {
+                var offset = ((py * width) + px) << 2;
+                buffer_poke(imageBuffer, offset,     buffer_u8, r);
+                buffer_poke(imageBuffer, offset + 1, buffer_u8, g);
+                buffer_poke(imageBuffer, offset + 2, buffer_u8, b);
+                buffer_poke(imageBuffer, offset + 3, buffer_u8, a);
             }
-			
-			switch (index)
-			{
-				case 0:
-					r = r0;
-					g = g0;
-					b = b0;
-					break;
-				case 1:
-					r = r1;
-					g = g1;
-					b = b1;
-					break;
-				case 2:
-					r = ((2 * r0 + r1) / 3);
-					g = ((2 * g0 + g1) / 3);
-					b = ((2 * b0 + b1) / 3);
-					break;
-				case 3:
-					r = ((r0 + 2 * r1) / 3);
-					g = ((g0 + 2 * g1) / 3);
-					b = ((b0 + 2 * b1) / 3);
-					break;
-			}
-			
-			var px = (xx << 2) + blockX;
-			var py = (yy << 2) + blockY;
-			if ((px < width) && (py < height))
-			{
-				var offset = ((py * width) + px) << 2;
-				buffer_poke(imageBuffer, offset, buffer_u8, r);
-				buffer_poke(imageBuffer, offset + 1, buffer_u8, g);
-				buffer_poke(imageBuffer, offset + 2, buffer_u8, b);
-				buffer_poke(imageBuffer, offset + 3, buffer_u8, a);
-			}
-		}
+        }
     }
 }
 

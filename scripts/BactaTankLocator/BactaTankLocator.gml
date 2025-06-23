@@ -36,7 +36,8 @@ function BactaTankLocator() constructor
 		repeat(16) array_push(matrix, buffer_read(buffer, buffer_f32));
 		
 		// Locator Name
-		name = buffer_peek(buffer, (buffer_tell(buffer) + buffer_read(buffer, buffer_s16)) + 0x2c, buffer_string);
+		var currentOffset = buffer_tell(buffer);
+		name = buffer_peek(buffer, (currentOffset + buffer_read(buffer, buffer_s16)) + 0x2c, buffer_string);
 		
 		// Locator Bone Parent
 		buffer_seek(buffer, buffer_seek_relative, 0x02);

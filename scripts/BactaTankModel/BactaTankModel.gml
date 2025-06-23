@@ -390,7 +390,9 @@ function BactaTankModel(model = -1) constructor
 		self.meshes = [];
 		
 		// Mesh Block 1
-		var meshBlock1StartPointer = buffer_tell(buffer) + buffer_read(buffer, buffer_s32);
+		var currentOffset = buffer_tell(buffer);
+		var meshBlock1StartPointerRel = buffer_read(buffer, buffer_s32);
+		var meshBlock1StartPointer = currentOffset + meshBlock1StartPointerRel;
 		var meshCount = buffer_read(buffer, buffer_u32);
 		var meshBlock2StartPointer = buffer_tell(buffer) + buffer_read(buffer, buffer_s32);
 		var meshBlock2Count = buffer_read(buffer, buffer_u32);
@@ -406,7 +408,7 @@ function BactaTankModel(model = -1) constructor
 		{
 			// Seek to mesh entry
 			var tempOffset = buffer_tell(buffer) + 4;
-			buffer_seek(buffer, buffer_seek_relative, buffer_read(buffer, buffer_u32) - 4);
+			buffer_seek(buffer, buffer_seek_relative, buffer_read(buffer, buffer_s32) - 4);
 			
 			// Create New Mesh
 			self.meshes[i] = new BactaTankMesh();
