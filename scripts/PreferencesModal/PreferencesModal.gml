@@ -186,14 +186,14 @@ function PreferencesModal() : Modal() constructor
 					// Get Cursor Pos
 					var cursorPos = [ImGui.GetCursorPosX(), ImGui.GetCursorPosY()];
 					
-					// Reset Button
-					ImGui.SetCursorPos(width - 28, cursorPos[1] - 26);
-					if (ImGui.ImageButton("##hiddenResetToDefault", graReload, 0, c_white, 1, c_white, 0))
-					{
-						SETTINGS = newSettings();
-						ENVIRONMENT.applyTheme(SETTINGS.theme);
-					}
-					ImGui.ShowTooltip("Reset settings back to default");
+					//// Reset Button
+					//ImGui.SetCursorPos(width - 28, cursorPos[1] - 26);
+					//if (ImGui.ImageButton("##hiddenResetToDefault", graReload, 0, c_white, 1, c_white, 0))
+					//{
+					//	SETTINGS = newSettings();
+					//	ENVIRONMENT.applyTheme(SETTINGS.theme);
+					//}
+					//ImGui.ShowTooltip("Reset settings back to default");
 					
 					// Spacing
 					ImGui.Spacing();
