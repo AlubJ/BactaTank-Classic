@@ -39,7 +39,8 @@ function BactaTankArmature() constructor
 			
 			// Bone Name
 			buffer_seek(buffer, buffer_seek_relative, 0x0C);
-			bone.name = buffer_peek(buffer, buffer_tell(buffer) + buffer_read(buffer, buffer_s32), buffer_string);
+			var currentOffset = buffer_tell(buffer);
+			bone.name = buffer_peek(buffer, currentOffset + buffer_read(buffer, buffer_s32), buffer_string);
 			
 			// Bone Parent
 			bone.parent = buffer_read(buffer, buffer_s8);
