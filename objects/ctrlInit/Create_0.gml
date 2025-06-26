@@ -62,8 +62,9 @@ if (SETTINGS.lastProjectPath == "") SETTINGS.lastProjectPath = SETTINGS.defaultP
 if (SETTINGS.consoleEnabled) ConsoleInitialize();
 ConsoleLog("Settings Loaded");
 
-// Set MSAA
-if (SETTINGS.enableMSAA) enableAA(true);
+// Set MSAA and Refresh Rate
+enableAA(SETTINGS.enableMSAA, SETTINGS.enableVSync);
+game_set_speed(SETTINGS.frameLimit != "Unlimited" ? SETTINGS.frameLimit : 0, gamespeed_fps);
 
 //var buffer = buffer_load("Untitled.dds");
 //var size = buffer_get_size(buffer);

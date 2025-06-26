@@ -155,3 +155,6 @@ colour = c_white;
 //    }
 //    draw_set_alpha(1);
 //}
+
+// Delta Time Multiplier
+DELTA_MULTIPLIER = 1;

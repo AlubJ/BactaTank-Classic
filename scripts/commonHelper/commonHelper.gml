@@ -1077,6 +1077,8 @@ function newSettings()
 		simplifyRendering: false,			// Disabled Fancy Effects
 		lowerRenderResolution: false,		// Lowers The Render Resolution
 		enableMSAA:	false,					// Enables MSAA for rendering smooth edges
+		enableVSync: false,					// Enables VSync
+		frameLimit: getRefreshRate(),		// Frame Limit (Acceptable rates are 30, 60, 100, 120 and 144Hz)
 		
 		// Debug
 		consoleEnabled: false,				// Enables The Console Window
@@ -1138,10 +1140,21 @@ function upgradeSettings(settings)
 	}
 }
 
-function enableAA(enabled)
+function enableAA(enabledAA, enabledVSync = false)
 {
-	if (!enabled) return display_reset(0, true);
-	if (display_aa == 2) display_reset(2, true);
-	else if (display_aa == 6) display_reset(4, true);
-	else if (display_aa == 14) display_reset(8, true);
+	if (!enabledAA) return display_reset(0, enabledVSync);
+	if (display_aa == 2) display_reset(2, enabledVSync);
+	else if (display_aa == 6) display_reset(4, enabledVSync);
+	else if (display_aa == 14) display_reset(8, enabledVSync);
+}
+
+function getRefreshRate()
+{
+	var rr = display_get_frequency();
+	
+	if (rr < 60) return 30;
+	else if (rr >= 60 && rr < 100) return 60;
+	else if (rr >= 100 && rr < 120) return 100;
+	else if (rr >= 120 && rr < 144) return 120;
+	else return 144;
 }
