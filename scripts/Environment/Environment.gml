@@ -199,11 +199,8 @@ function GlobalEnvironment() constructor
 			}
 			
 			// Version Tag
-			var tag = "";
-			tag = $"{game_display_name} | {VERSIONS.indev ? "dev_": ""}{VERSIONS.main}{VERSIONS.revision != 0 ? "_rev" + VERSIONS.revision : ""}";
-			
-			ImGui.SetCursorPos(window_get_width() - ImGui.CalcTextWidth(tag) - 8, 0);
-			ImGui.Text(tag);
+			ImGui.SetCursorPos(window_get_width() - ImGui.CalcTextWidth(VERSION_TAG) - 8, 0);
+			ImGui.Text(VERSION_TAG);
 			
 			// End Menu Bar
 			ImGui.EndMainMenuBar();

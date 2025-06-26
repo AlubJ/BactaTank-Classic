@@ -81,14 +81,20 @@ buffer_delete(buffer);
 // Versions
 VERSIONS = {
 	indev: false,
-	main: "v0.3.3_YYC",
+	main: "v0.3.3",
 	renderer: "v1.2.3",
 	backend: "v0.3.3",
 	revision: "0",
+	platform: code_is_compiled() ? "YYC" : "VM",
 }
 
 // Set Console Title
 ConsoleSetTitle($"{game_display_name} | {VERSIONS.indev ? "dev_": ""}{VERSIONS.main}{VERSIONS.revision != 0 ? "_rev" + VERSIONS.revision : ""}");
+ABOUT_TAG = $"{VERSIONS.indev ? "dev_": ""}{VERSIONS.main}{VERSIONS.revision != 0 ? "_rev" + VERSIONS.revision : "" + "_" + VERSIONS.platform} | Renderer {VERSIONS.renderer} | Backend {VERSIONS.backend}";
+VERSION_TAG = $"{game_display_name} | {VERSIONS.indev ? "dev_": ""}{VERSIONS.main}{VERSIONS.revision != 0 ? "_rev" + VERSIONS.revision : ""}";
+
+// Add Attribution Text
+ABOUT = $"BactaTank Classic {ABOUT_TAG}\n" + ABOUT;
 
 // Context
 CONTEXT = BTContext.None;

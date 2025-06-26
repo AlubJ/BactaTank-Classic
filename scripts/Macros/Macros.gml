@@ -61,12 +61,16 @@ PRIMITIVES = {};
 #macro CONFIG		global.__config__
 #macro ASSET_PACKS	global.__assetPacks__
 #macro SCRIPTS		global.__scripts__
-#macro ABOUT		global.__about__
 #macro VERSIONS		global.__versions__
 #macro FILTERS		global.__filters__
 #macro CONTEXT		global.__context__
 #macro TEMPLATES	global.__templates__
 #macro SHORTCUTS	global.__shortcuts__
+#macro ABOUT		global.__about__
+
+// Tags
+#macro ABOUT_TAG	global.__aboutTag__
+#macro VERSION_TAG	global.__versionTag__
 
 // Themes
 #macro THEMES			global.__themes__

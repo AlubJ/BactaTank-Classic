@@ -35,9 +35,8 @@ function AboutModal() : Modal() constructor
 			ImGui.SetCursorPos((280 - 216) + 128, 54);
 			ImGui.Image(graBactaTankText, 0);
 			ImGui.SameLine();
-			var tag = $"{VERSIONS.indev ? "dev_": ""}{VERSIONS.main}{VERSIONS.revision != 0 ? "_rev" + VERSIONS.revision : ""} | Renderer {VERSIONS.renderer} | Backend {VERSIONS.backend}";
-			ImGui.SetCursorPos(((280 - 216) + 278) - floor(ImGui.CalcTextWidth(tag) / 2), 54 + 80);
-			ImGui.Text(tag);
+			ImGui.SetCursorPos(((280 - 216) + 278) - floor(ImGui.CalcTextWidth(ABOUT_TAG) / 2), 54 + 80);
+			ImGui.Text(ABOUT_TAG);
 			
 			// About (about.txt)
 			ImGui.Spacing();

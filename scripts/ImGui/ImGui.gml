@@ -4666,6 +4666,9 @@ function ImGui() constructor {
 		buffer_seek(__CmdBuffer, buffer_seek_start, 0);
 		if (buffer_read(__CmdBuffer, buffer_bool)) { // data->Valid
 			shader_set(shdImGui);
+			if (!surface_exists(__Surface)) {
+				__Surface = surface_create(max(1, __State.Display.Width), max(1, __State.Display.Height));	
+			}
 			surface_set_target(__Surface);
 			draw_clear_alpha(0, 0);
 			var list_count = buffer_read(__CmdBuffer, buffer_u32);
