@@ -44,5 +44,8 @@ if (WINDOW_SIZE[1] != window_get_height() && window_get_height() > 0)
 LAST_WINDOW_POSITION = [WINDOW_POSITION[0], WINDOW_POSITION[1]];
 WINDOW_POSITION = [window_get_x(), window_get_y()];
 
+// Update Delta Multiplier
+DELTA_MULTIPLIER = DELTA_HOOK * (delta_time / 1_000_000);
+
 // Update Game Frame
 //gameframe_update();

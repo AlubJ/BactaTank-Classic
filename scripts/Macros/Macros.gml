@@ -167,6 +167,10 @@ FILTERS = {
 #macro MODEL_NAME				global.__modelName__
 #macro DEFAULT_MATERIAL			global.__defaultMaterial__
 
+// Delta Multiplier
+#macro DELTA_MULTIPLIER			global.__deltaMultiplier__
+#macro DELTA_HOOK				60 // FPS expected
+
 // Default
 PROJECT = -1;
 

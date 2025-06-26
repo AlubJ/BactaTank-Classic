@@ -20,6 +20,8 @@ function PreferencesModal() : Modal() constructor
 	height = 512;
 	inKeybindMode = "";
 	
+	frameRateLimit = ["Unlimited", 30, 60, 100, 120, 144];
+	
 	static render = function()
 	{
 		// Set Modal Position and Size
@@ -75,10 +77,10 @@ function PreferencesModal() : Modal() constructor
 					// Show Tooltips
 					general.showTooltips = ImGui.CheckboxCustom("Show Tooltips", general.showTooltips, "##hiddenShowTooltips", space);
 					
-					// Lower Render Resolution
+					// Allow GSC
 					ImGui.SetCursorPos(width / 2 + 10, cursorPos[1]);
-					general.lowerRenderResolution = ImGui.CheckboxCustom2("Lower Render Resolution", general.lowerRenderResolution, "##hiddenLowerRenderResolution", space);
-					ImGui.ShowTooltip("Lowers the render resolution in the main viewport and secondary viewport for slower machines");
+					general.allowGSC = ImGui.CheckboxCustom2("Allow Scene Loading", general.allowGSC, "##hiddenAllowGSC", space);
+					ImGui.ShowTooltip("Allow .GSC scene files to be loaded (very unstable)");
 					
 					// Enable Scripts
 					//general.enableScripting = ImGui.CheckboxCustom("Enable Scripts (Requires Restart)", general.enableScripting, "##hiddenEnableScripting", space);
@@ -91,47 +93,6 @@ function PreferencesModal() : Modal() constructor
 					general.displayHex = ImGui.CheckboxCustom("Display Values As Hex", general.displayHex, "##hiddenDisplayValsInHex", space);
 					ImGui.ShowTooltip("Displays values in hexidecimal instead of decimal");
 					
-					// Disable Fancy Graphics
-					ImGui.SetCursorPos(width / 2 + 10, cursorPos[1]);
-					general.simplifyRendering = ImGui.CheckboxCustom2("Simplify Rendering", general.simplifyRendering, "##hiddenSimplifyRendering", space);
-					ImGui.ShowTooltip("Disables some of the fancy rendering features for slower machines (this will make the models look less accurate in the renderer)");
-					
-					// Cursor Pos
-					var cursorPos = [ImGui.GetCursorPosX(), ImGui.GetCursorPosY()];
-					
-					// Show Advanced Material Settings
-					general.advancedMaterialSettings = ImGui.CheckboxCustom("Advanced Material Settings", general.advancedMaterialSettings, "##hiddenAdvancedMaterialSettings", space);
-					ImGui.ShowTooltip("Enables advanced material settings (vertex format, assigned meshes, and extra material settings)");
-					
-					// Enable MSAA
-					ImGui.SetCursorPos(width / 2 + 10, cursorPos[1]);
-					var value = ImGui.CheckboxCustom2("Enable MSAA", general.enableMSAA, "##hiddenEnableMSAA", space);
-					ImGui.ShowTooltip("Enables multi-sample anti-aliasing for the viewport");
-					if (value != general.enableMSAA)
-					{
-						general.enableMSAA = value;
-						enableAA(general.enableMSAA ? true : false);
-					}
-					
-					// Cursor Pos
-					var cursorPos = [ImGui.GetCursorPosX(), ImGui.GetCursorPosY()];
-					
-					// Replace Vertex Format
-					general.replaceVertexFormat = ImGui.CheckboxCustom("Replace Vertex Format", general.replaceVertexFormat, "##hiddenReplaceVertexFormat", space);
-					ImGui.ShowTooltip("Enables replacing the vertex format when replacing a material");
-					
-					// Allow GSC
-					ImGui.SetCursorPos(width / 2 + 10, cursorPos[1]);
-					general.allowGSC = ImGui.CheckboxCustom2("Allow Scene Loading", general.allowGSC, "##hiddenAllowGSC", space);
-					ImGui.ShowTooltip("Allow .GSC scene files to be loaded (very unstable)");
-					
-					// Cursor Pos
-					var cursorPos = [ImGui.GetCursorPosX(), ImGui.GetCursorPosY()];
-					
-					// Enable System Console
-					general.consoleEnabled = ImGui.CheckboxCustom("Enable System Console (Requires Restart)", general.consoleEnabled, "##hiddenEnableSystemConsole", space);
-					ImGui.ShowTooltip("Enables the system console for debug / general outputting (requires a restart to take effect)");
-					
 					// Enable Texture Caching
 					ImGui.SetCursorPos(width / 2 + 10, cursorPos[1]);
 					general.cacheTextures = ImGui.CheckboxCustom2("Cache Textures", general.cacheTextures, "##hiddenCacheTextures", space);
@@ -140,9 +101,9 @@ function PreferencesModal() : Modal() constructor
 					// Cursor Pos
 					var cursorPos = [ImGui.GetCursorPosX(), ImGui.GetCursorPosY()];
 					
-					// Verbose Output
-					general.verboseOutput = ImGui.CheckboxCustom("Enable Verbose Console Output", general.verboseOutput, "##hiddenVerboseConsoleOutput", space);
-					ImGui.ShowTooltip("Enable verbose output in the console for debugging purposes");
+					// Show Advanced Material Settings
+					general.advancedMaterialSettings = ImGui.CheckboxCustom("Advanced Material Settings", general.advancedMaterialSettings, "##hiddenAdvancedMaterialSettings", space);
+					ImGui.ShowTooltip("Enables advanced material settings (vertex format, assigned meshes, and extra material settings)");
 					
 					// Show Viewer Debug Information
 					ImGui.SetCursorPos(width / 2 + 10, cursorPos[1]);
@@ -152,14 +113,44 @@ function PreferencesModal() : Modal() constructor
 					// Cursor Pos
 					var cursorPos = [ImGui.GetCursorPosX(), ImGui.GetCursorPosY()];
 					
-					// Export NU20 Last
-					general.exportNU20Last = ImGui.CheckboxCustom("Always Export Model Version 2", general.exportNU20Last, "##hiddenExportNU20Last", space);
-					ImGui.ShowTooltip("Export the model as version 2 (TCS version), this will decrease LB1/LIJ1 load times");
+					// Replace Vertex Format
+					general.replaceVertexFormat = ImGui.CheckboxCustom("Replace Vertex Format", general.replaceVertexFormat, "##hiddenReplaceVertexFormat", space);
+					ImGui.ShowTooltip("Enables replacing the vertex format when replacing a material");
 					
 					// Rebuild Dynamic Buffers
 					ImGui.SetCursorPos(width / 2 + 10, cursorPos[1]);
 					general.rebuildDynamicBuffers = ImGui.CheckboxCustom2("Rebuild Dynamic Buffers", general.rebuildDynamicBuffers, "##hiddenRebuildDynamicBuffers", space);
 					ImGui.ShowTooltip("This will rebuild the dynamic buffers of a mesh (this is required for custom dynamic buffers / editing of dynamic buffer meshes)");
+					
+					// Cursor Pos
+					var cursorPos = [ImGui.GetCursorPosX(), ImGui.GetCursorPosY()];
+					
+					// Enable System Console
+					general.consoleEnabled = ImGui.CheckboxCustom("Enable System Console (Requires Restart)", general.consoleEnabled, "##hiddenEnableSystemConsole", space);
+					ImGui.ShowTooltip("Enables the system console for debug / general outputting (requires a restart to take effect)");
+					
+					// Enable Texture Caching
+					//ImGui.SetCursorPos(width / 2 + 10, cursorPos[1]);
+					
+					// Cursor Pos
+					var cursorPos = [ImGui.GetCursorPosX(), ImGui.GetCursorPosY()];
+					
+					// Verbose Output
+					general.verboseOutput = ImGui.CheckboxCustom("Enable Verbose Console Output", general.verboseOutput, "##hiddenVerboseConsoleOutput", space);
+					ImGui.ShowTooltip("Enable verbose output in the console for debugging purposes");
+					
+					// Show Viewer Debug Information
+					//ImGui.SetCursorPos(width / 2 + 10, cursorPos[1]);
+					
+					// Cursor Pos
+					var cursorPos = [ImGui.GetCursorPosX(), ImGui.GetCursorPosY()];
+					
+					// Export NU20 Last
+					general.exportNU20Last = ImGui.CheckboxCustom("Always Export Model Version 2", general.exportNU20Last, "##hiddenExportNU20Last", space);
+					ImGui.ShowTooltip("Export the model as version 2 (TCS version), this will decrease LB1/LIJ1 load times");
+					
+					// Rebuild Dynamic Buffers
+					//ImGui.SetCursorPos(width / 2 + 10, cursorPos[1]);
 					
 					// Allow Version 1 GHGs
 					general.allowVersion1 = ImGui.CheckboxCustom("Allow Version 1 Model Loading", general.allowVersion1, "##hiddenAllowVersion1", space);
@@ -182,6 +173,77 @@ function PreferencesModal() : Modal() constructor
 					ImGui.EndTabItem();
 				}
 				
+				// Graphics Tab
+				if (ImGui.BeginTabItem("Graphics"))
+				{
+					// Spacing
+					ImGui.Spacing();
+					
+					// Graphics
+					ImGui.Text("Graphics");
+					ImGui.Separator();
+					
+					// Get Cursor Pos
+					var cursorPos = [ImGui.GetCursorPosX(), ImGui.GetCursorPosY()];
+					
+					// Reset Button
+					ImGui.SetCursorPos(width - 28, cursorPos[1] - 26);
+					if (ImGui.ImageButton("##hiddenResetToDefault", graReload, 0, c_white, 1, c_white, 0))
+					{
+						SETTINGS = newSettings();
+						ENVIRONMENT.applyTheme(SETTINGS.theme);
+					}
+					ImGui.ShowTooltip("Reset settings back to default");
+					
+					// Spacing
+					ImGui.Spacing();
+					
+					// General
+					var general = SETTINGS;
+					
+					// Cursor Pos
+					var cursorPos = [ImGui.GetCursorPosX(), ImGui.GetCursorPosY()];
+					
+					// Frame Limit
+					var limit = frameRateLimit[ImGui.ComboBoxCustom("Frame Rate Limit", array_get_index(frameRateLimit, general.frameLimit), frameRateLimit, "##hiddenFrameLimit", space, NO_DEFAULT)];
+					ImGui.ShowTooltip("Sets the frame rate limit that BactaTank Classic should use, your display refresh rate is automatically detected and an appropriate refresh rate is chosen by default");
+					if (limit != general.frameLimit)
+					{
+						general.frameLimit = limit;
+						game_set_speed(general.frameLimit != "Unlimited" ? general.frameLimit : 0, gamespeed_fps);
+					}
+					
+					// Enable MSAA
+					var value = ImGui.CheckboxCustom("Enable MSAA", general.enableMSAA, "##hiddenEnableMSAA", space);
+					ImGui.ShowTooltip("Enables multi-sample anti-aliasing for the viewport");
+					if (value != general.enableMSAA)
+					{
+						general.enableMSAA = value;
+						enableAA(general.enableMSAA ? true : false, general.enableVSync);
+					}
+					
+					// Enable VSync
+					var value = ImGui.CheckboxCustom("Enable VSync", general.enableVSync, "##hiddenEnableVSync", space);
+					ImGui.ShowTooltip("Enables VSync for the entire program");
+					if (value != general.enableVSync)
+					{
+						general.enableVSync = value;
+						enableAA(general.enableMSAA, general.enableVSync);
+					}
+					
+					// Simplify Rendering
+					general.simplifyRendering = ImGui.CheckboxCustom("Simplify Rendering", general.simplifyRendering, "##hiddenSimplifyRendering", space);
+					ImGui.ShowTooltip("Disables some of the fancy rendering features for slower machines (this will make the models look less accurate in the renderer)");
+					
+					// Lower Render Resolution
+					general.lowerRenderResolution = ImGui.CheckboxCustom("Lower Render Resolution", general.lowerRenderResolution, "##hiddenLowerRenderResolution", space);
+					ImGui.ShowTooltip("Lowers the render resolution in the main viewport and secondary viewport for slower machines");
+					
+					// End Tab Item
+					ImGui.EndTabItem();
+				}
+				
+				// Viewer Settings
 				if (ImGui.BeginTabItem("Viewer"))
 				{
 					// Spacing

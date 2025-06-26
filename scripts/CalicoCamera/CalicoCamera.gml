@@ -229,9 +229,9 @@ function CalicoCamera() constructor
 	{
 		if (smooth)
 		{
-			lookDirectionSmooth += (lookDirection - lookDirectionSmooth) / smoothStep;
-			lookPitchSmooth += (lookPitch - lookPitchSmooth) / smoothStep;
-			lookDistanceSmooth += (lookDistance - lookDistanceSmooth) / smoothStep;
+			lookDirectionSmooth += ((lookDirection - lookDirectionSmooth) / smoothStep) * DELTA_MULTIPLIER;
+			lookPitchSmooth += ((lookPitch - lookPitchSmooth) / smoothStep) * DELTA_MULTIPLIER;
+			lookDistanceSmooth += ((lookDistance - lookDistanceSmooth) / smoothStep) * DELTA_MULTIPLIER;
 		}
 		else
 		{
