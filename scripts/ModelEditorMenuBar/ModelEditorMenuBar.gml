@@ -165,6 +165,7 @@ function ModelEditorMenuBar() constructor
 				{
 					ImGui.Separator();
 					if (ImGui.MenuItem("Download Latest Update")) url_open("https://github.com/AlubJ/BactaTank-Classic/releases/latest/");
+					if (ImGui.MenuItem("Update")) update();
 				}
 			}
 			

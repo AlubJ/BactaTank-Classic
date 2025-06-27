@@ -1158,3 +1158,9 @@ function getRefreshRate()
 	else if (rr >= 120 && rr < 144) return 120;
 	else return 144;
 }
+
+function update()
+{
+	ExecuteShell(WORKING_DIRECTORY + "updateHelper/BactaTankUpdateHelper.exe", $"--requestUpdate --{string_lower(VERSIONS.platform)} \"{string_replace_all(WORKING_DIRECTORY, "\\", "/")}\"");
+	time_source_start(time_source_create(time_source_global, 1, time_source_units_seconds, function() { game_end() }));
+}
