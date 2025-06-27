@@ -8,7 +8,7 @@ assignees: ''
 ---
 
 **Version**
-Please state which version you experienced the bug on, the version is found at the top right of the window.
+Please state which version you experienced the bug on, the version is found at the top right of the window. (Please include whether you are using YYC or VM for version v0.3.3 or above)
 
 **Describe the bug**
 A clear and concise description of what the bug is.
