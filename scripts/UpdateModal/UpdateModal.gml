@@ -19,7 +19,7 @@ function UpdateModal() : Modal() constructor
 	width = 420;
 	height = 132;
 	
-	totalButtonWidth = 80 * 2 + 8 * 2;
+	totalButtonWidth = 80 * 3 + 8 * 3;
 	
 	static render = function()
 	{
@@ -45,19 +45,30 @@ function UpdateModal() : Modal() constructor
 			// Get Cursor Position
 			var cursorPos = [ImGui.GetCursorPosX(), ImGui.GetCursorPosY()];
 			
-			// Center Button
+			// Center
 			ImGui.SetCursorPos(width / 2 - totalButtonWidth / 2, cursorPos[1] + 2);
 			
-			// Open Project or Model
+			// Auto Download
 			if (ImGui.Button("Download", 80))
+			{
+				update();
+			}
+			ImGui.ShowTooltip("Automatically downloads the update.");
+			
+			// Center Button
+			ImGui.SetCursorPos(width / 2 - totalButtonWidth / 2 + 88, cursorPos[1] + 2);
+			
+			// Open Project or Model
+			if (ImGui.Button("GitHub", 80))
 			{
 				url_open("https://github.com/AlubJ/BactaTank-Classic/releases/latest");
 				ImGui.CloseCurrentPopup();
 				ENVIRONMENT.openModal("Welcome");
 			}
+			ImGui.ShowTooltip("Opens the GitHub release in your browser, you can manually download the update from here.");
 			
 			// Center Button
-			ImGui.SetCursorPos(width / 2 - totalButtonWidth / 2 + 88, cursorPos[1] + 2);
+			ImGui.SetCursorPos(width / 2 - totalButtonWidth / 2 + 176, cursorPos[1] + 2);
 			
 			// Open Project or Model
 			if (ImGui.Button("Ignore", 80))
