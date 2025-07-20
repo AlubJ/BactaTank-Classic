@@ -29,7 +29,7 @@ BactaTank Classic is a character creator and viewer for LEGO Star Wars: The Comp
 ## Supported Platforms
 Windows.
 
-Okay, jokes asside, BactaTank Classic is only officially supported on Windows 10 or 11. I have heard good things about running it through wine, although I haven't tried it myself.
+Okay, jokes asside, BactaTank Classic is only officially supported on Windows 10 or 11. Regarding Linux; I have heard good things about running it through wine, although I haven't tried it myself.
 
 MacOS you ask? haha... wait you're serious? Uhh no.
 
