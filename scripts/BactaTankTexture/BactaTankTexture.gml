@@ -98,17 +98,19 @@ function BactaTankTexture() constructor
 		file = TEMP_DIRECTORY + name;
 		
 		// Convert DDS to PNG
-		if (file_exists(TEMP_DIRECTORY + @"_textures\" + name + ".png") && SETTINGS.cacheTextures)
-		{
-			ConsoleLog($"    Loading Cached Texture \"{TEMP_DIRECTORY + @"_textures\" + name + ".png"}\"", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer));
-			sprite = sprite_add(TEMP_DIRECTORY + @"_textures\" + name + ".png", 1, false, false, 0, 0);
-		}
-		else
-		{
+		//if (file_exists(TEMP_DIRECTORY + @"_textures\" + name + ".png") && SETTINGS.cacheTextures)
+		//{
+		//	ConsoleLog($"    Loading Cached Texture \"{TEMP_DIRECTORY + @"_textures\" + name + ".png"}\"", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer));
+		//	sprite = sprite_add(TEMP_DIRECTORY + @"_textures\" + name + ".png", 1, false, false, 0, 0);
+		//}
+		//else
+		//{
+		var timer = current_time;
 			ConsoleLog($"    Decoding DDS Texture", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer));
 			sprite = ddsLoad(data);
 			if (SETTINGS.cacheTextures) sprite_save(sprite, 0, TEMP_DIRECTORY + @"_textures\" + name + ".png");
-		}
+		show_debug_message($"Texture {_index} took: {current_time - timer}ms");
+		//}
 		
 		// Set Texture
 		texture = sprite_get_texture(sprite, 0);
