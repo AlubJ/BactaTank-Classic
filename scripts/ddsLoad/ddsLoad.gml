@@ -16,6 +16,16 @@
 
 function ddsLoad(buffer)
 {
+	// Decode DDS
+	var _texture = new Texture(buffer);
+	var _sprite = _texture.toSprite();
+	_texture.destroy();
+	
+	return _sprite;
+}
+
+function ddsLoadOld(buffer)
+{
 	// Skip ahead a little
 	buffer_seek(buffer, buffer_seek_start, 0x0c);
 	

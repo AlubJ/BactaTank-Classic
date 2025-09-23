@@ -596,9 +596,14 @@ function BactaTankBMesh() constructor
 			dynamicBuffers[i] = [];
 			
 			// Read Position Data
-			repeat (vertexCount * 3)
+			repeat (vertexCount)
 			{
-				array_push(dynamicBuffers[i], buffer_read(buffer, buffer_f32));
+				var xx = buffer_read(buffer, buffer_f32);
+				var yy = buffer_read(buffer, buffer_f32);
+				var zz = buffer_read(buffer, buffer_f32);
+				array_push(dynamicBuffers[i], xx);
+				array_push(dynamicBuffers[i], zz);
+				array_push(dynamicBuffers[i], -yy);
 			}
 			
 			// Value Checker (Sometimes dynamic buffers aren't stored in the GHG so these are just put into the bmesh file as all zeros)

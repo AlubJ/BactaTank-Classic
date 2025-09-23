@@ -1,3 +1,4 @@
+// Feather disable all
 function ImGui() constructor {
 	
 	#region Custom Methods

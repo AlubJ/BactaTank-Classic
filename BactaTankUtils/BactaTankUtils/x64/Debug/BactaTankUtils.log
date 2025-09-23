@@ -1,7 +1,8 @@
 ﻿  Console.cpp
-  FileDropper.cpp
-  FileDropperDLL.cpp
-  main.cpp
+D:\Projects\BactaTank\BactaTank Classic\BactaTankUtils\BactaTankUtils\Console.cpp(118,12): warning C4311: 'type cast': pointer truncation from 'HINSTANCE' to 'int'
+D:\Projects\BactaTank\BactaTank Classic\BactaTankUtils\BactaTankUtils\Console.cpp(118,12): warning C4302: 'type cast': truncation from 'HINSTANCE' to 'int'
   TextureUtils.cpp
   Generating Code...
-D:\Projects\BactaTank\BactaTank Classic\BactaTankUtils\BactaTankUtils\Console.cpp(139,1): error C4716: 'ExecuteShell': must return a value
+  LINK : D:\Projects\BactaTank\BactaTank Classic\BactaTankUtils\x64\Debug\BactaTankUtils.dll not found or not built by the last incremental link; performing full link
+     Creating library D:\Projects\BactaTank\BactaTank Classic\BactaTankUtils\x64\Debug\BactaTankUtils.lib and object D:\Projects\BactaTank\BactaTank Classic\BactaTankUtils\x64\Debug\BactaTankUtils.exp
+  BactaTankUtils.vcxproj -> D:\Projects\BactaTank\BactaTank Classic\BactaTankUtils\x64\Debug\BactaTankUtils.dll

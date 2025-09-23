@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"Texture",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"Texture",
+  "parent":{
+    "name":"DDSTools",
+    "path":"folders/Utils/DDSTools.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}
