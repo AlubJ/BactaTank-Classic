@@ -447,6 +447,48 @@ vec2 getScroll()
 	return scrollOffset;
 }
 
+vec2 cubeToCrossUV(vec3 dir)
+{
+    vec3 adir = abs(dir);
+    float sc, tc, ma;
+    vec2 uv;
+    int face;
+
+    if (adir.x >= adir.y && adir.x >= adir.z) {
+        ma = adir.x;
+        if (dir.x > 0.0) { sc = -dir.z; tc = -dir.y; face = 0; } // +X
+        else              { sc =  dir.z; tc = -dir.y; face = 1; } // -X
+    } else if (adir.y >= adir.x && adir.y >= adir.z) {
+        ma = adir.y;
+        if (dir.y > 0.0) { sc =  dir.x; tc =  dir.z; face = 2; } // +Y
+        else              { sc =  dir.x; tc = -dir.z; face = 3; } // -Y
+    } else {
+        ma = adir.z;
+        if (dir.z > 0.0) { sc =  dir.x; tc = -dir.y; face = 4; } // +Z
+        else              { sc = -dir.x; tc = -dir.y; face = 5; } // -Z
+    }
+
+    uv = vec2(0.5 * (sc / ma + 1.0), 0.5 * (tc / ma + 1.0));
+
+    // ---- seam fix ----
+    const float fw = 1.0 / 4.0;
+    const float fh = 1.0 / 3.0;
+    const float border = 4. / 128.0;  // ~half texel if your face is 256x256
+
+    // Push UV slightly inward from edge
+    uv = clamp(uv, border, 1.0 - border);
+
+    vec2 offset;
+    if (face == 0)      offset = vec2(2.0*fw, 1.0*fh);
+    else if (face == 1) offset = vec2(0.0*fw, 1.0*fh);
+    else if (face == 2) offset = vec2(1.0*fw, 0.0*fh);
+    else if (face == 3) offset = vec2(1.0*fw, 2.0*fh);
+    else if (face == 4) offset = vec2(1.0*fw, 1.0*fh);
+    else                offset = vec2(3.0*fw, 1.0*fh);
+
+    return offset + uv * vec2(fw, fh);
+}
+
 #endregion
 
 // Main
@@ -511,9 +553,12 @@ void main()
 	else if (uMetallic) specular = getSpecular(normal, specularStrength, surfaceUVs, true);
 	else specular = vec3(0.0);
 	
+	// Reflection
+	vec3 I = normalize(uCameraPosition - vWorldPosition);
+	
     // Cubemap
 	vec3 cubemap;
-	if (uUseCubemap) cubemap = getCubeMapColor(normal).rgb;
+	if (uUseCubemap) cubemap = texture2D(tCubemap, cubeToCrossUV(reflect(-I, normal))).rgb;
 	else cubemap = vec3(0.0);
 	
     // ShineMap

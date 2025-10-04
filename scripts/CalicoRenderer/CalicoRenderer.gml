@@ -296,7 +296,7 @@ function CalicoRenderer() constructor
 				shader_set_uniform_f_array(shader_get_uniform(shader, "uLightDataPrimary"), lightingDataPrimary);
 				shader_set_uniform_f_array(shader_get_uniform(shader, "uLightDataSecondary"), lightingDataSecondary);
 				shader_set_uniform_f_array(shader_get_uniform(shader, "uLightDataTertiary"), lightingDataTertiary);
-				shader_set_uniform_matrix_array(shader_get_uniform(shader, "uInvertedViewMatrix"), matrix_inverse(matrix_get(matrix_view)));
+				//shader_set_uniform_matrix_array(shader_get_uniform(shader, "uInvertedViewMatrix"), matrix_inverse(matrix_get(matrix_view)));
 				
 				//shader_set_uniform_matrix_array(shader_get_uniform(shader, "bones"), ctrlScene.test.armature.bonesAnimated);
 				
@@ -311,7 +311,12 @@ function CalicoRenderer() constructor
 				// Set Textures
 				if (material.specularID != -1 && !SETTINGS.simplifyRendering)				texture_set_stage(shader_get_sampler_index(shader, "tSpecularMap"), textures[material.specularID].texture);
 				if (material.normalID != -1 && !SETTINGS.simplifyRendering)					texture_set_stage(shader_get_sampler_index(shader, "tNormalMap"), textures[material.normalID].texture);
-				if (material.cubemapID != -1 && !SETTINGS.simplifyRendering)				texture_set_stage(shader_get_sampler_index(shader, "tCubemap"), textures[material.cubemapID].texture); //sprite_get_texture(texture3, 0));
+				if (material.cubemapID != -1 && !SETTINGS.simplifyRendering)
+				{
+					gpu_set_tex_mip_enable_ext(shader_get_sampler_index(shader, "tCubemap"), mip_off);
+					gpu_set_tex_filter_ext(shader_get_sampler_index(shader, "tCubemap"), false);
+					texture_set_stage(shader_get_sampler_index(shader, "tCubemap"), textures[material.cubemapID].texture); //sprite_get_texture(texture3, 0));
+				}
 				if (material.shineID != -1 && !SETTINGS.simplifyRendering)					texture_set_stage(shader_get_sampler_index(shader, "tShineMap"), textures[material.shineID].texture);
 				//texture_set_stage(shader_get_sampler_index(shader, "tCubemap"), sprite_get_texture(GoldCubemap, 0));
 				
