@@ -89,7 +89,13 @@ global.__attributeSizes = [8, 12, 4, 8];
 #macro BT_VERTEX_ATTRIBUTE_SIZES global.__attributeSizes
 
 // DXT Compressions
-global.DXTCompression = ["", "DXT1", "", "", "DXT3", "", "DXT5"];
+enum _BT_COMPRESSION_TYPE
+{
+	DXT1,
+	DXT3,
+	DXT5,
+}
+global.DXTCompression = ["DXT1", "DXT3", "DXT5"];
 #macro BT_DXT_COMPRESSION global.DXTCompression
 
 // Shader Settings

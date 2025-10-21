@@ -27,6 +27,7 @@
         {"$GMExtensionFunction":"","%Name":"DDSWidth","argCount":0,"args":[1,],"documentation":"","externalName":"DDSWidth","help":"","hidden":false,"kind":1,"name":"DDSWidth","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":2,},
         {"$GMExtensionFunction":"","%Name":"DDSHeight","argCount":0,"args":[1,],"documentation":"","externalName":"DDSHeight","help":"","hidden":false,"kind":1,"name":"DDSHeight","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":2,},
         {"$GMExtensionFunction":"","%Name":"DDSCubemap","argCount":0,"args":[1,],"documentation":"","externalName":"DDSCubemap","help":"","hidden":false,"kind":1,"name":"DDSCubemap","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":2,},
+        {"$GMExtensionFunction":"","%Name":"DDSCompression","argCount":0,"args":[1,],"documentation":"","externalName":"DDSCompression","help":"","hidden":false,"kind":1,"name":"DDSCompression","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":2,},
       ],"init":"","kind":1,"name":"","order":[],"origname":"","ProxyFiles":[
         {"$GMProxyFile":"","%Name":"DDSTool.dll","name":"DDSTool.dll","resourceType":"GMProxyFile","resourceVersion":"2.0","TargetMask":6,},
       ],"resourceType":"GMExtensionFile","resourceVersion":"2.0","uncompress":false,"usesRunnerInterface":false,},

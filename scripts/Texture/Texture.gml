@@ -40,6 +40,9 @@ function Texture(_source, _width = 0, _height = 0, _compressionType = _COMPRESSI
 			// Srote Width and Height
 			width = DDSWidth(texturePointer);
 			height = DDSHeight(texturePointer);
+			
+			// Get Cubemap
+			cubemap = DDSCubemap(texturePointer);
 		}
 		else
 		{
@@ -175,6 +178,12 @@ function Texture(_source, _width = 0, _height = 0, _compressionType = _COMPRESSI
 			// Delete Buffer
 			buffer_delete(_textureBuffer);
 		}
+	}
+	
+	/// @func getCompressionType()
+	static getCompressionType = function()
+	{
+		return DDSCompression(texturePointer);
 	}
 	
 	/// @func destroy()

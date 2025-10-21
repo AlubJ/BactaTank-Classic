@@ -47,7 +47,7 @@ function BactaTankTexture() constructor
 		ConsoleLog($"    Width:        {width}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) - 4);
 		height = buffer_read(buffer, buffer_u32);
 		ConsoleLog($"    Height:       {height}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) - 4);
-			
+		
 		// NU20 Last MetaData
 		if (_model.nu20Offset == 0)
 		{
@@ -84,33 +84,24 @@ function BactaTankTexture() constructor
 			if (width < 0) width = -width;
 		}
 		
-		// Compression
-		//compression = array_get_index(BT_DXT_COMPRESSION, buffer_peek(buffer, buffer_tell(buffer) + 0x54, buffer_string));
-		//ConsoleLog($"    Compression:   {BT_DXT_COMPRESSION[compression]}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) + 0x54);
-		
 		// Texture Buffer
 		data = buffer_create(size, buffer_fixed, 1);
 		buffer_copy(buffer, buffer_tell(buffer), size, data, 0);
-		//ConsoleLog($"	Data: 0x{self.textureMetaData[i].size}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer));
 		
-		// Get Textures File Name For Saving
-		var name = buffer_sha1(data, 0, size);
-		file = TEMP_DIRECTORY + name;
+		// Log
+		ConsoleLog($"    Decoding DDS Texture", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer));
 		
-		// Convert DDS to PNG
-		//if (file_exists(TEMP_DIRECTORY + @"_textures\" + name + ".png") && SETTINGS.cacheTextures)
-		//{
-		//	ConsoleLog($"    Loading Cached Texture \"{TEMP_DIRECTORY + @"_textures\" + name + ".png"}\"", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer));
-		//	sprite = sprite_add(TEMP_DIRECTORY + @"_textures\" + name + ".png", 1, false, false, 0, 0);
-		//}
-		//else
-		//{
-		var timer = current_time;
-			ConsoleLog($"    Decoding DDS Texture", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer));
-			sprite = ddsLoad(data);
-			if (SETTINGS.cacheTextures) sprite_save(sprite, 0, TEMP_DIRECTORY + @"_textures\" + name + ".png");
-		show_debug_message($"Texture {_index} took: {current_time - timer}ms");
-		//}
+		// Decode DDS 
+		var _texture = new Texture(data);
+		
+		// Get the textures sprite
+		sprite = _texture.toSprite();
+		
+		// Get the compression
+		compression = _texture.getCompressionType();
+		
+		// Destroy Texture
+		_texture.destroy();
 		
 		// Set Texture
 		texture = sprite_get_texture(sprite, 0);
@@ -133,7 +124,6 @@ function BactaTankTexture() constructor
 	#endregion
 	
 	#region Serialize / Deserialize
-	
 	
 	
 	#endregion
@@ -163,19 +153,27 @@ function BactaTankTexture() constructor
 		data = buffer_load(filepath);
 		
 		// Get Metadata
-		width = buffer_peek(data, 0x10, buffer_u32);
-		height = buffer_peek(data, 0x0c, buffer_u32);
 		size = buffer_get_size(data);
-		compression = array_get_index(BT_DXT_COMPRESSION, buffer_peek(data, 0x54, buffer_string));
 		
-		// Get Textures File Name For Saving
-		var name = buffer_sha1(data, 0, size);
-		file = TEMP_DIRECTORY + @"\" + name;
+		// Decode DDS 
+		var _texture = new Texture(data);
 		
-		// Convert DDS to PNG
-		sprite = ddsLoad(data);
-		sprite_save(sprite, 0, TEMP_DIRECTORY + @"\_textures\" + name + ".png");
+		// Get the textures sprite
+		sprite = _texture.toSprite();
+		
+		// Get width and height
+		width = _texture.width;
+		height = _texture.height;
+		
+		// Get the compression
+		compression = _texture.getCompressionType();
+		
+		// Destroy Texture
+		_texture.destroy();
+		
+		// Set Texture
 		texture = sprite_get_texture(sprite, 0);
+		//sprite_save(sprite, 0, TEMP_DIRECTORY + @"\_textures\" + name + ".png");
 		
 		// Set Last Filepath
 		lastFilename = filepath;
