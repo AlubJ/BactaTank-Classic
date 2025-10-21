@@ -183,13 +183,13 @@ surface_resize(application_surface, WINDOW_SIZE[0], WINDOW_SIZE[1]);
 display_set_gui_size(WINDOW_SIZE[0], WINDOW_SIZE[1]);
 
 // Window Maximise
-if (SETTINGS.window.maximised) time_source_start(time_source_create(time_source_game, 2, time_source_units_frames, function() { SetWindowMaximised(window_handle()); }));
+if (SETTINGS.window.maximised) DoLater(2, function() { SetWindowMaximised(window_handle()); });
 
 // Command Hook
 window_command_hook(window_command_close);
 
 // Title Bar
-if (os_version >= 655360) SetWindowTitleBarDark(window_handle());
+//if (os_version >= 655360) SetWindowTitleBarDark(window_handle());
 
 #endregion
 

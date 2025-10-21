@@ -762,7 +762,8 @@ function BactaTankMesh() constructor
 			}
 			
 			// Timesource
-			time_source_start(time_source_create(time_source_game, 3, time_source_units_frames, func, [self, lastFilename, _model]));
+			//time_source_start(time_source_create(time_source_game, 3, time_source_units_frames, func, [self, lastFilename, _model]));
+			DoLater(3, func, self, lastFilename, _model);
 		}
 	}
 	

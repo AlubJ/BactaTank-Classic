@@ -16,7 +16,7 @@
   "exportToGame":true,
   "extensionVersion":"0.0.1",
   "files":[
-    {"$GMExtensionFile":"","%Name":"","constants":[],"copyToTargets":-1,"filename":"DDSTool.dll","final":"","functions":[
+    {"$GMExtensionFile":"","%Name":"","constants":[],"copyToTargets":3035426170322551022,"filename":"DDSTool.dll","final":"","functions":[
         {"$GMExtensionFunction":"","%Name":"DecodeDDS","argCount":0,"args":[1,2,1,2,],"documentation":"","externalName":"DecodeDDS","help":"","hidden":false,"kind":1,"name":"DecodeDDS","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":2,},
         {"$GMExtensionFunction":"","%Name":"DDSCreate","argCount":0,"args":[2,2,2,2,2,],"documentation":"","externalName":"DDSCreate","help":"","hidden":false,"kind":1,"name":"DDSCreate","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":2,},
         {"$GMExtensionFunction":"","%Name":"DDSCompress","argCount":0,"args":[1,1,],"documentation":"","externalName":"DDSCompress","help":"","hidden":false,"kind":1,"name":"DDSCompress","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":2,},
@@ -26,6 +26,7 @@
         {"$GMExtensionFunction":"","%Name":"DDSLoad","argCount":0,"args":[1,2,],"documentation":"","externalName":"DDSLoad","help":"","hidden":false,"kind":1,"name":"DDSLoad","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":2,},
         {"$GMExtensionFunction":"","%Name":"DDSWidth","argCount":0,"args":[1,],"documentation":"","externalName":"DDSWidth","help":"","hidden":false,"kind":1,"name":"DDSWidth","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":2,},
         {"$GMExtensionFunction":"","%Name":"DDSHeight","argCount":0,"args":[1,],"documentation":"","externalName":"DDSHeight","help":"","hidden":false,"kind":1,"name":"DDSHeight","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":2,},
+        {"$GMExtensionFunction":"","%Name":"DDSCubemap","argCount":0,"args":[1,],"documentation":"","externalName":"DDSCubemap","help":"","hidden":false,"kind":1,"name":"DDSCubemap","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":2,},
       ],"init":"","kind":1,"name":"","order":[],"origname":"","ProxyFiles":[
         {"$GMProxyFile":"","%Name":"DDSTool.dll","name":"DDSTool.dll","resourceType":"GMProxyFile","resourceVersion":"2.0","TargetMask":6,},
       ],"resourceType":"GMExtensionFile","resourceVersion":"2.0","uncompress":false,"usesRunnerInterface":false,},

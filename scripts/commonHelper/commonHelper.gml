@@ -123,7 +123,8 @@ function openProjectOrModel(file)
 		}
 		
 		// Timesource
-		time_source_start(time_source_create(time_source_game, 5, time_source_units_frames, func, [file, string_split(filename_name(file), ".")[0]]));
+		//time_source_start(time_source_create(time_source_game, 5, time_source_units_frames, func, [file, string_split(filename_name(file), ".")[0]]));
+		DoLater(5, func, file, string_split(filename_name(file), ".")[0]);
 	}
 }
 
@@ -161,7 +162,8 @@ function uiSaveModel(file)
 		}
 		
 		// Timesource
-		time_source_start(time_source_create(time_source_game, 5, time_source_units_frames, func, [file]));
+		//time_source_start(time_source_create(time_source_game, 5, time_source_units_frames, func, [file]));
+		DoLater(5, func, file);
 	}
 }
 
@@ -530,7 +532,8 @@ function uiReplaceTexture(model, index)
 		}
 						
 		// Timesource
-		time_source_start(time_source_create(time_source_game, 3, time_source_units_frames, func, [model, index, file]));
+		//time_source_start(time_source_create(time_source_game, 3, time_source_units_frames, func, [model, index, file]));
+		DoLater(3, func, model, index, file);
 	}
 }
 
@@ -632,7 +635,8 @@ function uiReplaceMesh(model, index)
 		}
 						
 		// Timesource
-		time_source_start(time_source_create(time_source_game, 3, time_source_units_frames, func, [model, index, file]));
+		//time_source_start(time_source_create(time_source_game, 3, time_source_units_frames, func, [model, index, file]));
+		DoLater(3, func, model, index, file);
 	}
 }
 
@@ -747,7 +751,8 @@ function uiExportModel(model)
 		}
 						
 		// Timesource
-		time_source_start(time_source_create(time_source_game, 3, time_source_units_frames, func, [model, file]));
+		//time_source_start(time_source_create(time_source_game, 3, time_source_units_frames, func, [model, file]));
+		DoLater(3, func, model, file);
 	}
 }
 
@@ -757,7 +762,7 @@ function uiExportModelFromPreview(model, layers)
 	var file = get_save_filename_ext(FILTERS.exportModel, $"Model", SETTINGS.lastModelPath, "Save Model");
 	if (file != "" && ord(file) != 0)
 	{
-		// User Feedback
+		// User Feedback 
 		ENVIRONMENT.openInfoModal("Please wait", "Exporting Model");
 		window_set_cursor(cr_hourglass);
 		
@@ -776,7 +781,8 @@ function uiExportModelFromPreview(model, layers)
 		}
 						
 		// Timesource
-		time_source_start(time_source_create(time_source_game, 3, time_source_units_frames, func, [model, file, layers]));
+		//time_source_start(time_source_create(time_source_game, 3, time_source_units_frames, func, [model, file, layers]));
+		DoLater(3, func, model, file, layers);
 	}
 }
 

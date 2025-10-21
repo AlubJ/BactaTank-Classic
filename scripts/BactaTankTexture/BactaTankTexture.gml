@@ -210,7 +210,8 @@ function BactaTankTexture() constructor
 			}
 			
 			// Timesource
-			time_source_start(time_source_create(time_source_game, 3, time_source_units_frames, func, [self, lastFilename]));
+			//time_source_start(time_source_create(time_source_game, 3, time_source_units_frames, func, [self, lastFilename]));
+			DoLater(3, func, self, lastFilename);
 		}
 	}
 	

@@ -20,13 +20,14 @@ enum _COMPRESSION_TYPE
 	RGBA_UNORM,		// No Compression
 }
 
-function Texture(_source, _width = 0, _height = 0, _compressionType = _COMPRESSION_TYPE.RGBA_UNORM, _generateMipmaps = false, _errorDiffuseDither = false) constructor
+function Texture(_source, _width = 0, _height = 0, _compressionType = _COMPRESSION_TYPE.RGBA_UNORM, _generateMipmaps = false, _errorDiffuseDither = false, _cubemap = false) constructor
 {
 	// Default Variables
 	texturePointer = pointer_null;
 	width = _width;
 	height = _height;
 	compressionType = _compressionType;
+	cubemap = _cubemap;
 	
 	// Let's Decode
 	if (buffer_exists(_source))
@@ -51,6 +52,9 @@ function Texture(_source, _width = 0, _height = 0, _compressionType = _COMPRESSI
 			// Srote Width and Height
 			width = DDSWidth(texturePointer);
 			height = DDSHeight(texturePointer);
+			
+			// Get Cubemap
+			cubemap = DDSCubemap(texturePointer);
 		}
 	}
 	else if (sprite_exists(_source))
@@ -88,6 +92,9 @@ function Texture(_source, _width = 0, _height = 0, _compressionType = _COMPRESSI
 			// Srote Width and Height
 			width = DDSWidth(texturePointer);
 			height = DDSHeight(texturePointer);
+			
+			// Get Cubemap
+			cubemap = DDSCubemap(texturePointer);
 			
 			// Free Buffer
 			buffer_delete(_buffer);

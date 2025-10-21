@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"DoLaterCreateParent",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"DoLaterCreateParent",
+  "parent":{
+    "name":"Parents",
+    "path":"folders/Vendors/DoLater/Parents.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

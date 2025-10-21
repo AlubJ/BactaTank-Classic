@@ -79,7 +79,8 @@ function DragAndDropController()
 						}
 						
 						// Timesource
-						time_source_start(time_source_create(time_source_game, 3, time_source_units_frames, func, [PROJECT.currentModel, index, files[0]]));
+						//time_source_start(time_source_create(time_source_game, 3, time_source_units_frames, func, [PROJECT.currentModel, index, files[0]]));
+						DoLater(3, func, PROJECT.currentModel, index, files[0]);
 					}
 				}
 			}
@@ -146,7 +147,8 @@ function DragAndDropController()
 						}
 						
 						// Timesource
-						time_source_start(time_source_create(time_source_game, 3, time_source_units_frames, func, [PROJECT.currentModel, index, files[0]]));
+						//time_source_start(time_source_create(time_source_game, 3, time_source_units_frames, func, [PROJECT.currentModel, index, files[0]]));
+						DoLater(3, func, PROJECT.currentModel, index, files[0]);
 					}
 				}
 			}
