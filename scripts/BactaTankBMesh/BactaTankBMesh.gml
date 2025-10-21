@@ -661,6 +661,7 @@ function BactaTankBMesh() constructor
 				colourSet1: [1, 1, 1, 1],
 				colourSet2: [1, 1, 1, 1],
 				uvSet1: [0, 0],
+				uvSet2: [0, 0],
 				blendIndices: [0, 0, 0, 0],
 				blendWeights: [0, 0, 0, 0],
 				lightDirection: [],
