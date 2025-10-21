@@ -84,7 +84,7 @@ VERSIONS = {
 	main: "v0.3.4",
 	renderer: "v1.2.3",
 	backend: "v0.3.4",
-	revision: "2",
+	revision: "3",
 	platform: code_is_compiled() ? "YYC" : "VM",
 }
 
