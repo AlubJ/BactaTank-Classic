@@ -786,33 +786,55 @@ function uiExportModelFromPreview(model, layers)
 	}
 }
 
-function uiSwizzleNormalMap(flipGreenChannel = false)
+function uiSwizzleNormalMap(_flipGreenChannel = false)
 {
-	var file = get_open_filename(FILTERS.uvLayout, "normalmap.png");
+	var _file = get_open_filename(FILTERS.image, "normalmap.png");
 	
-	if (file != "" && ord(file) != 0)
+	if (_file != "" && ord(_file) != 0)
 	{
-		// Get Filename With No Extension
-		var filename = filename_change_ext(file, "");
+		// Get Filename Extension
+		var _filenameExt = filename_ext(_file);
 		
-		// Load The PNG As A Sprite
-		var sprite = sprite_add(file, 0, false, false, 0, 0);
+		// Get Filename With No Extension
+		var _filename = filename_change_ext(_file, "");
+		
+		// Check File Extension
+		if (_filenameExt == ".png")
+		{
+			// Load The PNG As A Sprite
+			var _sprite = sprite_add(_file, 0, false, false, 0, 0);
+		}
+		else
+		{
+			// Load DDS File into buffer
+			var _buffer = buffer_load(_file);
+			
+			// Create texture from that dds buffer
+			var _texture = new Texture(_buffer);
+			
+			// Convert dds to sprite
+			var _sprite = _texture.toSprite();
+			
+			// Cleanup
+			buffer_delete(_buffer);
+			_texture.destroy();
+		}
 		
 		// Create A Surface
-		var surface = surface_create(sprite_get_width(sprite), sprite_get_height(sprite));
+		var _surface = surface_create(sprite_get_width(_sprite), sprite_get_height(_sprite));
 		
 		// Set Surface Target
-		surface_set_target(surface);
+		surface_set_target(_surface);
 		draw_clear_alpha(c_black, 0);
 		
 		// Use Shader
 		shader_set(shdSwizzle);
 		
 		// Flip Green Channel
-		shader_set_uniform_i(shader_get_uniform(shdSwizzle, "uFlipGreen"), flipGreenChannel);
+		shader_set_uniform_i(shader_get_uniform(shdSwizzle, "uFlipGreen"), _flipGreenChannel);
 		
 		// Draw The Sprite
-		draw_sprite(sprite, 0, 0, 0);
+		draw_sprite(_sprite, 0, 0, 0);
 		
 		// Reset Shader
 		shader_reset();
@@ -820,12 +842,36 @@ function uiSwizzleNormalMap(flipGreenChannel = false)
 		// Reset Surface
 		surface_reset_target();
 		
-		// Save Surface
-		surface_save(surface, filename + "_swizzled.png");
+		// Check File Extension
+		if (_filenameExt == ".png")
+		{
+			// Save Surface
+			surface_save(_surface, _filename + "_swizzled.png");
+		}
+		else
+		{
+			// Create buffer for surface and copy surface to it
+			var _buffer = buffer_create(surface_get_width(_surface) * surface_get_height(_surface) * 4, buffer_fixed, 1);
+			buffer_get_surface(_buffer, _surface, 0);
+			
+			// Create DDS texture with DXT5 compression
+			var _texture = new Texture(_buffer, surface_get_width(_surface), surface_get_height(_surface), _BT_COMPRESSION_TYPE.DXT5, true, true, false);
+			
+			// Convert DDS texture to buffer
+			var _ddsBuffer = _texture.toBuffer();
+			
+			// Save the DDS buffer
+			buffer_save(_ddsBuffer, _filename + "_swizzled.dds");
+			
+			// Cleanup
+			_texture.destroy();
+			buffer_delete(_ddsBuffer);
+			buffer_delete(_buffer);
+		}
 		
 		// Cleanup
-		surface_free(surface);
-		sprite_delete(sprite);
+		surface_free(_surface);
+		sprite_delete(_sprite);
 	}
 }
 

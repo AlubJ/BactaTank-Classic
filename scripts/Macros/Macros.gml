@@ -156,6 +156,8 @@ FILTERS = {
 	
 	uvLayout: "Portable Graphics Network (*.png)|*.png",
 	
+	image: $"Image File (*.dds;*.png)|*.dds;*.png|DirectDraw Surface (*.dds)|*.dds|Portable Graphics Network (*.png)|*.png",
+	
 	// Exe
 	exe: "Windows Executable File (*.exe)|*.exe",
 };
