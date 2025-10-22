@@ -788,26 +788,24 @@ function uiExportModelFromPreview(model, layers)
 
 function uiSwizzleNormalMap(_flipGreenChannel = false)
 {
-	var _file = get_open_filename(FILTERS.image, "normalmap.png");
+	var _openFile = get_open_filename(FILTERS.image, "source.png");
+	var _saveFile = get_save_filename(FILTERS.image, "swizzled.png");
 	
-	if (_file != "" && ord(_file) != 0)
+	if ((_openFile != "" && ord(_openFile) != 0) || (_saveFile != "" && ord(_saveFile) != 0))
 	{
 		// Get Filename Extension
-		var _filenameExt = filename_ext(_file);
-		
-		// Get Filename With No Extension
-		var _filename = filename_change_ext(_file, "");
+		var _filenameExt = filename_ext(_openFile);
 		
 		// Check File Extension
 		if (_filenameExt == ".png")
 		{
 			// Load The PNG As A Sprite
-			var _sprite = sprite_add(_file, 0, false, false, 0, 0);
+			var _sprite = sprite_add(_openFile, 0, false, false, 0, 0);
 		}
 		else
 		{
 			// Create texture from that dds buffer
-			var _texture = new Texture(_file);
+			var _texture = new Texture(_openFile);
 			
 			// Convert dds to sprite
 			var _sprite = _texture.toSprite();
@@ -846,11 +844,14 @@ function uiSwizzleNormalMap(_flipGreenChannel = false)
 		// Reset Surface
 		surface_reset_target();
 		
+		// Get Filename Extension
+		var _filenameExt = filename_ext(_saveFile);
+		
 		// Check File Extension
 		if (_filenameExt == ".png")
 		{
 			// Save Surface
-			surface_save(_surface, _filename + "_swizzled.png");
+			surface_save(_surface, _saveFile);
 		}
 		else
 		{
@@ -865,7 +866,7 @@ function uiSwizzleNormalMap(_flipGreenChannel = false)
 			var _ddsBuffer = _texture.toBuffer();
 			
 			// Save the DDS buffer
-			buffer_save(_ddsBuffer, _filename + "_swizzled.dds");
+			buffer_save(_ddsBuffer, _saveFile);
 			
 			// Cleanup
 			_texture.destroy();

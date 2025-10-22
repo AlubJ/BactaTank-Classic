@@ -82,9 +82,9 @@ buffer_delete(buffer);
 VERSIONS = {
 	indev: true,
 	main: "v0.3.4",
-	renderer: "v1.2.3",
+	renderer: "v1.3.0",
 	backend: "v0.3.4",
-	revision: "3",
+	revision: "4",
 	platform: code_is_compiled() ? "YYC" : "VM",
 }
 

@@ -2,24 +2,31 @@ Created by Alub
 
 BactaTank Classic is a character creator and viewer for LEGO Star Wars: The Complete Saga, LEGO Indiana Jones: The Original Adventures and LEGO Batman: The Videogame. This program is designed to preview the models as accurately as possible to the games. If you like this tool, and are able to support me financially, I would greatly appreciate it if you could throw me a few bucks (Help >> Support Me). Thank you for using this tool.
 
-With development help from:
- - Javster101
- - IsaMorphic
- - Slucier
- - Aaron
- - Skulluse
- - BarioTheWeird
- - Suso
+--Credits--
+Development Help:
+ - Javster101 - Creator of BrickBench, which is a massive source of information for BactaTank Classic's development.
+ - IsaMorphic - Creator of various LEGO Game tools (usually relating to LEGO Star Wars The Videogame), and a massive source of information and help.
+ - Slucier - Creator of various LEGO Game model extraction tools, which are a massive source of information.
+ - Aaron - Creator of the original PLYtoLSWMesh tool and TCSConv, the former being the original way to convert meshes to be used inside of LEGO Games, and the latter which helped with the version 2 conversion.
+ - Skulluse - Creator of the original GHG Repack tool, in which BactaTank Classic was a successor to.
+ - BarioTheWeird - Help with various reverse engineering of the files.
+ - Suso - Help with various reverse engineering of the files.
 
-And with testing from:
+Logo Creation Help:
+ - Cheatster9000x
+
+Software Title Suggestion:
+ - SirYodaJedi
+
+Testing Help:
  - Alex (Venomander)
  - Austin
  - Bagusman
  - Cheatster9000x
  - Cosine_Rave
- - DevsGuy
+ - DevzGuy
  - GavinWK
- - INGWAR
+ - Ingysta
  - Jacko
  - JTman620
  - JustNathan
@@ -27,7 +34,7 @@ And with testing from:
  - PollyThePancake
  - Quba
  - Shadow.Shifter
- - SomethinBuggin2
+ - somthinbuggin2
  - Savvy
  - Suso
  - Treefortress2
@@ -35,6 +42,21 @@ And with testing from:
  - thereallintman
  - Vader18
 
+Documentation Help:
+ - DevzGuy - Help writing sections of the docs
+ - Cheatster9000x - Proofreading
+ - PollyThePancake - Proofreading
+ - SirYodaJedi - Proofreading and other help
+
+Vendors:
+ - ImGui_GM (Nommin) - Graphical user interfacing.
+ - Struct n' Array Parser (Juju Adams) - Config file saving and loading.
+ - DoLater (Juju Adams) - Alternative to call_later function.
+ - File Dropper (DragoniteSpam) - File drop detection.
+ - Catspeak (Katsaii) - Currently unused scripting API.
+ - Window Commands (YellowAfterLife) - Window command hooking.
+
+Legal Disclaimer:
 This software is not affiliated, associated, authorized, endorsed by, or in any way officially connected with the LEGO Group, TT Games Studios, Lucasfilm Ltd., WarnerMedia, or any of their subsidiaries or affiliates. All trademarks and copyrights belong to their respective owners.
 
 This tool is provided for educational and entertainment purposes only. It does not include or distribute any official game files. Users must use their own legally obtained copies of the game.
