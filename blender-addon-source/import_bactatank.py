@@ -80,7 +80,7 @@ def read_header(buffer, offset):
 
     # Check version is 0.4
     version = unpack_from("f", buffer, offset)[0]
-    if round(version, 1) != 0.4:
+    if round(version, 1) != 0.4 and round(version, 1) != 0.5:
         raise Exception("Incompatible Version Detected - File version: " + str(round(version, 1)))
         return {'CANCELLED'}
 
