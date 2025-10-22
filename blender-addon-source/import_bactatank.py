@@ -205,6 +205,12 @@ def read_mesh(buffer, offset):
             vertices[i].uvSet2[1] = unpack_from("f", buffer, offset + 4)[0]
             offset += 8
     
+    # Tangents
+    if "Tangents" in attributes:
+        offset = readString(buffer, offset)[1]
+        for i in range(vertexCount):
+            offset += 4
+    
     # Blend Indices
     if "BlendIndices" in attributes:
         offset = readString(buffer, offset)[1]
@@ -616,22 +622,17 @@ def importModel(operator, context, filepath=""):
             # Get Nodes
             nodes = newMaterial.node_tree.nodes
 
-            # Step 5: Create an Image Texture Node and set the loaded image
             image_texture_node = nodes.new(type='ShaderNodeTexImage')
-            image_texture_node.image = image  # Set the image for the node
+            image_texture_node.image = image
 
-            # Step 6: Create the Principled BSDF shader node (the default shader)
             principled_bsdf_node = nodes.get("Principled BSDF")
 
-            # Step 7: Connect the image texture to the Base Color input of the Principled BSDF
             newMaterial.node_tree.links.new(image_texture_node.outputs["Color"], principled_bsdf_node.inputs["Base Color"])
 
-            # Step 8: Connect the alpha of the image texture to the Alpha input of the Principled BSDF
             newMaterial.node_tree.links.new(image_texture_node.outputs["Alpha"], principled_bsdf_node.inputs["Alpha"])
 
-            # Step 9: Enable transparency in the material
-            newMaterial.blend_method = 'HASHED'  # Set blend mode to 'BLEND' to support transparency
-            newMaterial.shadow_method = 'NONE'  # Optional: Disable shadows if you don't want them to be cast by transparent parts
+            newMaterial.blend_method = 'HASHED'
+            #newMaterial.shadow_method = 'NONE'
             newMaterial.show_transparent_back = False
         else:
             # Get the Principled BSDF node

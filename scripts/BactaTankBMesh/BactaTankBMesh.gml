@@ -77,6 +77,9 @@ function BactaTankBMesh() constructor
 				case BTVertexAttributes.uvSet2:
 					array_push(attributes, "UVSet2");
 					break;
+				case BTVertexAttributes.tangent:
+					array_push(attributes, "Tangents");
+					break;
 				case BTVertexAttributes.blendIndices:
 					array_push(attributes, "BlendIndices");
 					break;
@@ -128,7 +131,7 @@ function BactaTankBMesh() constructor
 		
 		// Read Header
 		var version = readHeader(buffer, _model);
-		if (version == 0.4) 
+		if (version == 0.5 || version == 0.4)
 		{
 			// Read Bones
 			buffer_read(buffer, buffer_string) // Bones
@@ -157,7 +160,7 @@ function BactaTankBMesh() constructor
 		// Write Header
 		buffer_write(buffer, buffer_string, "BactaTankMesh");
 		buffer_write(buffer, buffer_string, "PCGHG");
-		buffer_write(buffer, buffer_f32, 0.4);
+		buffer_write(buffer, buffer_f32, 0.5);
 	}
 	
 	static writeBones = function(buffer, _model = noone)
@@ -304,6 +307,23 @@ function BactaTankBMesh() constructor
 			}
 		}
 		
+		// Write Tangents
+		if (array_contains(attributes, "Tangents"))
+		{
+			buffer_write(buffer, buffer_string, "Tangents");
+			for (var i = 0; i < vertexCount; i++)
+			{
+				if (array_length(vertices[i].tangent) == 2)
+				{
+					buffer_write(buffer, buffer_u8, floor(((vertices[i].tangent[0] + 1) / 2) * 255));
+					buffer_write(buffer, buffer_u8, floor(((vertices[i].tangent[1] + 1) / 2) * 255));
+					buffer_write(buffer, buffer_u8, floor(((vertices[i].tangent[2] + 1) / 2) * 255));
+					buffer_write(buffer, buffer_u8, floor(((vertices[i].tangent[3] + 1) / 2) * 255));
+				}
+				else buffer_write(buffer, buffer_s32, 0x00);
+			}
+		}
+		
 		// Write Blend Indices
 		if (array_contains(attributes, "BlendIndices"))
 		{
@@ -380,8 +400,8 @@ function BactaTankBMesh() constructor
 		buffer_read(buffer, buffer_string);					// BactaTankMesh
 		buffer_read(buffer, buffer_string);					// PCGHG
 		
-		// Validate Version (If its not 0.4, attempt to load a v0.3 mesh instead)
-		var version = buffer_read(buffer, buffer_f32);		// 0.4
+		// Validate Version (If its not 0.5, attempt to load a v0.3 mesh instead)
+		var version = buffer_read(buffer, buffer_f32);		// 0.5
 		
 		// Return The Version Out
 		return version;
@@ -457,7 +477,7 @@ function BactaTankBMesh() constructor
 			}
 		}
 		
-		ConsoleLog(vertices[0].position);
+		//ConsoleLog(vertices[0].position);
 		
 		// Normal Attribute
 		if (array_contains(attributes, "Normal"))
@@ -537,6 +557,23 @@ function BactaTankBMesh() constructor
 			
 				// Set Vertex UVs
 				vertices[i].uvSet2 = [uvX, uvY];
+			}
+		}
+		
+		// Tangent Attribute
+		if (array_contains(attributes, "Tangents"))
+		{
+			buffer_read(buffer, buffer_string);
+			for (var i = 0; i < vertexCount; i++)
+			{
+				// Read Vertex Normals
+				var tangentX = ((buffer_read(buffer, buffer_u8) / 255) * 2) - 1;
+				var tangentY = ((buffer_read(buffer, buffer_u8) / 255) * 2) - 1;
+				var tangentZ = ((buffer_read(buffer, buffer_u8) / 255) * 2) - 1;
+				var tangentW = ((buffer_read(buffer, buffer_u8) / 255) * 2) - 1;
+			
+				// Set Vertex Normal
+				vertices[i].tangent = [tangentX, tangentY, tangentZ, tangentW];
 			}
 		}
 		

@@ -22,7 +22,7 @@ import bpy
 
 # Global Variables Defines
 engine = "PCGHG"
-version = 0.4
+version = 0.5
 
 # Check Blender version
 bVersion = bpy.app.version
@@ -94,6 +94,8 @@ def evaluate_vertex_attributes(vertices):
         attributes.append("UVSet1")
     if vertex.uvSet2 != None:
         attributes.append("UVSet2")
+    if vertex.tangent != None:
+        attributes.append("Tangents")
     if vertex.blendIndices != None:
         attributes.append("BlendIndices")
     if vertex.blendWeights != None:
@@ -147,6 +149,7 @@ def prepare_meshes(context, meshes, global_matrix = None, apply_moderfiers = Tru
     # Calculate the normals here
     if not b41_up:
         mesh.calc_normals_split()
+    mesh.calc_tangents()
 
     # And we flip the normals due to the left-handed coordinate system that TtGames uses.
     mesh.flip_normals()
@@ -309,6 +312,19 @@ def write_mesh(buffer, vertices, triangles, shapeKeys, linkedBones, isStrip = Tr
             # UV Coords
             buffer.extend(pack("<2f", *vertex.uvSet2))
 
+    # Vertex Tangents
+    if "Tangents" in attributes:
+        # Tangents Tag
+        buffer.extend(bytearray("Tangents\0",'utf-8'))
+        
+        # Tangents
+        for vertex in vertices:
+            # Tangents
+            buffer.extend(pack("B", vertex.tangent[0]))
+            buffer.extend(pack("B", 255 - vertex.tangent[1]))
+            buffer.extend(pack("B", 255 - vertex.tangent[2]))
+            buffer.extend(pack("B", vertex.tangent[3]))
+
     # Vertex Blend Indices
     if "BlendIndices" in attributes:
         # Blend Indices Tag
@@ -468,6 +484,7 @@ def generate_vertex_data(mesh, obj, armature, export_skinning, export_shape_keys
     # Imports
     import bpy
     import bmesh
+    import mathutils
     from . import tristrip
 
     # Helper Functions
@@ -562,6 +579,21 @@ def generate_vertex_data(mesh, obj, armature, export_skinning, export_shape_keys
     # Create a map from loop indices to exported vertex indices (for shape keys)
     loop_map = {}
 
+    # Store averaged tangents per vertex
+    vertex_tangents = [mathutils.Vector((0.0, 0.0, 0.0)) for _ in range(len(mesh.vertices))]
+    vertex_tangent_counts = [0 for _ in range(len(mesh.vertices))]
+
+    for poly in mesh.polygons:
+        for loop_index in poly.loop_indices:
+            loop = mesh.loops[loop_index]
+            vidx = loop.vertex_index
+            vertex_tangents[vidx] += loop.tangent
+            vertex_tangent_counts[vidx] += 1
+
+    for i, count in enumerate(vertex_tangent_counts):
+        if count > 0:
+            vertex_tangents[i].normalize()
+
     # This is where we get the normals, uvLayers, and colourLayers (when I add them)
     vert_count = 0
     for i, f in enumerate(mesh.polygons):
@@ -637,6 +669,15 @@ def generate_vertex_data(mesh, obj, armature, export_skinning, export_shape_keys
                 # Apply Blend
                 vertex.blendIndices = tempVertices[vidx].blendIndices
                 vertex.blendWeights = tempVertices[vidx].blendWeights
+
+                # Apply tangent
+                loop_index = f.loop_start + j
+                loop = mesh.loops[loop_index]
+                tangent_vec = vertex_tangents[vidx]
+                bitangent_sign = loop.bitangent_sign
+                vertex.tangent = [
+                    int((c + 1.0) * 127.5) for c in tangent_vec
+                ] + [int((bitangent_sign + 1.0) * 127.5)]
 
                 # Add to Vertices
                 vertices.append(vertex)
