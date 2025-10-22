@@ -10,6 +10,7 @@
 	 - Created 13/09/2025 by Alun Jones
 
 	To Do:
+	 - Add surface detection from source
 */
 
 enum _COMPRESSION_TYPE
@@ -28,6 +29,14 @@ function Texture(_source, _width = 0, _height = 0, _compressionType = _COMPRESSI
 	height = _height;
 	compressionType = _compressionType;
 	cubemap = _cubemap;
+	consume = false;
+	
+	// If source is a string and the file exists we can load it as a buffer
+	if (is_string(_source) && file_exists(_source))
+	{
+		_source = buffer_load(_source);
+		consume = true;
+	}
 	
 	// Let's Decode
 	if (buffer_exists(_source))
@@ -59,6 +68,9 @@ function Texture(_source, _width = 0, _height = 0, _compressionType = _COMPRESSI
 			// Get Cubemap
 			cubemap = DDSCubemap(texturePointer);
 		}
+		
+		// Delete buffer
+		if (consume) buffer_delete(_source);
 	}
 	else if (sprite_exists(_source))
 	{

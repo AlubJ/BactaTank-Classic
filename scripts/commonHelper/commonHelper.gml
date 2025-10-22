@@ -806,17 +806,13 @@ function uiSwizzleNormalMap(_flipGreenChannel = false)
 		}
 		else
 		{
-			// Load DDS File into buffer
-			var _buffer = buffer_load(_file);
-			
 			// Create texture from that dds buffer
-			var _texture = new Texture(_buffer);
+			var _texture = new Texture(_file);
 			
 			// Convert dds to sprite
 			var _sprite = _texture.toSprite();
 			
 			// Cleanup
-			buffer_delete(_buffer);
 			_texture.destroy();
 		}
 		
@@ -825,16 +821,24 @@ function uiSwizzleNormalMap(_flipGreenChannel = false)
 		
 		// Set Surface Target
 		surface_set_target(_surface);
-		draw_clear_alpha(c_black, 0);
+		draw_clear_alpha(c_white, 1);
 		
 		// Use Shader
 		shader_set(shdSwizzle);
 		
 		// Flip Green Channel
-		shader_set_uniform_i(shader_get_uniform(shdSwizzle, "uFlipGreen"), _flipGreenChannel);
+		shader_set_uniform_i(shader_get_uniform(shdSwizzle, "uFlipGreen"), false);
+		
+		// Set blend mode to multiply
+		gpu_push_state();
+		gpu_set_blendenable(true);
+		gpu_set_blendmode_ext(bm_dest_color, bm_zero);
 		
 		// Draw The Sprite
 		draw_sprite(_sprite, 0, 0, 0);
+		
+		// Reset GPU State
+		gpu_pop_state();
 		
 		// Reset Shader
 		shader_reset();

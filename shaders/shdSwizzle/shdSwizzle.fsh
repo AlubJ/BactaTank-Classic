@@ -10,10 +10,10 @@ void main()
 {
 	vec4 col = texture2D( gm_BaseTexture, v_vTexcoord ).agbr;
 	
-	if (uFlipGreen)
-	{
-		col.g = 1.0 - col.g;
-	}
+	//if (uFlipGreen)
+	//{
+	//	col.g = 1.0 - col.g;
+	//}
 	
     gl_FragColor = col;
 }
