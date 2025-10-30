@@ -488,7 +488,7 @@ function saveSettings()
 function uiExportTexture(model, index)
 {
 	// Get Save File Name For DDS Export
-	var file = get_save_filename_ext(FILTERS.texture, $"texture{index}.dds", SETTINGS.lastTexturePath, "Export Texture");
+	var file = get_save_filename_ext(FILTERS.image, $"texture{index}.dds", SETTINGS.lastTexturePath, "Export Texture");
 	if (file != "" && ord(file) != 0)
 	{
 		// User Feedback

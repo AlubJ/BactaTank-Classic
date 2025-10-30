@@ -18,7 +18,8 @@ enum _COMPRESSION_TYPE
 	BC1,			// DXT1 Compression
 	BC2,			// DXT3 Compression
 	BC3,			// DXT5 Compression
-	RGBA_UNORM,		// No Compression
+	RGBA_UNORM,		// No Compression (Raw)
+	PNG,			// PNG Compression
 }
 
 function Texture(_source, _width = 0, _height = 0, _compressionType = _COMPRESSION_TYPE.RGBA_UNORM, _generateMipmaps = false, _errorDiffuseDither = false, _cubemap = false) constructor
@@ -117,6 +118,19 @@ function Texture(_source, _width = 0, _height = 0, _compressionType = _COMPRESSI
 	}
 	
 	#region Methods
+	
+	/// @func load()
+	/// @desc Load a texture from a source.
+	/// @arg {Any} source A texture source, either a PNG, DDS, RAW or binary buffer containing DDS or RAW.
+	static load = function(_source)
+	{
+		// Check if the source is a string
+		if (is_string(_source) && file_exists(_source))
+		{
+			// This is a filepath to a texture, next we check the file extension.
+			
+		}
+	}
 	
 	/// @func toSprite()
 	static toSprite = function()

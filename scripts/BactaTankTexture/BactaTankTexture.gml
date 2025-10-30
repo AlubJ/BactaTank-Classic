@@ -59,7 +59,7 @@ function BactaTankTexture() constructor
 			// Read DXT Compression
 			//compression = buffer_read(buffer, buffer_u32);
 			//ConsoleLog($"    Compression:   {BT_DXT_COMPRESSION[compression]}", CONSOLE_MODEL_LOADER_DEBUG, buffer_tell(buffer) - 4);
-				
+			
 			// Seek to size
 			buffer_seek(buffer, buffer_seek_relative, 0x0c);
 			size = buffer_read(buffer, buffer_u32);
