@@ -1,5 +1,5 @@
 {
-  "$GMSprite":"",
+  "$GMSprite":"v2",
   "%Name":"graCharacterQuestionMark",
   "bboxMode":0,
   "bbox_bottom":28,
@@ -12,7 +12,7 @@
   "edgeFiltering":false,
   "For3D":true,
   "frames":[
-    {"$GMSpriteFrame":"","%Name":"19af4dc5-7fb0-4492-8586-6564cf4189bf","name":"19af4dc5-7fb0-4492-8586-6564cf4189bf","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"19af4dc5-7fb0-4492-8586-6564cf4189bf","name":"19af4dc5-7fb0-4492-8586-6564cf4189bf","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
   ],
   "gridX":0,
   "gridY":0,

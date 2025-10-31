@@ -16,7 +16,7 @@
   "exportToGame":true,
   "extensionVersion":"1.0.17",
   "files":[
-    {"$GMExtensionFile":"","%Name":"imgui_gm.dll","constants":[
+    {"$GMExtensionFile":"v1","%Name":"imgui_gm.dll","constants":[
         {"$GMExtensionConstant":"","%Name":"IMGUI_GM_VERSION","hidden":false,"name":"IMGUI_GM_VERSION","resourceType":"GMExtensionConstant","resourceVersion":"2.0","value":"\"1.0.17\"",},
       ],"copyToTargets":-1,"filename":"imgui_gm.dll","final":"","functions":[
         {"$GMExtensionFunction":"","%Name":"__imgui_initialize","argCount":0,"args":[],"documentation":"/// @function __imgui_initialize(info)\r\n/// @argument {ds_map} info - Operating system info","externalName":"__imgui_initialize","help":"","hidden":false,"kind":1,"name":"__imgui_initialize","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":1,},
@@ -386,18 +386,7 @@
         {"$GMExtensionFunction":"","%Name":"__imgui_set_window_size","argCount":0,"args":[],"documentation":"","externalName":"__imgui_set_window_size","help":"","hidden":true,"kind":1,"name":"__imgui_set_window_size","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":1,},
         {"$GMExtensionFunction":"","%Name":"__imgui_set_window_collapsed","argCount":0,"args":[],"documentation":"","externalName":"__imgui_set_window_collapsed","help":"","hidden":true,"kind":1,"name":"__imgui_set_window_collapsed","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":1,},
         {"$GMExtensionFunction":"","%Name":"__imgui_set_window_focus","argCount":0,"args":[],"documentation":"","externalName":"__imgui_set_window_focus","help":"","hidden":true,"kind":1,"name":"__imgui_set_window_focus","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":1,},
-      ],"init":"","kind":1,"name":"imgui_gm.dll","order":[
-        {"name":"__imgui_update","path":"extensions/ImGui_GM/ImGui_GM.yy",},
-        {"name":"__imgui_render","path":"extensions/ImGui_GM/ImGui_GM.yy",},
-        {"name":"__imgui_mouse","path":"extensions/ImGui_GM/ImGui_GM.yy",},
-        {"name":"__imgui_key","path":"extensions/ImGui_GM/ImGui_GM.yy",},
-        {"name":"__imgui_input","path":"extensions/ImGui_GM/ImGui_GM.yy",},
-        {"name":"__imgui_mouse_wheel","path":"extensions/ImGui_GM/ImGui_GM.yy",},
-        {"name":"__imgui_mouse_cursor","path":"extensions/ImGui_GM/ImGui_GM.yy",},
-        {"name":"__imgui_begin","path":"extensions/ImGui_GM/ImGui_GM.yy",},
-        {"name":"__imgui_end","path":"extensions/ImGui_GM/ImGui_GM.yy",},
-        {"name":"__imgui_initialize","path":"extensions/ImGui_GM/ImGui_GM.yy",},
-      ],"origname":"","ProxyFiles":[
+      ],"init":"","kind":1,"name":"imgui_gm.dll","origname":"","ProxyFiles":[
         {"$GMProxyFile":"","%Name":"libimgui_gm.dylib","name":"libimgui_gm.dylib","resourceType":"GMProxyFile","resourceVersion":"2.0","TargetMask":1,},
         {"$GMProxyFile":"","%Name":"libimgui_gm.so","name":"libimgui_gm.so","resourceType":"GMProxyFile","resourceVersion":"2.0","TargetMask":7,},
       ],"resourceType":"GMExtensionFile","resourceVersion":"2.0","uncompress":false,"usesRunnerInterface":true,},

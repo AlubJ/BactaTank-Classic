@@ -13,7 +13,7 @@
 */
 
 // Global Version ([Major].[Minor][Patch][Revision][1:A 2:B 3:C, 4:Public])
-#macro VERSION 0.343
+#macro VERSION 0.345
 #macro VERSION_MAJOR 0
 #macro VERSION_MINOR 3
 #macro VERSION_PATCH 4

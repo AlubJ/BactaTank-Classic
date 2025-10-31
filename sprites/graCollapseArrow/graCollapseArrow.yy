@@ -1,5 +1,5 @@
 {
-  "$GMSprite":"",
+  "$GMSprite":"v2",
   "%Name":"graCollapseArrow",
   "bboxMode":0,
   "bbox_bottom":11,
@@ -12,8 +12,8 @@
   "edgeFiltering":false,
   "For3D":false,
   "frames":[
-    {"$GMSpriteFrame":"","%Name":"d73c561a-8858-40a8-8ee0-12fe5047538b","name":"d73c561a-8858-40a8-8ee0-12fe5047538b","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
-    {"$GMSpriteFrame":"","%Name":"b743a431-a6a3-49d1-8c67-6d43057e9b17","name":"b743a431-a6a3-49d1-8c67-6d43057e9b17","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"d73c561a-8858-40a8-8ee0-12fe5047538b","name":"d73c561a-8858-40a8-8ee0-12fe5047538b","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"b743a431-a6a3-49d1-8c67-6d43057e9b17","name":"b743a431-a6a3-49d1-8c67-6d43057e9b17","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
   ],
   "gridX":0,
   "gridY":0,

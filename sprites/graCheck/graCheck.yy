@@ -1,5 +1,5 @@
 {
-  "$GMSprite":"",
+  "$GMSprite":"v2",
   "%Name":"graCheck",
   "bboxMode":0,
   "bbox_bottom":13,
@@ -12,8 +12,8 @@
   "edgeFiltering":false,
   "For3D":false,
   "frames":[
-    {"$GMSpriteFrame":"","%Name":"282efa95-cef2-48ba-ae36-84a52314fb2a","name":"282efa95-cef2-48ba-ae36-84a52314fb2a","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
-    {"$GMSpriteFrame":"","%Name":"7d7c0e6b-257d-4fc1-a8ac-5b0ac2fbb82e","name":"7d7c0e6b-257d-4fc1-a8ac-5b0ac2fbb82e","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"282efa95-cef2-48ba-ae36-84a52314fb2a","name":"282efa95-cef2-48ba-ae36-84a52314fb2a","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"7d7c0e6b-257d-4fc1-a8ac-5b0ac2fbb82e","name":"7d7c0e6b-257d-4fc1-a8ac-5b0ac2fbb82e","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
   ],
   "gridX":0,
   "gridY":0,

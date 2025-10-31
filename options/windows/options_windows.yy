@@ -1,5 +1,5 @@
 {
-  "$GMWindowsOptions":"",
+  "$GMWindowsOptions":"v1",
   "%Name":"Windows",
   "name":"Windows",
   "option_windows_allow_fullscreen_switching":false,
@@ -7,6 +7,7 @@
   "option_windows_company_info":"Alub",
   "option_windows_copyright_info":"",
   "option_windows_copy_exe_to_dest":false,
+  "option_windows_d3dswapeffectdiscard":false,
   "option_windows_description_info":"",
   "option_windows_disable_sandbox":true,
   "option_windows_display_cursor":true,
@@ -29,7 +30,7 @@
   "option_windows_steam_use_alternative_launcher":false,
   "option_windows_texture_page":"8192x8192",
   "option_windows_use_splash":false,
-  "option_windows_version":"0.3.4.4",
+  "option_windows_version":"0.3.4.5",
   "option_windows_vsync":false,
   "resourceType":"GMWindowsOptions",
   "resourceVersion":"2.0",

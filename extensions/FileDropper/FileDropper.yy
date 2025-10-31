@@ -16,19 +16,13 @@
   "exportToGame":true,
   "extensionVersion":"0.0.1",
   "files":[
-    {"$GMExtensionFile":"","%Name":"","constants":[],"copyToTargets":-1,"filename":"FileDropper.dll","final":"","functions":[
+    {"$GMExtensionFile":"v1","%Name":"","constants":[],"copyToTargets":-1,"filename":"FileDropper.dll","final":"","functions":[
         {"$GMExtensionFunction":"","%Name":"file_dropper_init","argCount":0,"args":[1,],"documentation":"","externalName":"file_drop_init","help":"file_dropper_init(window)","hidden":false,"kind":1,"name":"file_dropper_init","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":2,},
         {"$GMExtensionFunction":"","%Name":"__file_dropper_count","argCount":0,"args":[],"documentation":"","externalName":"file_drop_count","help":"__file_dropper_count()","hidden":false,"kind":1,"name":"__file_dropper_count","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":2,},
         {"$GMExtensionFunction":"","%Name":"__file_dropper_get","argCount":0,"args":[2,],"documentation":"","externalName":"file_drop_get","help":"__file_dropper_get(index)","hidden":false,"kind":1,"name":"__file_dropper_get","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":1,},
         {"$GMExtensionFunction":"","%Name":"file_dropper_flush","argCount":0,"args":[],"documentation":"","externalName":"file_drop_flush","help":"file_dropper_flush()","hidden":false,"kind":1,"name":"file_dropper_flush","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":2,},
         {"$GMExtensionFunction":"","%Name":"__file_dropper_version","argCount":0,"args":[],"documentation":"","externalName":"file_dropper_version","help":"__file_dropper_version()","hidden":false,"kind":1,"name":"__file_dropper_version","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":1,},
-      ],"init":"","kind":1,"name":"","order":[
-        {"name":"file_dropper_init","path":"extensions/FileDropper/FileDropper.yy",},
-        {"name":"file_dropper_flush","path":"extensions/FileDropper/FileDropper.yy",},
-        {"name":"__file_dropper_count","path":"extensions/FileDropper/FileDropper.yy",},
-        {"name":"__file_dropper_get","path":"extensions/FileDropper/FileDropper.yy",},
-        {"name":"__file_dropper_version","path":"extensions/FileDropper/FileDropper.yy",},
-      ],"origname":"","ProxyFiles":[],"resourceType":"GMExtensionFile","resourceVersion":"2.0","uncompress":false,"usesRunnerInterface":false,},
+      ],"init":"","kind":1,"name":"","origname":"","ProxyFiles":[],"resourceType":"GMExtensionFile","resourceVersion":"2.0","uncompress":false,"usesRunnerInterface":false,},
   ],
   "gradleinject":"",
   "hasConvertedCodeInjection":true,

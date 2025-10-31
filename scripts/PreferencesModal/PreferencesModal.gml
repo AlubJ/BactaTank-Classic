@@ -94,16 +94,9 @@ function PreferencesModal() : Modal() constructor
 					ImGui.ShowTooltip("Displays values in hexidecimal instead of decimal");
 					
 					// Enable Texture Caching
-					ImGui.SetCursorPos(width / 2 + 10, cursorPos[1]);
-					general.cacheTextures = ImGui.CheckboxCustom2("Cache Textures", general.cacheTextures, "##hiddenCacheTextures", space);
-					ImGui.ShowTooltip("Cache textures for faster reloading of models");
-					
-					// Cursor Pos
-					var cursorPos = [ImGui.GetCursorPosX(), ImGui.GetCursorPosY()];
-					
-					// Show Advanced Material Settings
-					general.advancedMaterialSettings = ImGui.CheckboxCustom("Advanced Material Settings", general.advancedMaterialSettings, "##hiddenAdvancedMaterialSettings", space);
-					ImGui.ShowTooltip("Enables advanced material settings (vertex format, assigned meshes, and extra material settings)");
+					//ImGui.SetCursorPos(width / 2 + 10, cursorPos[1]);
+					//general.cacheTextures = ImGui.CheckboxCustom2("Cache Textures", general.cacheTextures, "##hiddenCacheTextures", space);
+					//ImGui.ShowTooltip("Cache textures for faster reloading of models");
 					
 					// Show Viewer Debug Information
 					ImGui.SetCursorPos(width / 2 + 10, cursorPos[1]);
@@ -113,14 +106,21 @@ function PreferencesModal() : Modal() constructor
 					// Cursor Pos
 					var cursorPos = [ImGui.GetCursorPosX(), ImGui.GetCursorPosY()];
 					
-					// Replace Vertex Format
-					general.replaceVertexFormat = ImGui.CheckboxCustom("Replace Vertex Format", general.replaceVertexFormat, "##hiddenReplaceVertexFormat", space);
-					ImGui.ShowTooltip("Enables replacing the vertex format when replacing a material");
+					// Show Advanced Material Settings
+					general.advancedMaterialSettings = ImGui.CheckboxCustom("Advanced Material Settings", general.advancedMaterialSettings, "##hiddenAdvancedMaterialSettings", space);
+					ImGui.ShowTooltip("Enables advanced material settings (vertex format, assigned meshes, and extra material settings)");
 					
 					// Rebuild Dynamic Buffers
 					ImGui.SetCursorPos(width / 2 + 10, cursorPos[1]);
 					general.rebuildDynamicBuffers = ImGui.CheckboxCustom2("Rebuild Dynamic Buffers", general.rebuildDynamicBuffers, "##hiddenRebuildDynamicBuffers", space);
 					ImGui.ShowTooltip("This will rebuild the dynamic buffers of a mesh (this is required for custom dynamic buffers / editing of dynamic buffer meshes)");
+					
+					// Cursor Pos
+					var cursorPos = [ImGui.GetCursorPosX(), ImGui.GetCursorPosY()];
+					
+					// Replace Vertex Format
+					general.replaceVertexFormat = ImGui.CheckboxCustom("Replace Vertex Format", general.replaceVertexFormat, "##hiddenReplaceVertexFormat", space);
+					ImGui.ShowTooltip("Enables replacing the vertex format when replacing a material");
 					
 					// Cursor Pos
 					var cursorPos = [ImGui.GetCursorPosX(), ImGui.GetCursorPosY()];

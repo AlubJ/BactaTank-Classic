@@ -1,5 +1,5 @@
 {
-  "$GMSprite":"",
+  "$GMSprite":"v2",
   "%Name":"graCharacterIconFrame",
   "bboxMode":0,
   "bbox_bottom":31,
@@ -12,8 +12,8 @@
   "edgeFiltering":false,
   "For3D":false,
   "frames":[
-    {"$GMSpriteFrame":"","%Name":"20771740-b1ef-4931-a08a-08346c6b87ee","name":"20771740-b1ef-4931-a08a-08346c6b87ee","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
-    {"$GMSpriteFrame":"","%Name":"e132abd9-0d66-4ca9-8131-f8f3e5a2aaa1","name":"e132abd9-0d66-4ca9-8131-f8f3e5a2aaa1","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"20771740-b1ef-4931-a08a-08346c6b87ee","name":"20771740-b1ef-4931-a08a-08346c6b87ee","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"e132abd9-0d66-4ca9-8131-f8f3e5a2aaa1","name":"e132abd9-0d66-4ca9-8131-f8f3e5a2aaa1","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
   ],
   "gridX":0,
   "gridY":0,

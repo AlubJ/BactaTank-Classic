@@ -189,6 +189,23 @@ function ModelAttributesPanel() constructor
 			else if (model.meshes[i].type == 0 && model.meshes[i].vertexBufferObject == -1) ImGui.Image(graEye, 2);
 			else if (model.meshes[i].type == 0) ImGui.Image(graEye, 1);
 			
+			// Toggle mesh visibility
+			if (mouse_check_button_released(mb_left) && ImGui.IsItemHovered(ImGuiHoveredFlags.AllowWhenOverlapped) && model.meshes[i].vertexBufferObject != -1)
+			{
+				model.meshes[i].type = (model.meshes[i].type == 0) ? 6 : 0;
+				
+				// Clear Render Queue and Push Model Again
+				RENDERER.flush();
+				model.pushToRenderQueue(ENVIRONMENT.displayLayers, RENDERER, ENVIRONMENT.hideDisabledMeshes);
+				
+				// Clear Secondary Renderers Queue
+				SECONDARY_RENDERER.flush();
+				
+				// Enable Renderer
+				RENDERER.activate();
+				RENDERER.deactivate(2);
+			}
+			
 			// Attribute Text
 			ImGui.SetCursorPos(pos[0] + 40, pos[1]);
 			if (model.meshes[i].type == 6) ImGui.Text($"Mesh {i}");

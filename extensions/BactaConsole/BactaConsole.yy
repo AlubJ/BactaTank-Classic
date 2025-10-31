@@ -16,7 +16,7 @@
   "exportToGame":true,
   "extensionVersion":"0.0.1",
   "files":[
-    {"$GMExtensionFile":"","%Name":"","constants":[],"copyToTargets":3035426170322551022,"filename":"BactaConsole.dll","final":"","functions":[
+    {"$GMExtensionFile":"v1","%Name":"","constants":[],"copyToTargets":3035426170322551022,"filename":"BactaConsole.dll","final":"","functions":[
         {"$GMExtensionFunction":"","%Name":"TestFunction","argCount":0,"args":[],"documentation":"","externalName":"TestFunction","help":"","hidden":false,"kind":1,"name":"TestFunction","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":2,},
         {"$GMExtensionFunction":"","%Name":"ConsoleInitialize","argCount":0,"args":[],"documentation":"","externalName":"InitConsole","help":"","hidden":false,"kind":1,"name":"ConsoleInitialize","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":2,},
         {"$GMExtensionFunction":"","%Name":"ConsolePrint","argCount":0,"args":[1,],"documentation":"","externalName":"Print","help":"","hidden":false,"kind":1,"name":"ConsolePrint","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":2,},
@@ -29,7 +29,7 @@
         {"$GMExtensionFunction":"","%Name":"SetWindowTitleBarDark","argCount":0,"args":[1,],"documentation":"","externalName":"SetWindowTitleBarDark","help":"","hidden":false,"kind":1,"name":"SetWindowTitleBarDark","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":2,},
         {"$GMExtensionFunction":"","%Name":"SetWindowTitleBarLight","argCount":0,"args":[1,],"documentation":"","externalName":"SetWindowTitleBarLight","help":"","hidden":false,"kind":1,"name":"SetWindowTitleBarLight","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":2,},
         {"$GMExtensionFunction":"","%Name":"ExecuteShell","argCount":0,"args":[1,1,],"documentation":"","externalName":"ExecuteShell","help":"","hidden":false,"kind":1,"name":"ExecuteShell","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":2,},
-      ],"init":"","kind":1,"name":"","order":[],"origname":"","ProxyFiles":[
+      ],"init":"","kind":1,"name":"","origname":"","ProxyFiles":[
         {"$GMProxyFile":"","%Name":"BactaTankUtils.dll","name":"BactaTankUtils.dll","resourceType":"GMProxyFile","resourceVersion":"2.0","TargetMask":6,},
       ],"resourceType":"GMExtensionFile","resourceVersion":"2.0","uncompress":false,"usesRunnerInterface":false,},
   ],
