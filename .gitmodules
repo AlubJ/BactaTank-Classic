@@ -4,3 +4,6 @@
 [submodule "BactaTankUtils"]
 	path = BactaTankUtils
 	url = https://github.com/AlubJ/BactaTankUtils
+[submodule "DDSTool"]
+	path = DDSTool
+	url = https://github.com/AlubJ/DDSTool
