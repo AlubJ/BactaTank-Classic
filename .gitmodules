@@ -1,3 +1,6 @@
 [submodule "BactaTank-Classic-Blender-Plugin"]
 	path = BactaTank-Classic-Blender-Plugin
 	url = https://github.com/AlubJ/BactaTank-Classic-Blender-Plugin
+[submodule "BactaTankUtils"]
+	path = BactaTankUtils
+	url = https://github.com/AlubJ/BactaTankUtils
