@@ -13,7 +13,7 @@ BactaTank Classic is a character creator and viewer for LEGO Star Wars: The Comp
 
 [License]: LICENSE
 [Support]: https://ko-fi.com/Y8Y219SKRX
-[Wiki]: https://github.com/AlubJ/BactaTank-Classic/wiki
+[Wiki]: https://docs.alub.dev/BactaTank-Classic/
 [Discussions]: https://github.com/AlubJ/BactaTank-Classic/discussions
 
 
