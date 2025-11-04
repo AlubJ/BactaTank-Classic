@@ -71,7 +71,7 @@ function BactaCamera() constructor
 	__zFar = 50;
 	
 	// Aspect and FOV
-	__aspectRatio = WINDOW_WIDTH / WINDOW_WIDTH;
+	__aspectRatio = -WINDOW_WIDTH / WINDOW_HEIGHT;
 	__fov = 50;
 	
 	// Matrices
@@ -83,6 +83,9 @@ function BactaCamera() constructor
 	
 	// Editor
 	__active = false;
+	
+	// Sensitivity (Move this to preferences prolly)
+	__sensitivity = 0.3;
 	
 	/// @func submit([clear])
 	/// @desc Submit the camera.
@@ -157,8 +160,86 @@ function BactaCamera() constructor
 	static stepThird = function()
 	{
 		position[0] = lookAtPosition[0] + distance * dcos(yaw) * dcos(pitch);
-		position[1] = lookAtPosition[1] - distance * dsin(yaw) * dcos(pitch);
-		position[2] = lookAtPosition[2] - distance * dsin(pitch);
+		position[2] = lookAtPosition[2] - distance * dsin(yaw) * dcos(pitch);
+		position[1] = lookAtPosition[1] - distance * dsin(pitch);
+	}
+	
+	/// @func moveThird(bounds)
+	/// @desc Move the camera in third person
+	static moveThird = function(bounds = [0, 0, WINDOW_WIDTH, WINDOW_HEIGHT]) {
+		if (window_mouse_get_x() > bounds[0] && window_mouse_get_x() < bounds[2] && window_mouse_get_y() > bounds[1] && window_mouse_get_y() < bounds[3])
+		{
+			if ((device_mouse_check_button_pressed(0, mb_left) || device_mouse_check_button_pressed(0, mb_right)) || device_mouse_check_button(0, mb_middle) && !__active)
+			{
+				__active = true;
+				window_set_cursor(device_mouse_check_button(0, mb_middle) ? cr_size_ns : cr_size_all);
+			}
+			
+			if (mouse_wheel_up())
+			{
+				distance -= (distance / 4);
+			}
+			
+			if (mouse_wheel_down())
+			{
+				distance += (distance / 3);
+			}
+		}
+		
+		if (device_mouse_check_button(0, mb_left) && __active)
+		{
+			yaw += window_mouse_get_delta_x() * __sensitivity;
+			pitch -= window_mouse_get_delta_y() * __sensitivity;
+			pitch = clamp(pitch, -89.999, 89.999);
+		}
+		else if (device_mouse_check_button(0, mb_right) && __active)
+		{
+			vectorH = [
+				dcos(yaw - 90),
+				dsin(pitch + 90),
+				dsin(yaw - 90)];
+			
+			vectorV = [
+				dcos(yaw),
+				dsin(pitch - 90),
+				dsin(yaw)];
+			//var matrix = matrix_build(0, 0, 0, lookPitch, lookDirection, 0, 1, 1, 1);
+			//lookAtPosition.x += matrix[4] * window_mouse_get_delta_x() * 0.001 + matrix[8] * window_mouse_get_delta_y() * 0.001;
+			//lookAtPosition.z += matrix[5] * window_mouse_get_delta_x() * 0.001 + matrix[9] * window_mouse_get_delta_y() * 0.001;
+			//lookAtPosition.y += matrix[6] * window_mouse_get_delta_x() * 0.001 + matrix[10] * window_mouse_get_delta_y() * 0.001;
+			
+			lookAtPosition[0] += vectorH[0] * window_mouse_get_delta_x() * 0.001;
+			lookAtPosition[1] -= vectorH[2] * window_mouse_get_delta_x() * 0.001;
+			lookAtPosition[2] += vectorH[1] * window_mouse_get_delta_y() * 0.001;
+			
+			//lookAtPosition.x += dsin(lookDirection) * window_mouse_get_delta_x() * 0.001;
+			//lookAtPosition.z += dcos(lookDirection) * window_mouse_get_delta_x() * 0.001;
+			//lookAtPosition.y += dcos(lookPitch) * window_mouse_get_delta_y() * 0.001;
+		}
+		else if (device_mouse_check_button(0, mb_middle) && __active)
+		{
+			distance += window_mouse_get_delta_y() * 0.005;
+		}
+		
+		if ((device_mouse_check_button_released(0, mb_left) || device_mouse_check_button_released(0, mb_right)) || device_mouse_check_button_released(0, mb_middle) && __active)
+		{
+			__active = false;
+			window_set_cursor(cr_default);
+		}
+		
+		lookAtPosition[0] = clamp(lookAtPosition[0], -20, 20);
+		lookAtPosition[1] = clamp(lookAtPosition[1], -20, 20);
+		lookAtPosition[2] = clamp(lookAtPosition[2], -20, 20);
+		
+		distance = clamp(distance, 0.05, 10);
+		
+		//if (active)
+		//{
+		//	if (CURSOR_POSITION[0] < bounds[0]) window_mouse_set(bounds[2], CURSOR_POSITION[1]);
+		//	else if (CURSOR_POSITION[0] > bounds[2]) window_mouse_set(bounds[0], CURSOR_POSITION[1]);
+		//	if (CURSOR_POSITION[1] < bounds[1]) window_mouse_set(CURSOR_POSITION[0], bounds[3]);
+		//	else if (CURSOR_POSITION[1] > bounds[3]) window_mouse_set(CURSOR_POSITION[0], bounds[1]);
+		//}
 	}
 	
 	#region Editor

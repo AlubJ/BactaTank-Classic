@@ -12,5 +12,6 @@
 	To do:
 	
 */
-PRIMARY_RENDERER.__camera.stepEditorThird([0, 0, WINDOW_WIDTH, WINDOW_HEIGHT]);
+PRIMARY_RENDERER.__camera.moveThird();
+PRIMARY_RENDERER.__camera.stepThird();
 PRIMARY_RENDERER.submit();

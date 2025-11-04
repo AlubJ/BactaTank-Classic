@@ -230,7 +230,7 @@ function BactaRenderer() constructor
 	/// @desc Render the surface onto the screen.
 	/// @arg  {Real} [width] The width to render to.
 	/// @arg  {Real} [height] The height to render to.
-	static render = function(_width = WINDOW_WIDTH, _height = WINDOW_WIDTH)
+	static render = function(_width = WINDOW_WIDTH, _height = WINDOW_HEIGHT)
 	{
 		//if (surface_exists(surface)) ppfx.Draw(surface, 0, 0, width, height, width / 3, height / 3);
 		
