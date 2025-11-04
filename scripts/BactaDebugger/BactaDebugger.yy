@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"BactaDebugger",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"BactaDebugger",
+  "parent":{
+    "name":"BactaCommon",
+    "path":"folders/BactaTank/BactaCommon.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

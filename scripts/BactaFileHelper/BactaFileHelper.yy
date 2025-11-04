@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"BactaFileHelper",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"BactaFileHelper",
+  "parent":{
+    "name":"FileHelpers",
+    "path":"folders/BactaTank/Helper/FileHelpers.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}
