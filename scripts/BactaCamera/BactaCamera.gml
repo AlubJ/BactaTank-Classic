@@ -10,6 +10,9 @@
 	 - Created 04/11/2025 by Alun Jones
 	
 	To Do:
+		Make the camera control much better, allow for panning across the view plane properly.
+		Allow free cam.
+		
 	
 	Information:
 		Initialise a new camera, includes a bunch of helper functions to do camera stuff.
@@ -147,6 +150,8 @@ function BactaCamera() constructor
 		lookAtPosition[2] = position[2] - dsin(pitch);
 	}
 	
+	/// @func stepFirst()
+	/// @desc Step the camera in first person.
 	static stepFirst = function()
 	{
 		// Apply Positions
