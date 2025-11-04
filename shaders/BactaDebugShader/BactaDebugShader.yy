@@ -1,0 +1,12 @@
+{
+  "$GMShader":"",
+  "%Name":"BactaDebugShader",
+  "name":"BactaDebugShader",
+  "parent":{
+    "name":"BactaShaders",
+    "path":"folders/BactaTank/BactaRenderer/BactaShaders.yy",
+  },
+  "resourceType":"GMShader",
+  "resourceVersion":"2.0",
+  "type":1,
+}

@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"BactaCamera",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"BactaCamera",
+  "parent":{
+    "name":"BactaRenderer",
+    "path":"folders/BactaTank/BactaRenderer.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

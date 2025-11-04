@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"BactaRenderer",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"BactaRenderer",
+  "parent":{
+    "name":"BactaRenderer",
+    "path":"folders/BactaTank/BactaRenderer.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

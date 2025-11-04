@@ -1,0 +1,53 @@
+{
+  "$GMProject":"v1",
+  "%Name":"BactaTank Classic",
+  "AudioGroups":[
+    {"$GMAudioGroup":"v1","%Name":"audiogroup_default","exportDir":"","name":"audiogroup_default","resourceType":"GMAudioGroup","resourceVersion":"2.0","targets":-1,},
+  ],
+  "configs":{
+    "children":[],
+    "name":"Default",
+  },
+  "defaultScriptType":1,
+  "Folders":[
+    {"$GMFolder":"","%Name":"BactaTank","folderPath":"folders/BactaTank.yy","name":"BactaTank","resourceType":"GMFolder","resourceVersion":"2.0",},
+    {"$GMFolder":"","%Name":"BactaConfig","folderPath":"folders/BactaTank/BactaConfig.yy","name":"BactaConfig","resourceType":"GMFolder","resourceVersion":"2.0",},
+    {"$GMFolder":"","%Name":"BactaLighting","folderPath":"folders/BactaTank/BactaLighting.yy","name":"BactaLighting","resourceType":"GMFolder","resourceVersion":"2.0",},
+    {"$GMFolder":"","%Name":"BactaMaths","folderPath":"folders/BactaTank/BactaMaths.yy","name":"BactaMaths","resourceType":"GMFolder","resourceVersion":"2.0",},
+    {"$GMFolder":"","%Name":"BactaRenderer","folderPath":"folders/BactaTank/BactaRenderer.yy","name":"BactaRenderer","resourceType":"GMFolder","resourceVersion":"2.0",},
+    {"$GMFolder":"","%Name":"BactaShaderInterface","folderPath":"folders/BactaTank/BactaRenderer/BactaShaderInterface.yy","name":"BactaShaderInterface","resourceType":"GMFolder","resourceVersion":"2.0",},
+    {"$GMFolder":"","%Name":"BactaShaders","folderPath":"folders/BactaTank/BactaRenderer/BactaShaders.yy","name":"BactaShaders","resourceType":"GMFolder","resourceVersion":"2.0",},
+  ],
+  "ForcedPrefabProjectReferences":[],
+  "IncludedFiles":[
+    {"$GMIncludedFile":"","%Name":"test.vbx","CopyToMask":-1,"filePath":"datafiles","name":"test.vbx","resourceType":"GMIncludedFile","resourceVersion":"2.0",},
+  ],
+  "isEcma":false,
+  "LibraryEmitters":[],
+  "MetaData":{
+    "IDEVersion":"2024.14.0.207",
+  },
+  "name":"BactaTank Classic",
+  "resources":[
+    {"id":{"name":"ctrlRenderer","path":"objects/ctrlRenderer/ctrlRenderer.yy",},},
+    {"id":{"name":"Room1","path":"rooms/Room1/Room1.yy",},},
+    {"id":{"name":"__BACTA_CONFIG","path":"scripts/__BACTA_CONFIG/__BACTA_CONFIG.yy",},},
+    {"id":{"name":"__BACTA_INITIALISE","path":"scripts/__BACTA_INITIALISE/__BACTA_INITIALISE.yy",},},
+    {"id":{"name":"__BACTA_MACROS","path":"scripts/__BACTA_MACROS/__BACTA_MACROS.yy",},},
+    {"id":{"name":"BactaCamera","path":"scripts/BactaCamera/BactaCamera.yy",},},
+    {"id":{"name":"BactaDebugShaderInterface","path":"scripts/BactaDebugShaderInterface/BactaDebugShaderInterface.yy",},},
+    {"id":{"name":"BactaLight","path":"scripts/BactaLight/BactaLight.yy",},},
+    {"id":{"name":"BactaMathGeneral","path":"scripts/BactaMathGeneral/BactaMathGeneral.yy",},},
+    {"id":{"name":"BactaRenderer","path":"scripts/BactaRenderer/BactaRenderer.yy",},},
+    {"id":{"name":"BactaDebugShader","path":"shaders/BactaDebugShader/BactaDebugShader.yy",},},
+  ],
+  "resourceType":"GMProject",
+  "resourceVersion":"2.0",
+  "RoomOrderNodes":[
+    {"roomId":{"name":"Room1","path":"rooms/Room1/Room1.yy",},},
+  ],
+  "templateType":"game",
+  "TextureGroups":[
+    {"$GMTextureGroup":"","%Name":"Default","autocrop":true,"border":2,"compressFormat":"bz2","customOptions":"","directory":"","groupParent":null,"isScaled":true,"loadType":"default","mipsToGenerate":0,"name":"Default","resourceType":"GMTextureGroup","resourceVersion":"2.0","targets":-1,},
+  ],
+}

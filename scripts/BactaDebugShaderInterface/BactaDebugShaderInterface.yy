@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"BactaDebugShaderInterface",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"BactaDebugShaderInterface",
+  "parent":{
+    "name":"BactaShaderInterface",
+    "path":"folders/BactaTank/BactaRenderer/BactaShaderInterface.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"BactaMathGeneral",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"BactaMathGeneral",
+  "parent":{
+    "name":"BactaMaths",
+    "path":"folders/BactaTank/BactaMaths.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}
