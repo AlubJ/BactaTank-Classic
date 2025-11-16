@@ -31,3 +31,6 @@ renderItem.vertexBuffer = vertexBuffer;
 renderItem.shader = "BactaDebugShader";
 
 array_push(PRIMARY_RENDERER.__staticRenderQueue, renderItem);
+
+// Test
+model = new BactaModel("ANAKIN_JEDI_PC.GHG");
