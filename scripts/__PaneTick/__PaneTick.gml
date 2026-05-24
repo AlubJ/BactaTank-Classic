@@ -39,9 +39,48 @@ function __PaneTick()
         
         if (__windowUpdated && __windowWidth > 0 && __windowHeight > 0)
         {
-            surface_resize(application_surface, __windowWidth, __windowHeight);
             display_set_gui_size(__windowWidth, __windowHeight);
+            surface_resize(application_surface, __windowWidth, __windowHeight);
             __PaneTrace("Window updated");
+        }
+        
+        if (__windowCommandsAvailable)
+        {
+            if (window_command_check(window_command_close))
+            {
+                if (is_method(__windowCloseCallback))
+                {
+                    __windowCloseCallback();
+                }
+                else
+                {
+                    window_command_run(window_command_close);
+                }
+            }
+            
+            if (window_command_check(window_command_minimize))
+            {
+                if (is_method(__windowMinimiseCallback))
+                {
+                    __windowMinimiseCallback();
+                }
+                else
+                {
+                    window_command_run(window_command_minimize);
+                }
+            }
+            
+            if (window_command_check(window_command_maximize))
+            {
+                if (is_method(__windowMaximiseCallback))
+                {
+                    __windowMaximiseCallback();
+                }
+                else
+                {
+                    window_command_run(window_command_maximize);
+                }
+            }
         }
     }
 }

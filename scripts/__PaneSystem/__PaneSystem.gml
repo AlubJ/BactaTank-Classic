@@ -21,9 +21,15 @@ function __PaneSystem()
         
         __windowUpdated = false;
         
+        __windowCommandsAvailable = false;
+        
         __PaneTrace($"Welcome to Pane by Alun Jones. This is v{PANE_VERSION} {PANE_DATE}");
         
         time_source_start(time_source_create(time_source_game, 1, time_source_units_frames, function () { __PaneTick() }, [  ], -1));
+        call_later(1, time_source_units_frames, function()
+        {
+            __PaneCheckWindowHook();
+        }, false);
     }
     
     return _system;

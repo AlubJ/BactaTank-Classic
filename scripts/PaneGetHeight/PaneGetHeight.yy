@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"PaneGetHeight",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"PaneGetHeight",
+  "parent":{
+    "name":"Pane",
+    "path":"folders/Vendors/Pane.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

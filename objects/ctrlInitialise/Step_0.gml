@@ -43,8 +43,7 @@ switch (initPhase)
     
     // Default
     default:
-        PaneSet(ReggieGet("window.width"), ReggieGet("window.height"), ReggieGet("window.x"), ReggieGet("window.y"), false, true, true);
-        PaneSetCursor(cr_default);
+        BactaInitWindow();
         room_goto(scnMain);
         break;
     

@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"PaneSetMaximiseCallback",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"PaneSetMaximiseCallback",
+  "parent":{
+    "name":"Pane",
+    "path":"folders/Vendors/Pane.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

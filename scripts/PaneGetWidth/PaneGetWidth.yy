@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"PaneGetWidth",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"PaneGetWidth",
+  "parent":{
+    "name":"Pane",
+    "path":"folders/Vendors/Pane.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}
