@@ -12,13 +12,14 @@ switch (initPhase)
         BactaInitCommandParams();
         BactaInitShortcuts();
         BactaInitFiletypes();
+        BactaInitConfig();
         
         array_push(initLog, "Loading user config");
         break;
     
     // Load user config
     case 2:
-        
+        ReggieLoad();
         array_push(initLog, "Applying user config");
         break;
     
@@ -42,7 +43,7 @@ switch (initPhase)
     
     // Default
     default:
-        PaneSet(1366, 768, false, true, true);
+        PaneSet(ReggieGet("window.width"), ReggieGet("window.height"), ReggieGet("window.x"), ReggieGet("window.y"), false, true, true);
         PaneSetCursor(cr_default);
         room_goto(scnMain);
         break;

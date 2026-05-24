@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"__ReggieEnsureInstance",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"__ReggieEnsureInstance",
+  "parent":{
+    "name":"(System)",
+    "path":"folders/Vendors/Reggie/(System).yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

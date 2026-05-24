@@ -1,12 +1,12 @@
 {
   "$GMScript":"v1",
-  "%Name":"__BactaTrace",
+  "%Name":"__ReggieSystem",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"__BactaTrace",
+  "name":"__ReggieSystem",
   "parent":{
-    "name":"Debugging",
-    "path":"folders/BactaTank/(BactaSystem)/Debugging.yy",
+    "name":"(System)",
+    "path":"folders/Vendors/Reggie/(System).yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

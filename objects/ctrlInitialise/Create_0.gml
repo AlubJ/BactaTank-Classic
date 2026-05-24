@@ -1,7 +1,7 @@
 /// @desc Begin initialisation of BactaTank
 
 // Set the window size
-PaneSet(640, 480, false, false, true);
+PaneSet(640, 480, undefined, undefined, false, false, true);
 
 // Initialisation phase
 initPhase = 0;

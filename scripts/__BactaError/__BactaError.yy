@@ -5,8 +5,8 @@
   "isDnD":false,
   "name":"__BactaError",
   "parent":{
-    "name":"(BactaSystem)",
-    "path":"folders/BactaTank/(BactaSystem).yy",
+    "name":"Debugging",
+    "path":"folders/BactaTank/(BactaSystem)/Debugging.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",
