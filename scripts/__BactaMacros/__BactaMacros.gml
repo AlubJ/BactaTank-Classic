@@ -30,7 +30,4 @@ PRIMARY_RENDERER = new BactaRenderer();
 #macro RUN_FROM_IDE				global.__runFromIDE__
 RUN_FROM_IDE					= (parameter_count() == 3 && string_count("GMS2TEMP", parameter_string(2)));
 
-// Trace
-#macro TRACE					($"{_GMFILE_}.{_GMFUNCTION_} line:{_GMLINE_}    -")
-
 #endregion

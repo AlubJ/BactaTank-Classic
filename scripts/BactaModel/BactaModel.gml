@@ -27,13 +27,13 @@ enum _BACTA_MODEL_VERSION
 function BactaModel(_modelPath = undefined) constructor
 {
 	// Check model arguement
-	if (_modelPath == undefined) throw ("<BactaModel> Cannot load an undefined model.");
+	if (_modelPath == undefined) __BactaError("Cannot load an undefined model.");
 	
 	// Validate file
 	if (validate_file(_modelPath, [ ".ghg" ]) == _BACTA_FILE_VALIDATION.PASSED)
 	{
 		// Debug out
-		DEBUGGER.print($"Attempting to load \"{_modelPath}\".");
+		__BactaTrace($"Attempting to load \"{_modelPath}\".");
 		
 		// Load Model
 		loadModel(_modelPath);
@@ -51,13 +51,24 @@ function BactaModel(_modelPath = undefined) constructor
 		
 		// Validate model version
 		self.version = getVersion(_buffer);
-		DEBUGGER.assert(self.version > 0, "Unsupported model version detected.");
+		__BactaAssert(self.version > 0, "Unsupported model version detected.");
 		
 		// Offsets struct (for future reference)
 		self.offsets = {  };
 		
 		// Read NU20
 		readNU20(_buffer);
+        
+        // Read all blocks
+        readBlocks(_buffer);
+        
+        // Read PNTR
+        readPNTR(_buffer);
+        
+        var _buffer1 = buffer_create(1, buffer_grow, 1);
+        buffer_write(_buffer1, buffer_text, json_stringify(self.referenceTable, true));
+        buffer_save(_buffer1, "/Users/alun/Documents/test.txt");
+        buffer_delete(_buffer1);
 		
 		// Read GSNH
 		readGSNH(_buffer);
@@ -82,10 +93,128 @@ function BactaModel(_modelPath = undefined) constructor
 		// Read PNTR and GSNH offsets
 		self.pntrOffset = buffer_read_pointer(_buffer);
 		self.gsnhOffset = buffer_read_pointer(_buffer);
-		
-		// Read GSNH
-		readGSNH(_buffer);
 	}
+    
+    /// @func readBlocks(buffer)
+    /// @desc Read all the blocks and add the information to the blocks struct.
+	/// @param {Id.Buffer} buffer Model buffer.
+    static readBlocks = function(_buffer)
+    {
+        // Create the structure to hold the block information
+        self.blocks = {  };
+        self.blockOrder = [  ];
+        
+        // Jump back 0x10 bytes to allow the HEAD block to be read
+        buffer_hop(_buffer, -0x10);
+        
+        // While loop
+        while (true)
+        {
+            // Get buffer information
+            var _blockStartOffset = buffer_tell(_buffer);
+            var _blockMagic = buffer_read_chars(_buffer, 4);
+            var _blockSize = buffer_read(_buffer, buffer_s32);
+            var _blockEndOffset = _blockStartOffset + _blockSize;
+            
+            // Extend the VBIB block ahead by 0x20 bytes to include this weird bit
+            if (_blockMagic == "VBIB")
+            {
+                _blockSize += 0x20;
+                _blockEndOffset = _blockStartOffset + _blockSize;
+            }
+            
+            // Seek ahead
+            buffer_hop(_buffer, _blockSize - 8);
+            
+            // Set block
+            self.blocks[$ _blockMagic] = {
+                magic: _blockMagic,
+                startOffset: _blockStartOffset,
+                size: _blockSize,
+                endOffset: _blockEndOffset,
+                
+                symbols: {  },  // Stores symbols for things that pointers point to
+                pointers: {  }, // Stores pointers to symbols
+            };
+            
+            array_push(self.blockOrder, _blockMagic);
+            
+            // Trace
+            __BactaTrace("Read block: ", _blockMagic);
+            
+            // Break after PNTR is read
+            if (_blockMagic == "PNTR")
+            {
+                break;
+            }
+        }
+    }
+    
+    /// @func readPNTR(buffer)
+    /// @desc Read the PNTR section and map out all pointers.
+	/// @param {Id.Buffer} buffer Model buffer.
+    static readPNTR = function(_buffer)
+    {
+        // Create reference table
+        self.referenceTable = {  };
+        
+        // Jump to PNTR
+        buffer_jump(_buffer, self.pntrOffset);
+        
+        // Get pointer count
+        var _pointerCount = buffer_read(_buffer, buffer_s32);
+        
+        // Repeat
+        repeat (_pointerCount)
+        {
+            // Source
+            var _sourceOffsetAbsolute = buffer_read_pointer(_buffer);
+            
+            // Source data
+            var _block = self.findBlockByOffset(_sourceOffsetAbsolute);
+            if (_block != undefined)
+            {
+                var _sourceBlock = _block.magic;
+                var _sourceOffset = _sourceOffsetAbsolute - _block.startOffset;
+            }
+            else
+            {
+                var _sourceBlock = "NONE";
+                var _sourceOffset = 0;
+            }
+            
+            // Target
+            var _targetOffsetAbsolute = buffer_peek_pointer(_buffer, _sourceOffsetAbsolute);
+            
+            // Target data
+            var _block = self.findBlockByOffset(_targetOffsetAbsolute);
+            if (_block != undefined)
+            {
+                var _targetBlock = _block.magic;
+                var _targetOffset = _targetOffsetAbsolute - _block.startOffset;
+            }
+            else
+            {
+                var _targetBlock = "NONE";
+                var _targetOffset = 0;
+            }
+            
+            // Add to struct
+            self.referenceTable[$ ($"{_sourceBlock}:{_sourceOffset}")] = {
+                sourceBlock: _sourceBlock,
+                sourceOffset: _sourceOffset,
+                sourceOffsetAbsolute: _sourceOffsetAbsolute,
+                targetBlock: _targetBlock,
+                targetOffset: _targetOffset,
+                targetOffsetAbsolute: _targetOffsetAbsolute,
+            }
+            
+            if (_targetBlock == "NONE")
+            {
+                
+            }
+        }
+    }
 	
 	/// @func readGSNH(buffer)
 	/// @desc Read the GSNH header of the model.
@@ -243,6 +372,29 @@ function BactaModel(_modelPath = undefined) constructor
 		// Return Model Version None regardless
 		return false;
 	}
+    
+    /// @func findBlockByOffset(offset)
+    /// @desc Find a block by a specific offset.
+    /// @param {Real} offset
+    static findBlockByOffset = function(_offset)
+    {
+        // Get struct properties
+        var _blockCount = array_length(self.blockOrder);
+        
+        // Loop over it
+        var _i = 0;
+        repeat(_blockCount)
+        {
+            var _block = self.blocks[$ self.blockOrder[_i]];
+            if (_offset >= _block.startOffset && _offset < _block.endOffset)
+            {
+                return _block;
+            }
+            _i++;
+        }
+        
+        return undefined;
+    }
 	
 	#endregion
 }
