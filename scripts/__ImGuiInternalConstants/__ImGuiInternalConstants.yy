@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"__ImGuiInternalConstants",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"__ImGuiInternalConstants",
+  "parent":{
+    "name":"(Internals)",
+    "path":"folders/Vendors/ImGM/(Internals).yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

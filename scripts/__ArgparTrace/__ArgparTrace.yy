@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"__ArgparTrace",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"__ArgparTrace",
+  "parent":{
+    "name":"(System)",
+    "path":"folders/Vendors/Argpar/(System).yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

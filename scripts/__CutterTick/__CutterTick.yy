@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"__CutterTick",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"__CutterTick",
+  "parent":{
+    "name":"(System)",
+    "path":"folders/Vendors/Cutter/(System).yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

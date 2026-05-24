@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"__PaneWarn",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"__PaneWarn",
+  "parent":{
+    "name":"Debugging",
+    "path":"folders/Vendors/Pane/(System)/Debugging.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

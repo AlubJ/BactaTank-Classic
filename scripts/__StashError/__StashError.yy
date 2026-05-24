@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"__StashError",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"__StashError",
+  "parent":{
+    "name":"Debugging",
+    "path":"folders/Vendors/Stash/(System)/Debugging.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"CutterGetEnabled",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"CutterGetEnabled",
+  "parent":{
+    "name":"Cutter",
+    "path":"folders/Vendors/Cutter.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

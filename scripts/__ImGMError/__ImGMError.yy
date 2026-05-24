@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"__ImGMError",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"__ImGMError",
+  "parent":{
+    "name":"(Internals)",
+    "path":"folders/Vendors/ImGM/(Internals).yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

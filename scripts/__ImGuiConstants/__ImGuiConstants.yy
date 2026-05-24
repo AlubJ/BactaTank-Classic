@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"__ImGuiConstants",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"__ImGuiConstants",
+  "parent":{
+    "name":"ImGM",
+    "path":"folders/Vendors/ImGM.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"__StashConstants",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"__StashConstants",
+  "parent":{
+    "name":"(System)",
+    "path":"folders/Vendors/Stash/(System).yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

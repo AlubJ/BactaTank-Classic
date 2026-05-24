@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"__PaneSystem",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"__PaneSystem",
+  "parent":{
+    "name":"(System)",
+    "path":"folders/Vendors/Pane/(System).yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

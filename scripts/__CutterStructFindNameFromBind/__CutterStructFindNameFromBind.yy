@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"__CutterStructFindNameFromBind",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"__CutterStructFindNameFromBind",
+  "parent":{
+    "name":"(System)",
+    "path":"folders/Vendors/Cutter/(System).yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

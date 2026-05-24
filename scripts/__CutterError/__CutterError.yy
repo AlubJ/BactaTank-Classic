@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"__CutterError",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"__CutterError",
+  "parent":{
+    "name":"Debugging",
+    "path":"folders/Vendors/Cutter/(System)/Debugging.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

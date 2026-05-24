@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"__PaneTick",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"__PaneTick",
+  "parent":{
+    "name":"(System)",
+    "path":"folders/Vendors/Pane/(System).yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

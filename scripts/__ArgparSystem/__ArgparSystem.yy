@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"__ArgparSystem",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"__ArgparSystem",
+  "parent":{
+    "name":"(System)",
+    "path":"folders/Vendors/Argpar/(System).yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}
