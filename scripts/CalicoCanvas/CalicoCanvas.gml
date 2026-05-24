@@ -227,6 +227,8 @@ function CalicoCanvas() constructor
 						
 						// Get Canvas Positions
 						var canvasBonePosition = world_to_screen(boneMatrix[12], boneMatrix[13], boneMatrix[14], drawList[i].viewMatrix, drawList[i].projMatrix, width, height);
+						var canvasIdentityPosition = world_to_screen(bone.identityMatrix[12], bone.identityMatrix[13], bone.identityMatrix[14], drawList[i].viewMatrix, drawList[i].projMatrix, width, height);
+						var canvasInversePosition = world_to_screen(bone.inverseBindMatrix[12], bone.inverseBindMatrix[13], bone.inverseBindMatrix[14], drawList[i].viewMatrix, drawList[i].projMatrix, width, height);
 						
 						// Skip if Outside View Bounds
 						if (canvasBonePosition[0] == -1 || canvasBonePosition[1] == -1) continue;
@@ -252,6 +254,18 @@ function CalicoCanvas() constructor
 							draw_set_halign(fa_center);
 							draw_text(canvasBonePosition[0], canvasBonePosition[1], bone.name);
 						}
+						
+						draw_set_colour(c_lime)
+						draw_rectangle(canvasIdentityPosition[0] - 2, canvasIdentityPosition[1] - 2, canvasIdentityPosition[0] + 2, canvasIdentityPosition[1] + 2, false);
+						draw_set_colour(c_aqua)
+						draw_rectangle(canvasInversePosition[0] - 3, canvasInversePosition[1] - 3, canvasInversePosition[0] + 3, canvasInversePosition[1] + 3, true);
+						
+						//
+						var _newMat = tester(boneMatrix[12], boneMatrix[13], boneMatrix[14], bone.identityMatrix);
+						var endpoint = world_to_screen(_newMat[12], _newMat[13], _newMat[14], drawList[i].viewMatrix, drawList[i].projMatrix, width, height);
+						
+						draw_line(canvasBonePosition[0], canvasBonePosition[1], endpoint[0], endpoint[1]);
+						
 						
 						// Reset Colour
 						draw_set_halign(fa_left);

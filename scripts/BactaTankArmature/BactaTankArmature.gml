@@ -37,8 +37,11 @@ function BactaTankArmature() constructor
 			bone.identityMatrix = [];
 			repeat(16) array_push(bone.identityMatrix, buffer_read(buffer, buffer_f32));
 			
+			// Mystery vec3
+			bone.unknownVec3 = [];
+			repeat(3) array_push(bone.unknownVec3, buffer_read(buffer, buffer_f32));
+			
 			// Bone Name
-			buffer_seek(buffer, buffer_seek_relative, 0x0C);
 			var currentOffset = buffer_tell(buffer);
 			bone.name = buffer_peek(buffer, currentOffset + buffer_read(buffer, buffer_s32), buffer_string);
 			
@@ -89,6 +92,7 @@ function BactaTankArmature() constructor
 			var offset = self.bones[i].offset + _model.nu20Offset;
 			ConsoleLog($"Bone {i}", CONSOLE_MODEL_LOADER_DEBUG, offset);
 			ConsoleLog($"    Identity Matrix:      {self.bones[i].identityMatrix}", CONSOLE_MODEL_LOADER_DEBUG, offset);
+			ConsoleLog($"    Mystery Vec3:         {self.bones[i].unknownVec3}", CONSOLE_MODEL_LOADER_DEBUG, offset + 0x40);
 			ConsoleLog($"    Name:                 \"{self.bones[i].name}\"", CONSOLE_MODEL_LOADER_DEBUG, offset + 0x4C);
 			ConsoleLog($"    Parent:               {self.bones[i].parent}", CONSOLE_MODEL_LOADER_DEBUG, offset + 0x50);
 			var offset = self.bones[i].bindOffset + _model.nu20Offset;
@@ -189,6 +193,7 @@ function BactaTankBone() constructor
 	// Other
 	matrix = matrix_build_identity();
 	matrixLocal = matrix_build_identity();
+	unknownVec3 = array_create(3, 0);
 	
 	// Offsets
 	offset = 0;

@@ -90,7 +90,7 @@
   "isEcma":false,
   "LibraryEmitters":[],
   "MetaData":{
-    "IDEVersion":"2024.14.0.207",
+    "IDEVersion":"2024.14.3.217",
   },
   "name":"BactaTank Classic",
   "resources":[
@@ -190,6 +190,7 @@
     {"id":{"name":"scr_catspeak_lexer","path":"scripts/scr_catspeak_lexer/scr_catspeak_lexer.yy",},},
     {"id":{"name":"scr_catspeak_parser","path":"scripts/scr_catspeak_parser/scr_catspeak_parser.yy",},},
     {"id":{"name":"scr_catspeak_presets","path":"scripts/scr_catspeak_presets/scr_catspeak_presets.yy",},},
+    {"id":{"name":"Script163","path":"scripts/Script163/Script163.yy",},},
     {"id":{"name":"scriptHelper","path":"scripts/scriptHelper/scriptHelper.yy",},},
     {"id":{"name":"ShortcutController","path":"scripts/ShortcutController/ShortcutController.yy",},},
     {"id":{"name":"Snap2DArrayToStructArray","path":"scripts/Snap2DArrayToStructArray/Snap2DArrayToStructArray.yy",},},
