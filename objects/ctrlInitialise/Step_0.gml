@@ -38,7 +38,13 @@ switch (initPhase)
     // Load templates
     case 5:
         
-        array_push(initLog, "Loading templates");
+        array_push(initLog, "Loading UI");
+        break;
+    
+    // Load UI
+    case 6:
+        BactaInitUI();
+        array_push(initLog, "Loading UI");
         break;
     
     // Default

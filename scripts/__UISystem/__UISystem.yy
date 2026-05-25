@@ -6,7 +6,7 @@
   "name":"__UISystem",
   "parent":{
     "name":"(System)",
-    "path":"folders/UI/(System).yy",
+    "path":"folders/Vendors/UI/(System).yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

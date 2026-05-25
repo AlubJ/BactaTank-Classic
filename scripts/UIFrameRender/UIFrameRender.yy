@@ -1,12 +1,12 @@
 {
   "$GMScript":"v1",
-  "%Name":"__UIConstants",
+  "%Name":"UIFrameRender",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"__UIConstants",
+  "name":"UIFrameRender",
   "parent":{
-    "name":"(System)",
-    "path":"folders/Vendors/UI/(System).yy",
+    "name":"Frame",
+    "path":"folders/Vendors/UI/Frame.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

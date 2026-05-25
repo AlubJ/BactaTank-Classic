@@ -254,8 +254,8 @@
   "maintainGms1Font":false,
   "name":"fntUI",
   "parent":{
-    "name":"BactaTank Classic",
-    "path":"BactaTank Classic.yyp",
+    "name":"(System)",
+    "path":"folders/Vendors/UI/(System).yy",
   },
   "pointRounding":0,
   "ranges":[

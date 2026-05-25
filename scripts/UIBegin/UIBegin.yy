@@ -1,12 +1,12 @@
 {
   "$GMScript":"v1",
-  "%Name":"__UIConstants",
+  "%Name":"UIBegin",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"__UIConstants",
+  "name":"UIBegin",
   "parent":{
-    "name":"(System)",
-    "path":"folders/Vendors/UI/(System).yy",
+    "name":"UI",
+    "path":"folders/Vendors/UI.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

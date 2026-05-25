@@ -11,7 +11,14 @@ function __UISystem()
     {
         __themes = {  };
         __contexts = {  };
+        __modals = {  };
         
+        __currentContext = undefined;
+        __currentWorkspace = 0;
+        
+        __ident = "Test Test Test";
+        
+        __imGuiContext = new ImGuiContext(0, 0, PaneGetWidth(), PaneGetHeight())
     }
     
     return _system;
