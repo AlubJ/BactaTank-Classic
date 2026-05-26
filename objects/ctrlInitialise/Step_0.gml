@@ -54,7 +54,7 @@ switch (initPhase)
     // Finish loading
     case 100:
         BactaInitWindow();
-        UIOpenModal("Test");
+        UIOpenModal("Welcome");
         room_goto(scnMain);
         break;
     

@@ -5,7 +5,7 @@ function BactaInitUI()
 {
     UISetIdent("BactaTank Classic", BACTA_VERSION);
     
-    UIAddModal("Test", new UITestModal(), 640, 520, false, true);
+    UIAddModal("Welcome", new UIWelcomeModal(), 640, 520, false, true);
     
     UIBegin();
 }

@@ -1,9 +1,9 @@
 {
   "$GMScript":"v1",
-  "%Name":"UIText",
+  "%Name":"UIHeader",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"UIText",
+  "name":"UIHeader",
   "parent":{
     "name":"Text",
     "path":"folders/Vendors/UI/Widgets/Generic/Text.yy",

@@ -1,12 +1,12 @@
 {
   "$GMScript":"v1",
-  "%Name":"UIText",
+  "%Name":"UISpacing",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"UIText",
+  "name":"UISpacing",
   "parent":{
-    "name":"Text",
-    "path":"folders/Vendors/UI/Widgets/Generic/Text.yy",
+    "name":"Generic",
+    "path":"folders/Vendors/UI/Widgets/Generic.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

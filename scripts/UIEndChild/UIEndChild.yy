@@ -1,12 +1,12 @@
 {
   "$GMScript":"v1",
-  "%Name":"UIText",
+  "%Name":"UIEndChild",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"UIText",
+  "name":"UIEndChild",
   "parent":{
-    "name":"Text",
-    "path":"folders/Vendors/UI/Widgets/Generic/Text.yy",
+    "name":"Generic",
+    "path":"folders/Vendors/UI/Widgets/Generic.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

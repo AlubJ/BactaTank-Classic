@@ -1,12 +1,12 @@
 {
   "$GMScript":"v1",
-  "%Name":"UIText",
+  "%Name":"UIWelcomeModal",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"UIText",
+  "name":"UIWelcomeModal",
   "parent":{
-    "name":"Text",
-    "path":"folders/Vendors/UI/Widgets/Generic/Text.yy",
+    "name":"Modals",
+    "path":"folders/UI/Modals.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

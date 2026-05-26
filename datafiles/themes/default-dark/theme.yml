@@ -22,7 +22,7 @@ Background:
 - 255
 
 # Style
-ChildBorderSize: 0
+ChildBorderSize: 1
 ChildRounding: 3
 FrameBorderSize: 0
 FrameRounding: 3
