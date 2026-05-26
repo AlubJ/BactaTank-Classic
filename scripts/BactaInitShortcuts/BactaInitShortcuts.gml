@@ -1,7 +1,7 @@
 ///
-/// Initialise all shortcuts
+/// Initialise all assets
 ///
-function BactaInitShortcuts()
+function BactaInitAssets()
 {
     // Empty function until I add shortcuts
 }

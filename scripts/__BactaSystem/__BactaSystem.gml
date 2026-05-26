@@ -9,6 +9,8 @@ function __BactaSystem()
     _system = {  };
     with (_system)
     {
+        __assets = {  };
+        
         __BactaTrace($"Welcome to BactaTank Classic by Alun Jones. Version {BACTA_VERSION} {BACTA_DATE}");
     }
     

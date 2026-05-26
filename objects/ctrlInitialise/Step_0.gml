@@ -43,14 +43,13 @@ switch (initPhase)
         break;
     
     // Load UI
-    case 6:
+    case 99:
         BactaInitUI();
         UISetTheme("Default Dark");
-        array_push(initLog, "Loading UI");
         break;
     
-    // Default
-    default:
+    // Finish loading
+    case 100:
         BactaInitWindow();
         room_goto(scnMain);
         break;
