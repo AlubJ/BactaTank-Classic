@@ -9,6 +9,7 @@ function UIFrameDraw()
     
     with (_system)
     {
+        draw_clear(__currentBackgroundColour);
         __imGuiContext.Draw();
     }
 }

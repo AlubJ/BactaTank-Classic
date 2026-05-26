@@ -5,8 +5,8 @@
   "isDnD":false,
   "name":"UIBegin",
   "parent":{
-    "name":"UI",
-    "path":"folders/Vendors/UI.yy",
+    "name":"Misc",
+    "path":"folders/Vendors/UI/Misc.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

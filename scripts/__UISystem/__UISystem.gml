@@ -14,7 +14,8 @@ function __UISystem()
         __modals = {  };
         
         //__defaultFont = ImGuiGetFont();
-        __currentFont = undefined;
+        
+        __currentBackgroundColour = c_black;
         
         __currentContext = undefined;
         __currentWorkspace = 0;

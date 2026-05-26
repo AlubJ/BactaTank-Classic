@@ -10,7 +10,7 @@ function UISetTheme(_name)
     
     with (_system)
     {
-        //ImGuiPopFont();
+        ImGuiPopFont();
         //ImGuiPushFont(__defaultFont);
         ImGuiStyleColorsDark();
         
@@ -46,6 +46,11 @@ function UISetTheme(_name)
             }
             
             _i++;
+        }
+        
+        if (variable_struct_exists(_theme, "Background"))
+        {
+            __currentBackgroundColour = make_colour_rgb(_theme[$ "Background"][0], _theme[$ "Background"][1], _theme[$ "Background"][2]);
         }
         
         if (variable_struct_exists(_theme, "font"))

@@ -159,7 +159,6 @@
     {"id":{"name":"__StashTrace","path":"scripts/__StashTrace/__StashTrace.yy",},},
     {"id":{"name":"__StashWarn","path":"scripts/__StashWarn/__StashWarn.yy",},},
     {"id":{"name":"__UIConstants","path":"scripts/__UIConstants/__UIConstants.yy",},},
-    {"id":{"name":"__UISetFont","path":"scripts/__UISetFont/__UISetFont.yy",},},
     {"id":{"name":"__UISystem","path":"scripts/__UISystem/__UISystem.yy",},},
     {"id":{"name":"ArgparGet","path":"scripts/ArgparGet/ArgparGet.yy",},},
     {"id":{"name":"ArgparParse","path":"scripts/ArgparParse/ArgparParse.yy",},},
