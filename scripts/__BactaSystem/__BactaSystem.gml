@@ -11,6 +11,8 @@ function __BactaSystem()
     {
         __assets = {  };
         
+        __project = undefined;
+        
         __BactaTrace($"Welcome to BactaTank Classic by Alun Jones. Version {BACTA_VERSION} {BACTA_DATE}");
     }
     

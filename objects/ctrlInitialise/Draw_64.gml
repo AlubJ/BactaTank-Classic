@@ -7,5 +7,3 @@ repeat (array_length(initLog))
     draw_text(initLogX, initLogY + (_i * initLogYSpace), initLog[_i]);
     _i++;
 }
-
-draw_sprite(graBactaWave, 0, 40, 40);

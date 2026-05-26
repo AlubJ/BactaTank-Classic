@@ -9,4 +9,7 @@ function BactaInitConfig()
     ReggieRegister("window.width", 1366);
     ReggieRegister("window.height", 768);
     ReggieRegister("window.maximised", false);
+    
+    // Directories
+    ReggieRegister("directories.projects", StashGetDocumentsDirectory() + "BactaTank Classic Projects/");
 }

@@ -13,7 +13,7 @@ function __StashSystem()
         __saveDirectory = game_save_id;
         __tempDirectory = temp_directory;
         __projectDirectory = filename_dir(GM_project_filename);
-        __documentsDirectory = environment_get_variable("USERPROFILE") + "\\Documents";
+        __documentsDirectory = environment_get_variable("USERPROFILE") + "/Documents/";
         
         __stashDirectories = {  };
         

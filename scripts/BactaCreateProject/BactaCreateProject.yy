@@ -1,12 +1,12 @@
 {
   "$GMScript":"v1",
-  "%Name":"BactaAddAsset",
+  "%Name":"BactaCreateProject",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"BactaAddAsset",
+  "name":"BactaCreateProject",
   "parent":{
-    "name":"Asset",
-    "path":"folders/BactaTank/Asset.yy",
+    "name":"Project",
+    "path":"folders/BactaTank/Project.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

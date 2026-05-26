@@ -11,8 +11,11 @@ switch (initPhase)
     case 1:
         BactaInitCommandParams();
         BactaInitShortcuts();
-        BactaInitFiletypes();
+        
         BactaInitConfig();
+        ReggieLoad();
+        
+        BactaInitFiletypes();
         BactaInitDirectories();
         
         array_push(initLog, "Loading user config");
@@ -20,7 +23,7 @@ switch (initPhase)
     
     // Load user config
     case 2:
-        ReggieLoad();
+        
         array_push(initLog, "Applying user config");
         break;
     

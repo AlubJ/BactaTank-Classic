@@ -1,3 +1,9 @@
+// Feather disable all
+
+///
+/// Add a new asset
+///
+/// @param {String} file The file of the asset
 function BactaAddAsset(_name)
 {
     static _system = __BactaSystem();

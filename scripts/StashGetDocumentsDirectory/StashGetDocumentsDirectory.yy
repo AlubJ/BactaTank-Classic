@@ -1,12 +1,12 @@
 {
   "$GMScript":"v1",
-  "%Name":"BactaAddAsset",
+  "%Name":"StashGetDocumentsDirectory",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"BactaAddAsset",
+  "name":"StashGetDocumentsDirectory",
   "parent":{
-    "name":"Asset",
-    "path":"folders/BactaTank/Asset.yy",
+    "name":"Stash",
+    "path":"folders/Vendors/Stash.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

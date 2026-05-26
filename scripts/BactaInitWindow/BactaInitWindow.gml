@@ -10,7 +10,9 @@ function BactaInitWindow()
         ReggieGet("window.y"),
         ReggieGet("window.maximised"),
         true,
-        true
+        true,
+        1366,
+        768
     );
     
     PaneSetCursor(cr_default);
