@@ -54,5 +54,62 @@ function UIFrameRender()
             
             ImGuiEndMainMenuBar();
         }
+        
+        var _modals = variable_struct_get_names(__modals);
+        
+        var _i = 0;
+        repeat (array_length(_modals))
+        {
+            
+            var _modal = __modals[$ _modals[_i]];
+            
+            if (_modal.open)
+            {
+                _modal.open = false;
+                _modal.closed = true;
+                _modal.modal.init();
+                ImGuiOpenPopup(_modal.name);
+            }
+            
+            if (_modal.fixedSize)
+            {
+                var _modalWidth = _modal.width;
+                var _modalHeight = _modal.height;
+                var _modalX = (PaneGetWidth() * 0.5) - (_modalWidth * 0.5);
+                var _modalY = (PaneGetHeight() * 0.5) - (_modalHeight * 0.5);
+            }
+            else
+            {
+                var _modalWidth = PaneGetWidth() * _modal.width;
+                var _modalHeight = PaneGetHeight() * _modal.height;
+                var _modalX = (PaneGetWidth() * 0.5) - (_modalWidth * 0.5);
+                var _modalY = (PaneGetHeight() * 0.5) - (_modalHeight * 0.5);
+            }
+            
+            var _flags = ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove;
+            
+            if (!_modal.allowClose)
+            {
+                _flags |= ImGuiWindowFlags.NoTitleBar;
+            }
+            
+            ImGuiSetNextWindowSize(_modalWidth, _modalHeight, ImGuiCond.Always);
+            ImGuiSetNextWindowPos(_modalX, _modalY, ImGuiCond.Always);
+            if (ImGuiBeginPopupModal(_modal.name, true, _flags))
+            {
+                _modal.modal.render(_modalWidth, _modalHeight);
+                ImGuiEndPopup();
+            }
+            else
+            {
+                if (_modal.closed)
+                {
+                    _modal.modal.deinit();
+                    _modal.closed = false;
+                }
+            }
+            
+            _i++;
+        }
     }
 }
