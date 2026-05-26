@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"__DoLaterSystem",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"__DoLaterSystem",
+  "parent":{
+    "name":"(System)",
+    "path":"folders/Vendors/DoLater/(System).yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

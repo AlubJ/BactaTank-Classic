@@ -1,0 +1,153 @@
+############################################
+### BactaTank Classic Dracula Theme      ###
+############################################
+
+# All colour values are stored as RGBA 0-255.
+# All style values are stored as integers.
+
+# Theme Name and Author
+name: "Dracula"
+author: "Devz"
+
+# Window Title Bar and Main Background
+titleBar: "Dark",
+mainBg:
+- 27
+- 28
+- 36
+- 255
+
+# Style
+ChildBorderSize: 0
+ChildRounding: 3
+FrameBorderSize: 0
+FrameRounding: 3
+GrabRounding: 3
+PopupBorderSize: 0
+PopupRounding: 3
+ScrollbarRounding: 3
+TabRounding: 3
+WindowBorderSize: 0
+WindowRounding: 10
+
+# Colours
+Button: 
+- 27
+- 28
+- 36
+- 255
+ButtonActive: 
+- 27
+- 28
+- 36
+- 255
+ButtonHovered: 
+- 98
+- 114
+- 164
+- 100
+CheckMark: 
+- 127
+- 127
+- 127
+- 255
+ChildBg: 
+- 40
+- 42
+- 54
+- 255
+FrameBg: 
+- 31
+- 31
+- 31
+- 255
+FrameBgActive: 
+- 27
+- 28
+- 36
+- 255
+FrameBgHovered: 
+- 98
+- 114
+- 164
+- 100
+Header: 
+- 38
+- 38
+- 38
+- 255
+HeaderActive: 
+- 27
+- 28
+- 36
+- 255
+HeaderHovered: 
+- 98
+- 114
+- 164
+- 100
+MenuBarBg: 
+- 27
+- 28
+- 36
+- 255
+ModalWindowDimBg: 
+- 0
+- 0
+- 0
+- 127
+PopupBg: 
+- 50
+- 52
+- 64
+- 255
+SliderGrab: 
+- 98
+- 114
+- 164
+- 100
+SliderGrabActive: 
+- 27
+- 28
+- 36
+- 255
+Tab: 
+- 40
+- 42
+- 54
+- 0
+TabActive: 
+- 40
+- 42
+- 54
+- 255
+TabHovered: 
+- 98
+- 114
+- 164
+- 100
+Text: 
+- 248
+- 248
+- 242
+- 255
+TextDisabled: 
+- 255
+- 255
+- 255
+- 127
+TitleBg: 
+- 40
+- 42
+- 54
+- 255
+TitleBgActive: 
+- 37
+- 38
+- 46
+- 255
+WindowBg: 
+- 40
+- 42
+- 54
+- 255

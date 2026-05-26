@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"SnapFromYAML",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"SnapFromYAML",
+  "parent":{
+    "name":"YAML",
+    "path":"folders/Vendors/SNAP/YAML.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

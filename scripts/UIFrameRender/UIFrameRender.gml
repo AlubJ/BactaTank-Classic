@@ -37,8 +37,20 @@ function UIFrameRender()
                 }
             }
             
-            ImGuiSetCursorPos(PaneGetWidth() - ImGuiCalcTextWidth(__ident) - 8, 0);
-            ImGuiText(__ident);
+            var _ident = "";
+            
+            if (__appName != "")
+            {
+                _ident += __appName + " | ";
+            }
+            
+            if (__version != "")
+            {
+                _ident += __version;
+            }
+            
+            ImGuiSetCursorPos(PaneGetWidth() - ImGuiCalcTextWidth(_ident) - 8, 0);
+            ImGuiText(_ident);
             
             ImGuiEndMainMenuBar();
         }

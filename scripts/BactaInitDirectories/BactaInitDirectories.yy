@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"BactaInitDirectories",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"BactaInitDirectories",
+  "parent":{
+    "name":"InitialisationFunctions",
+    "path":"folders/Initialisation/InitialisationFunctions.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

@@ -13,6 +13,7 @@ switch (initPhase)
         BactaInitShortcuts();
         BactaInitFiletypes();
         BactaInitConfig();
+        BactaInitDirectories();
         
         array_push(initLog, "Loading user config");
         break;
@@ -31,7 +32,7 @@ switch (initPhase)
     
     // Load themes
     case 4:
-        
+        BactaInitThemes();
         array_push(initLog, "Loading templates");
         break;
     
@@ -44,6 +45,7 @@ switch (initPhase)
     // Load UI
     case 6:
         BactaInitUI();
+        UISetTheme("Default Dark");
         array_push(initLog, "Loading UI");
         break;
     

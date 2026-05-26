@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"__UISetFont",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"__UISetFont",
+  "parent":{
+    "name":"(System)",
+    "path":"folders/Vendors/UI/(System).yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

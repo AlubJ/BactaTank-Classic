@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"SnapShallowAdd",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"SnapShallowAdd",
+  "parent":{
+    "name":"Utility",
+    "path":"folders/Vendors/SNAP/Utility.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

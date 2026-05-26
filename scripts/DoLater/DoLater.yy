@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"DoLater",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"DoLater",
+  "parent":{
+    "name":"API",
+    "path":"folders/Vendors/DoLater/API.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

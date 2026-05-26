@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"StashGetWorkingDirectory",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"StashGetWorkingDirectory",
+  "parent":{
+    "name":"Stash",
+    "path":"folders/Vendors/Stash.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

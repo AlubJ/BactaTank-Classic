@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"UISetTheme",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"UISetTheme",
+  "parent":{
+    "name":"Theme",
+    "path":"folders/Vendors/UI/Theme.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

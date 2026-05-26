@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"UISetIdent",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"UISetIdent",
+  "parent":{
+    "name":"Misc",
+    "path":"folders/Vendors/UI/Misc.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

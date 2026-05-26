@@ -1,0 +1,153 @@
+##########################################
+### BactaTank Classic Dark Green Theme ###
+##########################################
+
+# All colour values are stored as RGBA 0-255.
+# All style values are stored as integers.
+
+# Theme Name and Author
+name: "Green Dark"
+author: "Alub"
+
+# Window Title Bar and Main Background
+titleBar: "Dark"
+mainBg:
+- 0
+- 0
+- 0
+- 255
+
+# Style
+ChildBorderSize: 0
+ChildRounding: 3
+FrameBorderSize: 0
+FrameRounding: 3
+GrabRounding: 3
+PopupBorderSize: 0
+PopupRounding: 3
+ScrollbarRounding: 3
+TabRounding: 3
+WindowBorderSize: 0
+WindowRounding: 10
+
+# Colours
+Button: 
+- 10
+- 40
+- 10
+- 255
+ButtonActive: 
+- 20
+- 60
+- 20
+- 255
+ButtonHovered: 
+- 15
+- 50
+- 15
+- 255
+CheckMark: 
+- 50
+- 200
+- 50
+- 255
+ChildBg: 
+- 0
+- 0
+- 0
+- 0
+FrameBg: 
+- 10
+- 40
+- 10
+- 255
+FrameBgActive: 
+- 30
+- 80
+- 30
+- 255
+FrameBgHovered: 
+- 20
+- 60
+- 20
+- 255
+Header: 
+- 15
+- 50
+- 15
+- 255
+HeaderActive: 
+- 25
+- 75
+- 25
+- 255
+HeaderHovered: 
+- 20
+- 60
+- 20
+- 255
+MenuBarBg: 
+- 10
+- 30
+- 10
+- 255
+ModalWindowDimBg: 
+- 0
+- 0
+- 0
+- 127
+PopupBg: 
+- 15
+- 35
+- 15
+- 255
+SliderGrab: 
+- 40
+- 120
+- 40
+- 255
+SliderGrabActive: 
+- 50
+- 150
+- 50
+- 255
+Tab: 
+- 60
+- 180
+- 60
+- 0
+TabActive: 
+- 60
+- 160
+- 60
+- 33
+TabHovered: 
+- 60
+- 140
+- 60
+- 51
+Text: 
+- 255
+- 255
+- 255
+- 255
+TextDisabled: 
+- 140
+- 160
+- 140
+- 127
+TitleBg: 
+- 15
+- 50
+- 15
+- 255
+TitleBgActive: 
+- 25
+- 75
+- 25
+- 255
+WindowBg: 
+- 5
+- 15
+- 5
+- 255
