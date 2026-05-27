@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"StashOpenDialog",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"StashOpenDialog",
+  "parent":{
+    "name":"FileTypes",
+    "path":"folders/Vendors/Stash/FileTypes.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

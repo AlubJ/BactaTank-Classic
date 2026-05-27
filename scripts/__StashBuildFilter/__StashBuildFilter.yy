@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"__StashBuildFilter",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"__StashBuildFilter",
+  "parent":{
+    "name":"FileTypes",
+    "path":"folders/Vendors/Stash/FileTypes.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

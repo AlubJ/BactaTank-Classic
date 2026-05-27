@@ -17,6 +17,8 @@ function __StashSystem()
         
         __stashDirectories = {  };
         
+        __filetypes = {  };
+        
         __StashTrace($"Welcome to Stash by Alun Jones. This is v{STASH_VERSION} {STASH_DATE}");
     }
     

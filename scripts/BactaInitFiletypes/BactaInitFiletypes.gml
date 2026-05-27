@@ -3,5 +3,9 @@
 ///
 function BactaInitFiletypes()
 {
-    // Empty function until I add filetypes
+    StashAddFileType("bproj", "BactaTank Project", "*.bproject");
+    
+    StashAddFileType("ghg", "TtGames Model", "*.ghg");
+    
+    StashAddFileType("png", "Portable Network Graphics", "*.png");
 }

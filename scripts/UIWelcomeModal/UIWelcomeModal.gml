@@ -88,7 +88,12 @@ function UIWelcomeModal() : UIModal() constructor
         
         if (ImGuiButton("Open File", _buttonWidth))
         {
-            UICloseModal();
+            var _file = StashOpenDialog("Open Project or Model", [ "bproj", "ghg" ], "");
+            
+            if (_file != "")
+            {
+                UICloseModal();
+            }
         }
     }
 }
