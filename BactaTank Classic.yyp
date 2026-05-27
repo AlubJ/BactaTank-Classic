@@ -285,6 +285,7 @@
     {"id":{"name":"UIMenuItem","path":"scripts/UIMenuItem/UIMenuItem.yy",},},
     {"id":{"name":"UIModal","path":"scripts/UIModal/UIModal.yy",},},
     {"id":{"name":"UINewModelModal","path":"scripts/UINewModelModal/UINewModelModal.yy",},},
+    {"id":{"name":"UINewProjectModal","path":"scripts/UINewProjectModal/UINewProjectModal.yy",},},
     {"id":{"name":"UIOpenModal","path":"scripts/UIOpenModal/UIOpenModal.yy",},},
     {"id":{"name":"UISeparator","path":"scripts/UISeparator/UISeparator.yy",},},
     {"id":{"name":"UISetIdent","path":"scripts/UISetIdent/UISetIdent.yy",},},

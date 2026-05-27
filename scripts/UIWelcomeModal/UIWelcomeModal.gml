@@ -74,6 +74,7 @@ function UIWelcomeModal() : UIModal() constructor
         
         if (ImGuiButton("New Project", _buttonWidth))
         {
+            UIOpenModal("New Project");
             UICloseModal();
         }
         
