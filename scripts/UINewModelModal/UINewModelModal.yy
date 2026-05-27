@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"UINewModelModal",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"UINewModelModal",
+  "parent":{
+    "name":"Modals",
+    "path":"folders/UI/Modals.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

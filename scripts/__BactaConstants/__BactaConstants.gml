@@ -6,6 +6,8 @@
 
 //#macro BACTA_LINE_TRACE     	(_GMFILE_"."_GMFUNCTION_" line:"_GMLINE_"    -")
 
+#macro BACTA_RECENT_FILES_MAX 15
+
 #macro BACTA_GAME_TCS  0
 #macro BACTA_GAME_LIJ1 1
 #macro BACTA_GAME_LB1  2

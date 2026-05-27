@@ -1,12 +1,12 @@
 {
   "$GMScript":"v1",
-  "%Name":"UITestModal",
+  "%Name":"__UIOpenModal",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"UITestModal",
+  "name":"__UIOpenModal",
   "parent":{
-    "name":"Modals",
-    "path":"folders/UI/Modals.yy",
+    "name":"(System)",
+    "path":"folders/Vendors/UI/(System).yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

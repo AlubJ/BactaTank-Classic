@@ -1,62 +1,89 @@
 function UIWelcomeModal() : UIModal() constructor
 {
-    __recentProjects = [
-        "Test1",
-        "Test2",
-        "Test3",
-        "Test4",
-        "Test5",
-        "Test6",
-        "Test7",
-        "Test8",
-        "Test9",
-        "Test10",
-        "Test11",
-        "Test12",
-        "Test13",
-        "Test14",
-        "Test15",
-        "Test16",
-        "Test17",
-        "Test18",
-        "Test19",
-        "Test20",
-        "Test21",
-        "Test22",
-        "Test23",
-        "Test24",
-        "Test25",
-        "Test26",
-        "Test27",
-        "Test28",
-        "Test29",
-        "Test30",
-        ];
+    __recentProjects = BactaGetRecentFiles();
+    __selectedIndex = -1;
+    
+    static init = function()
+    {
+        __recentProjects = BactaGetRecentFiles();
+        __selectedIndex = -1;
+    }
     
     static render = function(_width, _height)
     {
         UIHeader("Welcome to BactaTank Classic", fa_center);
         
-        UIText("Recent files");
-        UISpacing();
+        ImGuiText("Recent files");
+        ImGuiSpacing();
         
-        if (UIBeginChild("recentFiles", 0, -42))
+        if (ImGuiBeginChild("RecentFiles", 0, -32, ImGuiChildFlags.Border))
         {
-            var _i = 0;
-            repeat (array_length(__recentProjects))
+            if (ImGuiBeginTable("Recent Files", 3, ImGuiTableFlags.ScrollY, 0, 0))
             {
-                ImGuiSelectable(__recentProjects[_i], false);
-                _i++;
+                ImGuiTableSetupScrollFreeze(0, 1);
+                
+                ImGuiTableSetupColumn(" File", ImGuiTableColumnFlags.WidthStretch, 0.3);
+                ImGuiTableSetupColumn("Path", ImGuiTableColumnFlags.WidthStretch, 0.55);
+                ImGuiTableSetupColumn("Type", ImGuiTableColumnFlags.WidthStretch, 0.15);
+                ImGuiTableHeadersRow();
+                
+                var _i = 0;
+                repeat (array_length(__recentProjects))
+                {
+                    ImGuiTableNextRow();
+                    ImGuiTableSetColumnIndex(0);
+                    
+                    var _selected = (_i == __selectedIndex);
+                    
+                    if (ImGuiSelectable($" {__recentProjects[_i].name}##{_i}", _selected, ImGuiSelectableFlags.SpanAllColumns))
+                    {
+                        __selectedIndex = _i;
+                    }
+                    
+                    ImGuiTableSetColumnIndex(1);
+                    ImGuiText($"{__recentProjects[_i].path}");
+                    
+                    ImGuiTableSetColumnIndex(2);
+                    ImGuiText($"{__recentProjects[_i].type}");
+                    
+                    _i++;
+                }
+                
+                ImGuiEndTable();
             }
-            UIEndChild();
+            
+            ImGuiEndChild();
         }
         
-        UISpacing();
-        UISeparator();
-        UISpacing();
+        ImGuiSpacing();
         
-        ImGuiButton("New Project");
+        var _buttonWidth = 100;
+        var _buttonSpacing = 8;
+        
+        var _buttonCount = 3;
+        var _totalWidth = _buttonCount * _buttonWidth + (_buttonCount - 1) * _buttonSpacing;
+        
+        var _startX = (_width - _totalWidth) * 0.5;
+        
+        ImGuiSetCursorPosX(_startX);
+        
+        if (ImGuiButton("New Project", _buttonWidth))
+        {
+            UICloseModal();
+        }
+        
         ImGuiSameLine();
-        ImGuiButton("Open Project or Model");
+        
+        if (ImGuiButton("New Model", _buttonWidth))
+        {
+            UIOpenModal("New Model");
+            UICloseModal();
+        }
+        ImGuiSameLine();
+        
+        if (ImGuiButton("Open File", _buttonWidth))
+        {
+            UICloseModal();
+        }
     }
 }
