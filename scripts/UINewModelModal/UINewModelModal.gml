@@ -1,6 +1,6 @@
 function UINewModelModal() : UIModal() constructor
 {
-    __templates = array_create(100, "ANAKIN_JEDI_PC.GHG");
+    __templates = BactaGetTemplates();
     __selectedIndex = -1;
     
     static deinit = function()
@@ -32,9 +32,14 @@ function UINewModelModal() : UIModal() constructor
                     
                     var _selected = (_i == __selectedIndex);
                     
-                    if (ImGuiSelectable($" {__templates[_i]}##{_i}", _selected, ImGuiSelectableFlags.SpanAllColumns))
+                    if (ImGuiSelectable($" {filename_name(__templates[_i])}##{_i}", _selected, ImGuiSelectableFlags.SpanAllColumns | ImGuiSelectableFlags.AllowDoubleClick))
                     {
                         __selectedIndex = _i;
+                        
+                        if (ImGuiIsMouseDoubleClicked(ImGuiMouseButton.Left))
+                        {
+                            __BactaTrace("Template opened")
+                        }
                     }
                     
                     _i++;

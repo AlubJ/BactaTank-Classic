@@ -9,6 +9,15 @@ function BactaAddRecentFile(_name, _path, _type)
     
     with (_system)
     {
+        if (_type == BACTA_PROJECT_DEFAULT)
+        {
+            _type = "Project";
+        }
+        else
+        {
+            _type = "Model";
+        }
+        
         var _entry = {
             name: _name,
             path: _path,

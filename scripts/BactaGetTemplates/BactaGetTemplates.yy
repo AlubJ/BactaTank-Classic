@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"BactaGetTemplates",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"BactaGetTemplates",
+  "parent":{
+    "name":"Templates",
+    "path":"folders/BactaTank/Templates.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

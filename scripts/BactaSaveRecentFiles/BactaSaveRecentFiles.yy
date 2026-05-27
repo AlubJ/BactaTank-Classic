@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"BactaSaveRecentFiles",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"BactaSaveRecentFiles",
+  "parent":{
+    "name":"RecentFiles",
+    "path":"folders/BactaTank/RecentFiles.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

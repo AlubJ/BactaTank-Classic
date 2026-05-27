@@ -4,7 +4,7 @@
 /// Get a tracked directory to stash
 /// 
 /// @param {String} _name The name of the directory
-function StashGetDirectory(_name, _directory)
+function StashGetDirectory(_name)
 {
     static _system = __StashSystem();
     

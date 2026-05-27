@@ -35,13 +35,18 @@ function UIWelcomeModal() : UIModal() constructor
                     
                     var _selected = (_i == __selectedIndex);
                     
-                    if (ImGuiSelectable($" {__recentProjects[_i].name}##{_i}", _selected, ImGuiSelectableFlags.SpanAllColumns))
+                    if (ImGuiSelectable($" {__recentProjects[_i].name}##{_i}", _selected, ImGuiSelectableFlags.SpanAllColumns | ImGuiSelectableFlags.AllowDoubleClick))
                     {
                         __selectedIndex = _i;
+                        
+                        if (ImGuiIsMouseDoubleClicked(ImGuiMouseButton.Left))
+                        {
+                            __BactaTrace("File opened")
+                        }
                     }
                     
                     ImGuiTableSetColumnIndex(1);
-                    ImGuiText($"{__recentProjects[_i].path}");
+                    ImGuiText($"{filename_dir(__recentProjects[_i].path)}");
                     
                     ImGuiTableSetColumnIndex(2);
                     ImGuiText($"{__recentProjects[_i].type}");
