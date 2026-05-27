@@ -32,7 +32,7 @@ function UINewProjectModal() : UIModal() constructor
             ImGuiSameLine(0, 4);
             if (ImGuiButton("...", 24))
             {
-                var _file = StashSaveDialog("New Project", ["bproj"], __projectName, "");
+                var _file = StashSaveDialog("New Project", [ "bproj" ], __projectName, "");
                 
                 if (_file != "")
                 {
