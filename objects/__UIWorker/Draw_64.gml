@@ -1,1 +1,4 @@
-UIFrameDraw();
+if (!PaneGetMinimised())
+{
+    UIFrameDraw();
+}

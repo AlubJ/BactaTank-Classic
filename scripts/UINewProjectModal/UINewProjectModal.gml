@@ -1,8 +1,8 @@
 function UINewProjectModal() : UIModal() constructor
 {
-    __projectName = "";
-    __projectFile = "";
-    __projectGame = "";
+    __projectName = "New Project";
+    __projectFile = StashGetDirectory("projects");
+    __projectGame = "TCS";
     
     static deinit = function()
     {
@@ -28,7 +28,7 @@ function UINewProjectModal() : UIModal() constructor
             ImGuiText("Project File");
             ImGuiSameLine(_spacing);
             ImGuiSetNextItemWidth(-29);
-            __projectFile = ImGuiInputText("##projectFile", __projectFile);
+            __projectFile = ImGuiInputText("##projectFile", __projectFile, ImGuiInputTextFlags.ReadOnly);
             ImGuiSameLine(0, 4);
             if (ImGuiButton("...", 24))
             {
@@ -58,11 +58,17 @@ function UINewProjectModal() : UIModal() constructor
         
         var _startX = (_width - _totalWidth) * 0.5;
         
-        ImGuiSetCursorPosX(_startX);
+        ImGuiSetCursorPosX(_startX)
+        
+        ImGuiBeginDisabled(__projectName == "" && __projectFile == "");;
         
         if (ImGuiButton("Create Project", _buttonWidth))
         {
+            BactaCreateProject(__projectName, __projectFile, __projectGame, BACTA_PROJECT_DEFAULT);
+            UISetContext("Project");
             UICloseModal();
         }
+        
+        ImGuiEndDisabled();
     }
 }

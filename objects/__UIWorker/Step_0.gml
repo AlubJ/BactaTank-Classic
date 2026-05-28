@@ -1,1 +1,4 @@
-UIFrameRender();
+if (!PaneGetMinimised())
+{
+    UIFrameRender();
+}

@@ -1,9 +1,9 @@
 {
   "$GMScript":"v1",
-  "%Name":"UIAddContext",
+  "%Name":"UISetContext",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"UIAddContext",
+  "name":"UISetContext",
   "parent":{
     "name":"Context",
     "path":"folders/Vendors/UI/Context.yy",

@@ -1,12 +1,12 @@
 {
   "$GMScript":"v1",
-  "%Name":"UIAddContext",
+  "%Name":"PaneGetMinimised",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"UIAddContext",
+  "name":"PaneGetMinimised",
   "parent":{
-    "name":"Context",
-    "path":"folders/Vendors/UI/Context.yy",
+    "name":"Pane",
+    "path":"folders/Vendors/Pane.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

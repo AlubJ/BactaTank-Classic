@@ -1,12 +1,12 @@
 {
   "$GMScript":"v1",
-  "%Name":"UIAddContext",
+  "%Name":"UIProjectPanel",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"UIAddContext",
+  "name":"UIProjectPanel",
   "parent":{
-    "name":"Context",
-    "path":"folders/Vendors/UI/Context.yy",
+    "name":"Project",
+    "path":"folders/UI/Workspaces/Project.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

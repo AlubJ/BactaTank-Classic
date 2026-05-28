@@ -20,6 +20,7 @@ function __PaneSystem()
         __windowYLast = window_get_y();
         
         __windowUpdated = false;
+        __windowMinimised = false;
         
         __windowCommandsAvailable = false;
         

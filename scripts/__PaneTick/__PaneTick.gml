@@ -7,6 +7,7 @@ function __PaneTick()
     with (_system)
     {
         __windowUpdated = false;
+        __windowMinimised = false;
         
         __windowWidth = window_get_width();
         __windowHeight = window_get_height();
@@ -42,6 +43,11 @@ function __PaneTick()
             display_set_gui_size(__windowWidth, __windowHeight);
             surface_resize(application_surface, __windowWidth, __windowHeight);
             __PaneTrace("Window updated");
+        }
+        
+        if (__windowWidth == 0 && __windowHeight == 0)
+        {
+            __windowMinimised = true;
         }
         
         if (__windowCommandsAvailable)

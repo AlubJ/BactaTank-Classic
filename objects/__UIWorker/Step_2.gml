@@ -1,1 +1,4 @@
-UIFrameEnd();
+if (!PaneGetMinimised())
+{
+    UIFrameEnd();
+}

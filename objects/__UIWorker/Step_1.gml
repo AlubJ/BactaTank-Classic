@@ -1,1 +1,4 @@
-UIFrameBegin();
+if (!PaneGetMinimised())
+{
+    UIFrameBegin();
+}

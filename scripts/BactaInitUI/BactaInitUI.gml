@@ -9,5 +9,11 @@ function BactaInitUI()
     UIAddModal("New Model", new UINewModelModal(), 640, 520, true, true);
     UIAddModal("New Project", new UINewProjectModal(), 500, 192, true, true);
     
+    UIAddContext("Project");
+    UIContextAddWorkspace("Project", "Project");
+    UIContextAddMenubar(UIProjectMenuBar, "Project");
+    
+    UIWorkspaceAddPanel("Project", "Project", new UIProjectPanel(), 0.25);
+    
     UIBegin();
 }

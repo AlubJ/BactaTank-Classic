@@ -1,12 +1,12 @@
 {
   "$GMScript":"v1",
-  "%Name":"UIAddContext",
+  "%Name":"UIProjectMenuBar",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"UIAddContext",
+  "name":"UIProjectMenuBar",
   "parent":{
-    "name":"Context",
-    "path":"folders/Vendors/UI/Context.yy",
+    "name":"Project",
+    "path":"folders/UI/Contexts/Project.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

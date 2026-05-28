@@ -15,7 +15,7 @@ function UIContextAddMenubar(_menubar, _context)
         {
             if (__contexts[$ _context].menuBar == undefined)
             {
-                
+                __contexts[$ _context].menuBar = _menubar;
             }
         }
     }
