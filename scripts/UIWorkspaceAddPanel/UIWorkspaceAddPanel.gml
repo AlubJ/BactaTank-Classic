@@ -15,10 +15,15 @@ function UIWorkspaceAddPanel(_context, _workspace, _panel, _flexWeight)
     {
         if (variable_struct_exists(__contexts, _context))
         {
-            if (variable_struct_exists(__contexts[$ _context].workspaces, _workspace))
+            var _i = 0;
+            repeat (array_length(__contexts[$ _context].workspaces))
             {
-                array_push(__contexts[$ _context].workspaces[$ _workspace].panels, _panel);
-                array_push(__contexts[$ _context].workspaces[$ _workspace].flexWeights, _flexWeight);
+                if (__contexts[$ _context].workspaces[_i].name == _workspace)
+                {
+                    array_push(__contexts[$ _context].workspaces[_i].panels, _panel);
+                    array_push(__contexts[$ _context].workspaces[_i].flexWeights, _flexWeight);
+                }
+                _i++;
             }
         }
     }

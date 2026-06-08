@@ -6,7 +6,7 @@
   "name":"__BactaTrace",
   "parent":{
     "name":"Debugging",
-    "path":"folders/BactaTank/(BactaSystem)/Debugging.yy",
+    "path":"folders/BactaTank/(System)/Debugging.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

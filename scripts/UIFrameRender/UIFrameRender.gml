@@ -55,6 +55,37 @@ function UIFrameRender()
             ImGuiEndMainMenuBar();
         }
         
+        if (__currentContext != undefined)
+        {
+            var _workspace = __contexts[$ __currentContext].workspaces[__currentWorkspace];
+            
+            var _i = 0;
+            var _spacing = 4;
+            var _totalSpacing = (_spacing * array_length(_workspace.panels)) + _spacing;
+            var _menuBarHeight = 24;
+            var _height = PaneGetHeight() - _menuBarHeight - _spacing - (_spacing / 2);
+            var _x = _spacing;
+            var _y = _menuBarHeight + (_spacing / 2);
+            
+            repeat (array_length(_workspace.panels))
+            {
+                var _width = (PaneGetWidth() - _totalSpacing) * _workspace.flexWeights[_i];
+                
+                ImGuiSetNextWindowPos(_x, _y, ImGuiCond.Always);
+                ImGuiSetNextWindowSize(_width, _height, ImGuiCond.Always);
+                
+                if (ImGuiBegin($"{_workspace.name}", true, ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoTitleBar))
+                {
+                    _workspace.panels[_i].render(_width, _height);
+                    ImGuiEnd();
+                }
+                
+                _x += _width + _spacing;
+                
+                _i++;
+            }
+        }
+        
         var _modals = variable_struct_get_names(__modals);
         
         var _i = 0;

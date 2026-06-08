@@ -5,8 +5,8 @@
   "isDnD":false,
   "name":"__BactaConstants",
   "parent":{
-    "name":"(BactaSystem)",
-    "path":"folders/BactaTank/(BactaSystem).yy",
+    "name":"(System)",
+    "path":"folders/BactaTank/(System).yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

@@ -12,8 +12,8 @@
   "Folders":[
     {"$GMFolder":"","%Name":"Assets","folderPath":"folders/Assets.yy","name":"Assets","resourceType":"GMFolder","resourceVersion":"2.0",},
     {"$GMFolder":"","%Name":"BactaTank","folderPath":"folders/BactaTank.yy","name":"BactaTank","resourceType":"GMFolder","resourceVersion":"2.0",},
-    {"$GMFolder":"","%Name":"(BactaSystem)","folderPath":"folders/BactaTank/(BactaSystem).yy","name":"(BactaSystem)","resourceType":"GMFolder","resourceVersion":"2.0",},
-    {"$GMFolder":"","%Name":"Debugging","folderPath":"folders/BactaTank/(BactaSystem)/Debugging.yy","name":"Debugging","resourceType":"GMFolder","resourceVersion":"2.0",},
+    {"$GMFolder":"","%Name":"(System)","folderPath":"folders/BactaTank/(System).yy","name":"(System)","resourceType":"GMFolder","resourceVersion":"2.0",},
+    {"$GMFolder":"","%Name":"Debugging","folderPath":"folders/BactaTank/(System)/Debugging.yy","name":"Debugging","resourceType":"GMFolder","resourceVersion":"2.0",},
     {"$GMFolder":"","%Name":"Asset","folderPath":"folders/BactaTank/Asset.yy","name":"Asset","resourceType":"GMFolder","resourceVersion":"2.0",},
     {"$GMFolder":"","%Name":"BactaCommon","folderPath":"folders/BactaTank/BactaCommon.yy","name":"BactaCommon","resourceType":"GMFolder","resourceVersion":"2.0",},
     {"$GMFolder":"","%Name":"BactaConfig","folderPath":"folders/BactaTank/BactaConfig.yy","name":"BactaConfig","resourceType":"GMFolder","resourceVersion":"2.0",},
@@ -99,7 +99,7 @@
   "isEcma":false,
   "LibraryEmitters":[],
   "MetaData":{
-    "IDEVersion":"2026.0.0.15",
+    "IDEVersion":"2026.0.0.16",
   },
   "name":"BactaTank Classic",
   "resources":[
