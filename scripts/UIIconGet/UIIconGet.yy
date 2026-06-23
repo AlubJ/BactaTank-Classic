@@ -1,12 +1,12 @@
 {
   "$GMScript":"v1",
-  "%Name":"__BactaMacros",
+  "%Name":"UIIconGet",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"__BactaMacros",
+  "name":"UIIconGet",
   "parent":{
-    "name":"Config",
-    "path":"folders/BactaTank/Config.yy",
+    "name":"Icons",
+    "path":"folders/Vendors/UI/Icons.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

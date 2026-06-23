@@ -5,8 +5,8 @@
   "isDnD":false,
   "name":"__BactaInitalise",
   "parent":{
-    "name":"BactaConfig",
-    "path":"folders/BactaTank/BactaConfig.yy",
+    "name":"Config",
+    "path":"folders/BactaTank/Config.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

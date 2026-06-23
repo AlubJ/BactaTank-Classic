@@ -28,7 +28,18 @@ function BactaCreateProject(_projectName, _projectFile, _projectGame, _projectTy
             type = _projectType;
             version = BACTA_VERSION;
             
-            characters = [  ];
+            characters = [ 
+                {
+                    name: "Character",
+                    
+                    animations: [  ],
+                    abilities: [  ],
+                    attributes: [  ],
+                    
+                    hrModel: undefined,
+                    lrModel: undefined,
+                }
+            ];
             models = [  ];
             
             loadedModel = undefined;

@@ -36,6 +36,8 @@ function UIAddTheme(_file)
             }
         }
         
+        _theme[$ "directory"] = filename_dir(_file) + "/";
+        
         __themes[$ _theme[$ "Name"]] = _theme;
     }
 }

@@ -12,6 +12,7 @@ function __UISystem()
         __themes = {  };
         __contexts = {  };
         __modals = {  };
+        __icons = {  };
         
         //__defaultFont = ImGuiGetFont();
         
@@ -24,17 +25,46 @@ function __UISystem()
         __version = "";
         
         __styleVars = [  ]
-        __styleVars[ImGuiStyleVar.WindowBorderSize] = "WindowBorderSize";
+        __styleVars[ImGuiStyleVar.Alpha] = "Alpha";
+        __styleVars[ImGuiStyleVar.ButtonTextAlign] = "ButtonTextAlign";
+        __styleVars[ImGuiStyleVar.CellPadding] = "CellPadding";
         __styleVars[ImGuiStyleVar.ChildBorderSize] = "ChildBorderSize";
-        __styleVars[ImGuiStyleVar.PopupBorderSize] = "PopupBorderSize";
-        __styleVars[ImGuiStyleVar.FrameBorderSize] = "FrameBorderSize";
-        __styleVars[ImGuiStyleVar.WindowRounding] = "WindowRounding";
         __styleVars[ImGuiStyleVar.ChildRounding] = "ChildRounding";
+        __styleVars[ImGuiStyleVar.DisabledAlpha] = "DisabledAlpha";
+        __styleVars[ImGuiStyleVar.DockingSeparatorSize] = "DockingSeparatorSize";
+        __styleVars[ImGuiStyleVar.FrameBorderSize] = "FrameBorderSize";
+        __styleVars[ImGuiStyleVar.FramePadding] = "FramePadding";
         __styleVars[ImGuiStyleVar.FrameRounding] = "FrameRounding";
+        __styleVars[ImGuiStyleVar.GrabMinSize] = "GrabMinSize";
+        __styleVars[ImGuiStyleVar.GrabRounding] = "GrabRounding";
+        __styleVars[ImGuiStyleVar.ImageBorderSize] = "ImageBorderSize";
+        __styleVars[ImGuiStyleVar.IndentSpacing] = "IndentSpacing";
+        __styleVars[ImGuiStyleVar.ItemInnerSpacing] = "ItemInnerSpacing";
+        __styleVars[ImGuiStyleVar.ItemSpacing] = "ItemSpacing";
+        __styleVars[ImGuiStyleVar.PopupBorderSize] = "PopupBorderSize";
         __styleVars[ImGuiStyleVar.PopupRounding] = "PopupRounding";
         __styleVars[ImGuiStyleVar.ScrollbarRounding] = "ScrollbarRounding";
-        __styleVars[ImGuiStyleVar.GrabRounding] = "GrabRounding";
+        __styleVars[ImGuiStyleVar.ScrollbarSize] = "ScrollbarSize";
+        __styleVars[ImGuiStyleVar.SelectableTextAlign] = "SelectableTextAlign";
+        __styleVars[ImGuiStyleVar.SeparatorTextAlign] = "SeparatorTextAlign";
+        __styleVars[ImGuiStyleVar.SeparatorTextBorderSize] = "SeparatorTextBorderSize";
+        __styleVars[ImGuiStyleVar.SeparatorTextPadding] = "SeparatorTextPadding";
+        __styleVars[ImGuiStyleVar.TabBarBorderSize] = "TabBarBorderSize";
+        __styleVars[ImGuiStyleVar.TabBarOverlineSize] = "TabBarOverlineSize";
+        __styleVars[ImGuiStyleVar.TabBorderSize] = "TabBorderSize";
+        __styleVars[ImGuiStyleVar.TabMinWidthBase] = "TabMinWidthBase";
+        __styleVars[ImGuiStyleVar.TabMinWidthShrink] = "TabMinWidthShrink";
         __styleVars[ImGuiStyleVar.TabRounding] = "TabRounding";
+        __styleVars[ImGuiStyleVar.TableAngledHeadersAngle] = "TableAngledHeadersAngle";
+        __styleVars[ImGuiStyleVar.TableAngledHeadersTextAlign] = "TableAngledHeadersTextAlign";
+        __styleVars[ImGuiStyleVar.TreeLinesRounding] = "TreeLinesRounding";
+        __styleVars[ImGuiStyleVar.TreeLinesSize] = "TreeLinesSize";
+        __styleVars[ImGuiStyleVar.WindowBorderSize] = "WindowBorderSize";
+        __styleVars[ImGuiStyleVar.WindowMinSize] = "WindowMinSize";
+        __styleVars[ImGuiStyleVar.WindowPadding] = "WindowPadding";
+        __styleVars[ImGuiStyleVar.WindowRounding] = "WindowRounding";
+        __styleVars[ImGuiStyleVar.WindowTitleAlign] = "WindowTitleAlign";
+        
         
         __styleColours = [];
         __styleColours[ImGuiCol.WindowBg] = "WindowBg";

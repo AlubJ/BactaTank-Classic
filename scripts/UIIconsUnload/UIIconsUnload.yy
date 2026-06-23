@@ -1,12 +1,12 @@
 {
   "$GMScript":"v1",
-  "%Name":"BactaDebugger",
+  "%Name":"UIIconsUnload",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"BactaDebugger",
+  "name":"UIIconsUnload",
   "parent":{
-    "name":"BactaCommon",
-    "path":"folders/BactaTank/BactaCommon.yy",
+    "name":"Icons",
+    "path":"folders/Vendors/UI/Icons.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

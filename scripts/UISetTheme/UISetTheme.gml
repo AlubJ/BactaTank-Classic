@@ -20,6 +20,8 @@ function UISetTheme(_name)
             return;
         }
         
+        UIIconsUnload();
+        
         var _theme = __themes[$ _name];
         var _themeFields = variable_struct_get_names(_theme);
         
@@ -51,6 +53,23 @@ function UISetTheme(_name)
         if (variable_struct_exists(_theme, "Background"))
         {
             __currentBackgroundColour = make_colour_rgb(_theme[$ "Background"][0], _theme[$ "Background"][1], _theme[$ "Background"][2]);
+        }
+        
+        if (variable_struct_exists(_theme, "Icons"))
+        {
+            var _icons = _theme[$ "Icons"];
+            var _iconNames = variable_struct_get_names(_icons);
+            
+            repeat (array_length(_iconNames))
+            {
+                var _iconName = array_pop(_iconNames);
+                var _iconPath = _theme[$ "directory"] + "icons/" + _icons[$ _iconName];
+                
+                if (file_exists(_iconPath) && filename_ext(_iconPath) == ".png")
+                {
+                    __icons[$ _iconName] = sprite_add(_iconPath, 0, false, false, 0, 0);
+                }
+            }
         }
         
         if (variable_struct_exists(_theme, "font"))

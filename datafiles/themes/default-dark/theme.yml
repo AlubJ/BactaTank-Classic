@@ -21,6 +21,11 @@ Background:
 - 8
 - 255
 
+# Icons
+Icons:
+  Character: "character.png"
+  Model: "model.png"
+
 # Style
 ChildBorderSize: 1
 ChildRounding: 3
@@ -33,6 +38,8 @@ ScrollbarRounding: 3
 TabRounding: 3
 WindowBorderSize: 0
 WindowRounding: 10
+TreeLinesSize: 1
+TreeLinesRounding: 0
 
 # Colours
 Button: 
